@@ -1,18 +1,23 @@
-# Fix “There isn’t a GitHub Pages site here” (404)
+# GitHub Pages: Deploy from branch main (root)
 
-Your workflow is already set up. You only need to turn on Pages and point it at Actions.
+The site is built and served from the **root of the main branch**.
 
-## Steps
+## One-time setup
 
-1. On GitHub, open: **https://github.com/jelliottdev/guided-bankruptcy-intake**
-2. Click **Settings** (repo tab, not your profile settings).
-3. In the left sidebar, under **“Code and automation”**, click **Pages**.
-4. Under **“Build and deployment”** → **Source**, choose **GitHub Actions** (not “Deploy from a branch”).
-5. Do not change anything else. The workflow in this repo will build and deploy.
+1. **GitHub** → repo **Settings** → **Pages** (under "Code and automation").
+2. Under **Build and deployment** → **Source**, choose **Deploy from a branch**.
+3. **Branch**: `main` (or your default branch).
+4. **Folder**: `/(root)`.
+5. Save.
 
-## After that
+## Deploy
 
-- **Automatic:** The next push to `main` will run the “Deploy to GitHub Pages” workflow and update the site.
-- **Manual:** **Actions** tab → **Deploy to GitHub Pages** → **Run workflow** (to deploy the current `main` without a new push).
+1. Run: `npm run deploy`  
+   (Builds and copies `dist/` to repo root as `index.html` and `assets/`.)
+2. Commit and push:  
+   `git add index.html assets/ && git commit -m "Deploy" && ./scripts/push.sh`  
+   (Or push however you normally do.)
 
-Your site will be at: **https://jelliottdev.github.io/guided-bankruptcy-intake/**
+## Live site
+
+**https://jelliottdev.github.io/guided-bankruptcy-intake/**
