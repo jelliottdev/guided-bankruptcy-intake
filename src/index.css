@@ -187,7 +187,7 @@ label {
   display: block;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .req {
@@ -210,20 +210,52 @@ label {
   margin-bottom: 0.25rem;
 }
 
-.field-why-we-ask {
-  margin: 0.25rem 0 0.375rem;
-  font-size: 0.8125rem;
+.field-label-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 4px;
+  min-height: 0;
 }
 
-.field-why-we-ask-link {
-  color: #2563eb;
+.field-label-row label {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.field-label-row .field-cant-answer {
+  flex-shrink: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.field-label-with-hint {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+}
+
+.field-why-we-ask-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #6b7280;
   cursor: help;
-  text-decoration: none;
-  border-bottom: 1px dotted currentColor;
+  vertical-align: middle;
 }
 
-.field-why-we-ask-link:hover {
-  text-decoration: underline;
+.field-why-we-ask-icon:hover {
+  color: #2563eb;
+}
+
+.field-why-we-ask-icon svg {
+  display: block;
 }
 
 .error {
@@ -233,7 +265,12 @@ label {
 }
 
 .field-wrap {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+
+.field-wrap .helper {
+  margin-top: 0.2rem;
+  margin-bottom: 0.35rem;
 }
 
 input[type="text"],
@@ -246,7 +283,8 @@ select {
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-bottom: 8px;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
 }
 
 textarea {
@@ -520,7 +558,7 @@ select:focus {
 }
 
 .step-fields .field-wrap.field-group-start {
-  margin-top: 28px;
+  margin-top: 20px;
 }
 
 .step-fields .field-wrap.field-group-start:first-child {
@@ -964,6 +1002,248 @@ select:focus {
   .attorney-kpi-row {
     grid-template-columns: 1fr;
   }
+}
+
+/* Case Readiness + Case Snapshot row */
+.attorney-readiness-summary-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+@media (max-width: 700px) {
+  .attorney-readiness-summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+.readiness-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+.readiness-card .readiness-score {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #f9fafb;
+  line-height: 1;
+}
+.readiness-card.readiness-ready .readiness-score { color: #22c55e; }
+.readiness-card.readiness-minor .readiness-score { color: #eab308; }
+.readiness-card.readiness-gaps .readiness-score { color: #f59e0b; }
+.readiness-card.readiness-early .readiness-score { color: #6b7280; }
+.readiness-card .readiness-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin-top: 8px;
+}
+.readiness-card .readiness-band {
+  font-size: 0.8125rem;
+  color: #d1d5db;
+  margin-top: 4px;
+  text-align: center;
+}
+.case-snapshot-card .case-snapshot-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #e5e7eb;
+}
+
+/* Strategy Signals + Schedule Coverage row */
+.attorney-strategy-schedules-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+@media (max-width: 800px) {
+  .attorney-strategy-schedules-row {
+    grid-template-columns: 1fr;
+  }
+}
+.strategy-empty, .follow-up-empty, .matrix-empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+.strategy-list, .schedule-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.strategy-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #1f2937;
+  font-size: 0.875rem;
+}
+.strategy-item:last-child { border-bottom: 0; }
+.strategy-label { font-weight: 500; color: #f3f4f6; }
+.strategy-note { display: block; font-size: 0.8125rem; color: #9ca3af; margin-top: 2px; }
+.schedule-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #1f2937;
+  font-size: 0.875rem;
+}
+.schedule-row:last-child { border-bottom: 0; }
+.schedule-name { color: #e5e7eb; }
+.schedule-status { font-weight: 600; }
+.schedule-row.schedule-ready .schedule-status { color: #22c55e; }
+.schedule-row.schedule-missing .schedule-status { color: #f59e0b; }
+.schedule-detail { grid-column: 1 / -1; font-size: 0.8125rem; color: #9ca3af; }
+
+/* Document sufficiency detail column */
+.doc-detail {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+/* Creditor Matrix + Client Reliability row */
+.creditor-reliability-row {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 20px;
+}
+@media (max-width: 700px) {
+  .creditor-reliability-row {
+    grid-template-columns: 1fr;
+  }
+}
+.card-sub {
+  margin: -8px 0 10px;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+.creditor-matrix-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.creditor-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid #1f2937;
+}
+.creditor-row.type-priority .creditor-type { color: #f59e0b; }
+.creditor-row.type-secured .creditor-type { color: #3b82f6; }
+.creditor-row.type-unsecured .creditor-type { color: #9ca3af; }
+.creditor-row.type-co-signed .creditor-type { color: #a78bfa; }
+.creditor-name { color: #e5e7eb; }
+.creditor-type { font-size: 0.75rem; font-weight: 600; }
+.matrix-more { margin: 0 0 8px; font-size: 0.8125rem; color: #6b7280; }
+.btn-export-creditor {
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+.btn-export-creditor:hover {
+  background: #374151;
+}
+.reliability-score {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f9fafb;
+}
+.reliability-label {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+.reliability-notes {
+  margin: 10px 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+/* Follow-Up + Timeline row */
+.follow-up-timeline-row {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: 20px;
+}
+@media (max-width: 600px) {
+  .follow-up-timeline-row {
+    grid-template-columns: 1fr;
+  }
+}
+.follow-up-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  color: #e5e7eb;
+}
+.follow-up-list li { margin-bottom: 4px; }
+.timeline-days {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+.timeline-note {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+/* AI Summary card */
+.ai-privacy {
+  margin: -4px 0 12px;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+.ai-summary-output {
+  padding: 12px;
+  background: #0f1419;
+  border: 1px solid #1f2937;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #e5e7eb;
+  margin-bottom: 12px;
+}
+.ai-summary-actions {
+  display: flex;
+  gap: 10px;
+}
+.btn-generate-ai, .btn-copy-ai, .btn-regenerate-ai {
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-generate-ai, .btn-regenerate-ai {
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: #fff;
+}
+.btn-generate-ai:hover, .btn-regenerate-ai:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+.btn-copy-ai {
+  background: #1f2937;
+  border: 1px solid #374151;
+  color: #e5e7eb;
+}
+.btn-copy-ai:hover {
+  background: #374151;
 }
 
 .kpi-card {
@@ -1797,14 +2077,36 @@ select:focus {
 }
 
 .field-cant-answer {
-  display: inline-block;
-  margin-top: 6px;
-  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 4px;
+  background: none;
+  border: none;
+  border-radius: 4px;
   color: #71717a;
+  cursor: pointer;
 }
 
 .field-cant-answer:hover {
   color: #52525b;
+  background: #f4f4f5;
+}
+
+.field-cant-answer-flagged,
+.field-cant-answer[aria-pressed="true"] {
+  color: #ea580c;
+}
+
+.field-cant-answer-flagged:hover,
+.field-cant-answer[aria-pressed="true"]:hover {
+  color: #c2410c;
+  background: #fff7ed;
+}
+
+.field-cant-answer-icon {
+  display: block;
 }
 
 .field-flag-note-box {

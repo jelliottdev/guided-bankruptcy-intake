@@ -61,49 +61,56 @@ export function FieldRenderer({
 
   if (field.showIf && !field.showIf(answers)) return null;
 
-  const renderFlagBlock = () => {
+  const renderFlagButton = () => {
     if (!field.required || !onSetFlag) return null;
     return (
-      <>
-        <button
-          type="button"
-          className="link-button field-cant-answer"
-          onClick={() => onSetFlag(field.id, !flagged)}
-          aria-pressed={flagged}
-        >
-          Can&apos;t answer right now
-        </button>
-        {flagged && (
-          <div className="field-flag-note-box">
-            <label htmlFor={`${field.id}-flag-note`}>Note to your attorney (required)</label>
-            <textarea
-              id={`${field.id}-flag-note`}
-              placeholder="Example: I don't have my SSN card right now. I will call the office tomorrow."
-              value={flagNote}
-              onChange={(e) => onSetFlagNote?.(field.id, e.target.value)}
-              aria-describedby={`${field.id}-flag-helper`}
-            />
-            <p id={`${field.id}-flag-helper`} className="helper">
-              Briefly explain why you can&apos;t answer yet or what you will provide later.
-            </p>
-            <div className="field-flag-actions">
-              <button
-                type="button"
-                className="field-flag-save-btn"
-                disabled={!flagNoteValid}
-                onClick={() => flagNoteValid && setNoteSavedFlash(true)}
-              >
-                Save note for attorney
-              </button>
-              {noteSavedFlash && <span className="field-flag-saved">Saved</span>}
-              {flagNoteValid && !noteSavedFlash && (
-                <span className="field-flag-will-see">Your attorney will see this note.</span>
-              )}
-            </div>
-            <p className="field-flag-reassurance">This won&apos;t stop your intake — it just alerts your attorney.</p>
-          </div>
-        )}
-      </>
+      <button
+        type="button"
+        className={`field-cant-answer${flagged ? ' field-cant-answer-flagged' : ''}`}
+        onClick={() => onSetFlag(field.id, !flagged)}
+        aria-pressed={flagged}
+        aria-label="Can't answer right now"
+        title="Can't answer right now"
+      >
+        <svg className="field-cant-answer-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <line x1="5" y1="22" x2="5" y2="2" />
+          <path d="M5 2v8l9-4-9-4z" />
+        </svg>
+      </button>
+    );
+  };
+
+  const renderFlagNoteBox = () => {
+    if (!flagged || !field.required || !onSetFlag) return null;
+    return (
+      <div className="field-flag-note-box">
+        <label htmlFor={`${field.id}-flag-note`}>Note to your attorney (required)</label>
+        <textarea
+          id={`${field.id}-flag-note`}
+          placeholder="Example: I don't have my SSN card right now. I will call the office tomorrow."
+          value={flagNote}
+          onChange={(e) => onSetFlagNote?.(field.id, e.target.value)}
+          aria-describedby={`${field.id}-flag-helper`}
+        />
+        <p id={`${field.id}-flag-helper`} className="helper">
+          Briefly explain why you can&apos;t answer yet or what you will provide later.
+        </p>
+        <div className="field-flag-actions">
+          <button
+            type="button"
+            className="field-flag-save-btn"
+            disabled={!flagNoteValid}
+            onClick={() => flagNoteValid && setNoteSavedFlash(true)}
+          >
+            Save note for attorney
+          </button>
+          {noteSavedFlash && <span className="field-flag-saved">Saved</span>}
+          {flagNoteValid && !noteSavedFlash && (
+            <span className="field-flag-will-see">Your attorney will see this note.</span>
+          )}
+        </div>
+        <p className="field-flag-reassurance">This won&apos;t stop your intake — it just alerts your attorney.</p>
+      </div>
     );
   };
 
@@ -115,21 +122,34 @@ export function FieldRenderer({
     .replace(/\s+/g, ' ')
     .trim();
 
+  const whyWeAskIcon = field.whyWeAsk ? (
+    <span className="field-why-we-ask-icon" title={field.whyWeAsk} aria-label="Why we ask this">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+        <path d="M12 17h.01" />
+      </svg>
+    </span>
+  ) : null;
+
   const label = (
-    <label id={`${field.id}-label`} htmlFor={field.id}>
+    <label id={`${field.id}-label`} htmlFor={field.id} className={whyWeAskIcon ? 'field-label-with-hint' : ''}>
       {displayLabel}
+      {whyWeAskIcon}
       {field.required && <span className="req" aria-hidden="true"> *</span>}
     </label>
+  );
+
+  const labelRow = (
+    <div className="field-label-row">
+      {label}
+      {renderFlagButton()}
+    </div>
   );
 
   const helper = field.helper ? <p className="helper">{field.helper}</p> : null;
   const err = error ? <p className="error">{error}</p> : null;
   const warn = warning ? <p className="field-warning" role="status">{warning}</p> : null;
-  const whyWeAskEl = field.whyWeAsk ? (
-    <p className="field-why-we-ask">
-      <span className="field-why-we-ask-link" title={field.whyWeAsk}>Why we ask this</span>
-    </p>
-  ) : null;
   const wrapClass = `field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}${field.groupStart ? ' field-group-start' : ''}`;
 
   switch (field.type) {
@@ -145,8 +165,7 @@ export function FieldRenderer({
       };
       return (
         <div className={wrapClass}>
-          {label}
-          {whyWeAskEl}
+          {labelRow}
           <input
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
             id={field.id}
@@ -159,7 +178,7 @@ export function FieldRenderer({
             aria-invalid={!!error}
           />
           {helper}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
           {warn}
         </div>
@@ -168,17 +187,17 @@ export function FieldRenderer({
     case 'textarea':
       return (
         <div className={wrapClass}>
-          {label}
-          {whyWeAskEl}
+          {labelRow}
           <textarea
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLTextAreaElement>) : undefined}
             id={field.id}
             value={(value as string) ?? ''}
             onChange={(e) => onChange(e.target.value)}
+            placeholder={field.placeholder}
             aria-invalid={!!error}
           />
           {helper}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
           {warn}
         </div>
@@ -186,7 +205,7 @@ export function FieldRenderer({
     case 'radio':
       return (
         <div className={wrapClass}>
-          {label}
+          {labelRow}
           <div className="field-radio" role="radiogroup" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
               <label key={opt.value} htmlFor={idx === 0 ? field.id : undefined}>
@@ -205,7 +224,7 @@ export function FieldRenderer({
             ))}
           </div>
           {helper}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
           {warn}
         </div>
@@ -226,7 +245,7 @@ export function FieldRenderer({
       };
       return (
         <div className={wrapClass}>
-          {label}
+          {labelRow}
           <div className="field-checkbox" role="group" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
               <label key={opt.value} htmlFor={idx === 0 ? field.id : undefined}>
@@ -243,7 +262,7 @@ export function FieldRenderer({
             ))}
           </div>
           {helper}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
           {warn}
         </div>
@@ -253,7 +272,7 @@ export function FieldRenderer({
       const v = (value as string) ?? '';
       return (
         <div className={wrapClass}>
-          {label}
+          {labelRow}
           <select
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLSelectElement>) : undefined}
             id={field.id}
@@ -269,7 +288,7 @@ export function FieldRenderer({
             ))}
           </select>
           {helper}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
           {warn}
         </div>
@@ -283,7 +302,7 @@ export function FieldRenderer({
       const columns = field.columns ?? [];
       return (
         <div className={wrapClass}>
-          {label}
+          {labelRow}
           <div className="field-grid">
             <table>
               <thead>
@@ -322,7 +341,7 @@ export function FieldRenderer({
             </table>
           </div>
           {helper}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
           {warn}
         </div>
@@ -334,7 +353,7 @@ export function FieldRenderer({
       const showDontHave = field.dontHaveYetCheckbox !== false;
       return (
         <div className={`field-wrap field-wrap-file${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
-          {label}
+          {labelRow}
           {field.uploadForTag && (
             <p className="upload-for-tag" aria-hidden>Upload for: {field.uploadForTag}</p>
           )}
@@ -401,7 +420,7 @@ export function FieldRenderer({
               I don&apos;t have this yet — will provide later
             </label>
           )}
-          {renderFlagBlock()}
+          {renderFlagNoteBox()}
           {err}
         </div>
       );

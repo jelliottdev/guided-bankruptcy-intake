@@ -20,7 +20,7 @@ function always(): boolean {
 const stepFilingSetup: Step = {
   id: 'filing_setup',
   title: 'Filing Setup',
-  description: 'Choose whether you are filing alone or with your spouse.',
+  description: 'Choose whether you are filing alone or with your spouse. This determines which sections you\'ll see.',
   showIf: always,
   fields: [
     {
@@ -28,7 +28,7 @@ const stepFilingSetup: Step = {
       type: 'radio',
       label: 'How are you filing your bankruptcy case?',
       required: true,
-      helper: 'Joint filing means both spouses are included in the same bankruptcy case.',
+      helper: 'Joint filing means both you and your spouse are in the same case and we\'ll ask for both of your information.',
       options: [
         { value: 'Filing alone', label: 'Filing by myself' },
         { value: 'Filing with spouse', label: 'Filing jointly with my spouse' },
@@ -56,6 +56,7 @@ const stepDebtorIdentity: Step = {
       id: 'debtor_other_names',
       type: 'text',
       label: 'Other names you used in the last 6 years',
+      placeholder: 'e.g. Jane Smith (maiden), Jane Doe (prior marriage)',
       helper: 'Include maiden names, prior married names, or legal name changes. Leave blank if none.',
     },
     {
@@ -107,7 +108,8 @@ const stepDebtorContact: Step = {
       type: 'textarea',
       label: 'Current Street Address',
       required: true,
-      helper: 'Street, apartment/unit if any, city, state, and ZIP.',
+      placeholder: '123 Main St, Apt 4B\nChicago, IL 60601',
+      helper: 'Street, apartment/unit if any, city, state, and ZIP. One or two lines is fine.',
       groupStart: true,
     },
     {
@@ -125,6 +127,8 @@ const stepDebtorContact: Step = {
       type: 'textarea',
       label: 'Mailing Address (if different)',
       required: false,
+      placeholder: 'P.O. Box 100 or street address\nCity, State ZIP',
+      helper: 'Where you receive mail if different from where you live.',
       showIf: (a) => a['mailing_different'] === 'Yes',
     },
     {
@@ -132,20 +136,23 @@ const stepDebtorContact: Step = {
       type: 'text',
       label: 'County of Residence',
       required: true,
-      helper: 'The county where you live (e.g. Cook County, Los Angeles County).',
+      placeholder: 'e.g. Cook County, Los Angeles County',
+      helper: 'The county where you currently live. Required for court filings.',
       groupStart: true,
     },
     {
       id: 'addresses_6_years',
       type: 'textarea',
       label: 'All addresses where you lived in the last 6 years',
-      helper: 'List cities and states if you don\'t remember full street addresses.',
+      placeholder: 'Jan 2020 – Dec 2022: 456 Oak Ave, Chicago IL\nJan 2023 – present: 123 Main St, Chicago IL',
+      helper: 'List each address and approximate dates. Cities and states are OK if you don\'t remember full street addresses.',
     },
     {
       id: 'business_names',
       type: 'textarea',
       label: 'Business names you have used in the last 6 years',
-      helper: 'Leave blank if none. Include side businesses or DBA names.',
+      placeholder: 'e.g. Smith Cleaning LLC, DBA Quick Fix',
+      helper: 'Leave blank if none. Include side businesses, DBA names, or any name you used for work.',
     },
     {
       id: 'prior_bankruptcy',
@@ -162,7 +169,8 @@ const stepDebtorContact: Step = {
       id: 'prior_bankruptcy_details',
       type: 'textarea',
       label: 'Prior Bankruptcy Details (If Yes)',
-      helper: 'Include chapter type, year filed, and whether you received a discharge (if known).',
+      placeholder: 'e.g. Chapter 7, filed 2018, received discharge',
+      helper: 'Include chapter type (7 or 13), year filed, and whether you received a discharge (if known).',
       showIf: (a) => a['prior_bankruptcy'] === 'Yes',
     },
   ],
@@ -175,8 +183,21 @@ const stepSpouse: Step = {
   description: 'Only complete this section if you are filing jointly with your spouse.',
   showIf: isJointFiling,
   fields: [
-    { id: 'spouse_full_name', type: 'text', label: 'Spouse full legal name (exactly as shown on ID)', required: true },
-    { id: 'spouse_other_names', type: 'text', label: 'Spouse other names used in the last 6 years' },
+    {
+      id: 'spouse_full_name',
+      type: 'text',
+      label: 'Spouse full legal name (exactly as shown on ID)',
+      required: true,
+      placeholder: 'e.g. John Robert Smith',
+      helper: 'Use current legal name — not nicknames.',
+    },
+    {
+      id: 'spouse_other_names',
+      type: 'text',
+      label: 'Spouse other names used in the last 6 years',
+      placeholder: 'e.g. maiden name, prior married name',
+      helper: 'Leave blank if none.',
+    },
     {
       id: 'spouse_ssn_last4',
       type: 'text',
@@ -221,6 +242,7 @@ const stepUrgency: Step = {
       id: 'urgency_flags',
       type: 'checkbox',
       label: 'Which of these apply?',
+      helper: 'Select any that describe your situation. This helps your attorney prioritize.',
       options: [
         { value: 'Wage garnishment is currently active or pending', label: 'Active wage garnishment' },
         { value: 'Bank account levy is pending', label: 'Bank account frozen or levy pending' },
@@ -234,7 +256,8 @@ const stepUrgency: Step = {
       id: 'foreclosure_date',
       type: 'text',
       label: 'Foreclosure date (if known)',
-      helper: 'Enter the date if you know it — estimate if needed.',
+      placeholder: 'e.g. 03/15/2025 or March 2025',
+      helper: 'Sale date or scheduled date if you know it. Estimate if needed.',
       showIf: (a) => {
         const v = a['urgency_flags'];
         return Array.isArray(v) && v.includes('Foreclosure on your home is pending (date:)');
@@ -244,7 +267,8 @@ const stepUrgency: Step = {
       id: 'repossession_date',
       type: 'text',
       label: 'Repossession date (if known)',
-      helper: 'Enter the date if you know it — estimate if needed.',
+      placeholder: 'e.g. 02/01/2025 or Soon',
+      helper: 'When the vehicle or item may be repossessed. Estimate if needed.',
       showIf: (a) => {
         const v = a['urgency_flags'];
         return Array.isArray(v) && v.includes('Risk of vehicle repossession (date:)');
@@ -254,7 +278,8 @@ const stepUrgency: Step = {
       id: 'shutoff_date',
       type: 'text',
       label: 'Shutoff date (if known)',
-      helper: 'Enter the date if you know it — estimate if needed.',
+      placeholder: 'e.g. 04/01/2025',
+      helper: 'Date on the notice or when service may be cut. Estimate if needed.',
       showIf: (a) => {
         const v = a['urgency_flags'];
         return Array.isArray(v) && v.includes('Utility shutoff notice received (date:)');
@@ -275,6 +300,8 @@ const stepUrgency: Step = {
       id: 'business_name_type',
       type: 'textarea',
       label: 'Business Name and Type',
+      placeholder: 'e.g. ABC Cleaning LLC — sole proprietor, house cleaning',
+      helper: 'Legal business name (if any) and what the business does.',
       showIf: (a) => a['self_employed'] === 'Yes',
     },
     {
@@ -292,6 +319,8 @@ const stepUrgency: Step = {
       id: 'cosigner_details',
       type: 'textarea',
       label: 'Co-signer Name(s) and which debt(s)',
+      placeholder: 'e.g. Jane Doe — Chase auto loan; John Smith — furniture financing',
+      helper: 'List each co-signer and the debt they co-signed for. Your attorney will explain how this affects your case.',
       showIf: (a) => a['cosigner_debts'] === 'Yes',
     },
   ],
@@ -305,6 +334,7 @@ function buildRealEstateFields(): Step['fields'] {
       type: 'radio',
       label: 'Do you own real estate or have a legal interest in any property?',
       required: true,
+      helper: 'Include your home, rental property, land, or timeshares — even if someone else lives there.',
       options: [
         { value: 'Yes, I own real estate', label: 'Yes, I own real estate' },
         { value: 'No, I do not own real estate', label: 'No, I do not own real estate' },
@@ -331,6 +361,7 @@ function buildRealEstateFields(): Step['fields'] {
         type: 'text',
         label: `Property ${n} Address`,
         required: true,
+        placeholder: 'e.g. 100 Oak Lane, Springfield IL 62701',
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
       },
       {
@@ -351,7 +382,8 @@ function buildRealEstateFields(): Step['fields'] {
         id: `${prefix}value`,
         type: 'text',
         label: `Property ${n} — Estimated property value (what it could sell for today)`,
-        helper: 'Use a rough market estimate — not your purchase price.',
+        placeholder: 'e.g. $250,000 or Not sure',
+        helper: 'What the property could sell for today — not what you paid. Zillow/Redfin estimates or "Not sure" are OK.',
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
       },
       {
@@ -369,7 +401,8 @@ function buildRealEstateFields(): Step['fields'] {
         id: `${prefix}mortgage_details`,
         type: 'textarea',
         label: `Property ${n} Mortgage Details`,
-        helper: 'Copy from your latest mortgage statement if available.',
+        placeholder: 'e.g. Lender: ABC Mortgage, balance ~$180,000, monthly $1,200',
+        helper: 'Lender name, approximate balance, and monthly payment. Copy from your latest mortgage statement if available.',
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n && a[`${prefix}mortgage`] === 'Yes',
       },
       {
@@ -399,6 +432,8 @@ function buildRealEstateFields(): Step['fields'] {
         id: `${prefix}hoa_details`,
         type: 'textarea',
         label: `Property ${n} HOA Details`,
+        placeholder: 'e.g. HOA name, monthly dues $150, any special assessments',
+        helper: 'HOA or condo association name, monthly dues, and any past-due amounts if known.',
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n && a[`${prefix}hoa`] === 'Yes',
       },
       {
@@ -433,6 +468,7 @@ function buildBankAccountFields(): Step['fields'] {
       type: 'radio',
       label: 'Do you have bank accounts?',
       required: true,
+      helper: 'Include checking, savings, credit union, and online-only accounts.',
       options: [
         { value: 'Yes, I have bank accounts', label: 'Yes, I have bank accounts' },
         { value: 'No, I do not have bank accounts', label: 'No, I do not have bank accounts' },
@@ -458,20 +494,24 @@ function buildBankAccountFields(): Step['fields'] {
         id: `${prefix}name`,
         type: 'text',
         label: `Account ${n}: Bank Name and Type`,
-        helper: 'e.g. Chase Checking',
+        placeholder: 'e.g. Chase Checking, Wells Fargo Savings',
+        helper: 'Bank or credit union name and account type.',
         showIf: (a) => hasBankAccounts(a) && getBankAccountCount(a) >= n,
       },
       {
         id: `${prefix}last4`,
         type: 'text',
         label: `Account ${n}: Last 4 Digits`,
+        placeholder: '1234',
+        helper: 'Last 4 digits of the account number only (for identification).',
         showIf: (a) => hasBankAccounts(a) && getBankAccountCount(a) >= n,
       },
       {
         id: `${prefix}balance`,
         type: 'text',
         label: `Account ${n}: Current Balance`,
-        helper: 'Today\'s approximate balance is fine.',
+        placeholder: 'e.g. $1,250 or Not sure',
+        helper: 'Today\'s approximate balance. Estimates are fine.',
         showIf: (a) => hasBankAccounts(a) && getBankAccountCount(a) >= n,
       }
     );
@@ -511,6 +551,7 @@ const stepSecurityDeposits: Step = {
       type: 'radio',
       label: 'Do you have any security deposits?',
       required: true,
+      helper: 'Money held by a landlord, utility, or other party that you expect back.',
       options: [
         { value: 'Yes, I have security deposits (e.g., rent, utilities)', label: 'Yes, I have security deposits' },
         { value: 'No, I do not have security deposits', label: 'No, I do not have security deposits' },
@@ -520,7 +561,8 @@ const stepSecurityDeposits: Step = {
       id: 'security_deposit_details',
       type: 'textarea',
       label: 'Security Deposit Details',
-      helper: 'Examples: apartment deposit, utility deposit, phone deposit.',
+      placeholder: 'e.g. Apartment: $1,200 with ABC Rentals; Electric: $200 deposit with City Power',
+      helper: 'Who holds the deposit, amount, and what it\'s for (rent, utility, phone, etc.).',
       showIf: hasSecurityDeposits,
     },
   ],
@@ -537,7 +579,7 @@ const HOUSEHOLD_COLUMNS = [
 const stepHouseholdProperty: Step = {
   id: 'household_property',
   title: 'Household Property',
-  description: 'Estimate what these items would sell for used — not what you paid.',
+  description: 'Estimate what these categories would sell for today (used/garage sale value), not what you paid. "Not sure" is OK.',
   showIf: always,
   fields: [
     {
@@ -562,6 +604,7 @@ const VALUABLES_NONE = 'None of the above';
 const stepValuables: Step = {
   id: 'valuables',
   title: 'Higher-Value Personal Property',
+  description: 'Items that may be worth more than typical household goods. Estimates are OK.',
   showIf: always,
   fields: [
     {
@@ -581,7 +624,8 @@ const stepValuables: Step = {
       id: 'valuables_details',
       type: 'textarea',
       label: 'Details (for each selected)',
-      helper: 'List items worth more than about $500 each.',
+      placeholder: 'e.g. Wedding ring, appraised $800; 2 firearms, estimated $600 total',
+      helper: 'List each item and estimated value (or "Not sure"). Items over about $500 each should be listed.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'valuables', VALUABLES_NONE),
     },
   ],
@@ -616,7 +660,8 @@ const stepFinancialAssets: Step = {
       id: 'financial_assets_details',
       type: 'textarea',
       label: 'Details (for each selected)',
-      helper: 'For each selected: institution, account # (if any), estimated value (or Not sure). Tax refund: include expected refunds you have not received yet. Lawsuit: include claims you could file, even if you haven\'t filed yet.',
+      placeholder: 'e.g. 401k at Fidelity, ~$12,000; Expected tax refund $1,500; Life insurance with $2k cash value',
+      helper: 'For each: institution or source, account # (if any), estimated value (or Not sure). Tax refund: amount you expect. Lawsuit: describe the claim even if not filed yet.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'financial_assets', FINANCIAL_NONE),
     },
   ],
@@ -655,7 +700,8 @@ function buildVehicleFields(): Step['fields'] {
         id: `${prefix}details`,
         type: 'text',
         label: `Vehicle ${n} — Make, model, year, mileage`,
-        helper: 'Estimate private-party resale value today.',
+        placeholder: 'e.g. 2018 Honda Civic, 75,000 miles',
+        helper: 'Make, model, year, and approximate mileage. We\'ll use this to estimate value.',
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n,
       },
       {
@@ -672,7 +718,8 @@ function buildVehicleFields(): Step['fields'] {
         id: `${prefix}loan_details`,
         type: 'textarea',
         label: `Vehicle ${n} Loan Details`,
-        helper: 'Copy from your latest loan statement if available.',
+        placeholder: 'e.g. Chase Auto, balance ~$8,500, monthly $320',
+        helper: 'Lender name, approximate balance, and monthly payment. Copy from your latest loan statement if available.',
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n && a[`${prefix}loan`] === 'Yes',
       },
       {
@@ -706,6 +753,7 @@ function buildVehicleFields(): Step['fields'] {
 const stepVehicles: Step = {
   id: 'vehicles',
   title: 'Vehicles',
+  description: 'Cars, trucks, motorcycles, boats, RVs, or trailers you own. Include any with a loan or lien.',
   showIf: always,
   fields: buildVehicleFields(),
 };
@@ -734,7 +782,8 @@ const stepOtherSecured: Step = {
       id: 'other_secured_details',
       type: 'textarea',
       label: 'Details',
-      helper: 'Creditor, collateral, balance.',
+      placeholder: 'e.g. ABC Furniture — couch & table, $800 left; Pawn shop — tools, $200',
+      helper: 'For each: creditor name, what they can take (collateral), and approximate balance.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'other_secured_debts', SECURED_NONE),
     },
     {
@@ -774,7 +823,8 @@ const stepPriorityDebts: Step = {
       id: 'priority_debts_details',
       type: 'textarea',
       label: 'Details',
-      helper: 'Agency/recipient, type, amount owed.',
+      placeholder: 'e.g. IRS — 2022 taxes, ~$3,000; State — child support arrears, ~$1,200',
+      helper: 'Who you owe, type of debt, and approximate amount. Priority debts get special treatment in bankruptcy.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'priority_debts', PRIORITY_NONE),
     },
   ],
@@ -801,7 +851,8 @@ const stepUnsecured: Step = {
       id: 'unsecured_creditors',
       type: 'textarea',
       label: 'Or list your largest unsecured creditors and balances',
-      helper: 'List your largest balances first if you don\'t enter all.',
+      placeholder: 'e.g. Chase Card $4,200; Medical Center $1,800; Personal loan from Credit Union $2,100',
+      helper: 'Creditor name and approximate balance. List largest first. You don\'t have to list every debt — a credit report upload can capture most.',
     },
   ],
 };
@@ -831,7 +882,8 @@ const stepLeases: Step = {
       id: 'leases_contracts_details',
       type: 'textarea',
       label: 'Details',
-      helper: 'Type, company, monthly payment, remaining term.',
+      placeholder: 'e.g. Apartment lease — ABC Rentals, $1,100/mo, ends Aug 2025; Gym — Planet Fitness, $15/mo',
+      helper: 'Type of agreement, company name, monthly payment, and when it ends (if known).',
       showIf: (a) => hasAnySelectedExceptNone(a, 'leases_contracts', LEASES_NONE),
     },
     {
@@ -849,14 +901,32 @@ const stepLeases: Step = {
 // Step 16 — Employment & Income
 function buildEmploymentFields(): Step['fields'] {
   const base: Step['fields'] = [
-    { id: 'debtor_employer', type: 'text', label: 'Employer name' },
-    { id: 'debtor_job_title', type: 'text', label: 'Job title' },
-    { id: 'debtor_how_long', type: 'text', label: 'How long employed' },
+    {
+      id: 'debtor_employer',
+      type: 'text',
+      label: 'Employer name',
+      placeholder: 'e.g. Acme Corp, City of Springfield',
+      helper: 'Current employer or "Unemployed" / "Retired" if applicable.',
+    },
+    {
+      id: 'debtor_job_title',
+      type: 'text',
+      label: 'Job title',
+      placeholder: 'e.g. Customer Service Rep, Nurse',
+      helper: 'Your current job title or role.',
+    },
+    {
+      id: 'debtor_how_long',
+      type: 'text',
+      label: 'How long employed',
+      placeholder: 'e.g. 2 years, 6 months, Since Jan 2023',
+      helper: 'How long you have worked at this job. Approximate is fine.',
+    },
     {
       id: 'debtor_pay_frequency',
       type: 'select',
       label: 'Pay frequency',
-      helper: 'Choose how often you are paid.',
+      helper: 'How often you receive a paycheck.',
       options: [
         { value: 'Weekly', label: 'Weekly' },
         { value: 'Bi-weekly', label: 'Bi-weekly' },
@@ -865,12 +935,36 @@ function buildEmploymentFields(): Step['fields'] {
         { value: 'Other', label: 'Other' },
       ],
     },
-    { id: 'debtor_gross_pay', type: 'text', label: 'Gross pay per check', helper: 'Estimates are OK. Enter "Not sure" if needed.' },
+    {
+      id: 'debtor_gross_pay',
+      type: 'text',
+      label: 'Gross pay per check',
+      placeholder: 'e.g. $2,400 or Not sure',
+      helper: 'Amount before taxes and deductions. Estimates are OK. Enter "Not sure" if needed.',
+    },
   ];
   base.push(
-    { id: 'spouse_employer', type: 'text', label: 'Spouse: Employer name', showIf: isJointFiling },
-    { id: 'spouse_job_title', type: 'text', label: 'Spouse: Job title', showIf: isJointFiling },
-    { id: 'spouse_how_long', type: 'text', label: 'Spouse: How long employed', showIf: isJointFiling },
+    {
+      id: 'spouse_employer',
+      type: 'text',
+      label: 'Spouse: Employer name',
+      placeholder: 'e.g. Acme Corp',
+      showIf: isJointFiling,
+    },
+    {
+      id: 'spouse_job_title',
+      type: 'text',
+      label: 'Spouse: Job title',
+      placeholder: 'e.g. Teacher, Manager',
+      showIf: isJointFiling,
+    },
+    {
+      id: 'spouse_how_long',
+      type: 'text',
+      label: 'Spouse: How long employed',
+      placeholder: 'e.g. 3 years',
+      showIf: isJointFiling,
+    },
     {
       id: 'spouse_pay_frequency',
       type: 'select',
@@ -885,7 +979,14 @@ function buildEmploymentFields(): Step['fields'] {
         { value: 'Other', label: 'Other' },
       ],
     },
-    { id: 'spouse_gross_pay', type: 'text', label: 'Spouse: Gross pay per check', showIf: isJointFiling }
+    {
+      id: 'spouse_gross_pay',
+      type: 'text',
+      label: 'Spouse: Gross pay per check',
+      placeholder: 'e.g. $2,100 or Not sure',
+      helper: 'Gross amount per paycheck before deductions.',
+      showIf: isJointFiling,
+    },
   );
   base.push(
     {
@@ -907,6 +1008,8 @@ function buildEmploymentFields(): Step['fields'] {
       id: 'other_income_details',
       type: 'textarea',
       label: 'Other income details (source and monthly amount)',
+      placeholder: 'e.g. Social Security $1,800/mo; Part-time gig $400/mo',
+      helper: 'For each source selected above: name of source and approximate monthly amount.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'other_income_types', 'None of the above'),
     },
     {
@@ -943,7 +1046,7 @@ const EXPENSE_COLUMNS = [
 const stepMonthlyExpenses: Step = {
   id: 'monthly_expenses',
   title: 'Monthly Expenses',
-  description: 'Estimate your typical monthly spending. Round numbers are fine.',
+  description: 'Estimate your typical monthly spending in each category. Round numbers are fine — we use this to compare income and expenses.',
   showIf: always,
   fields: [
     {
@@ -973,9 +1076,27 @@ const stepIncomeHistory: Step = {
   description: 'Gross income before deductions.',
   showIf: always,
   fields: [
-    { id: 'income_current_ytd', type: 'text', label: 'Total Gross Income — Current Year (Year-to-Date)' },
-    { id: 'income_last_year', type: 'text', label: 'Total Gross Income — Last Full Year' },
-    { id: 'income_two_years_ago', type: 'text', label: 'Total Gross Income — Two Years Ago', helper: 'Use tax returns or estimates if exact numbers are not available.' },
+    {
+      id: 'income_current_ytd',
+      type: 'text',
+      label: 'Total Gross Income — Current Year (Year-to-Date)',
+      placeholder: 'e.g. $28,000 or Not sure',
+      helper: 'All gross income so far this year, before taxes. Paystub YTD or estimate.',
+    },
+    {
+      id: 'income_last_year',
+      type: 'text',
+      label: 'Total Gross Income — Last Full Year',
+      placeholder: 'e.g. $45,000',
+      helper: 'Total gross income for last calendar year. Tax return or W-2 total if available.',
+    },
+    {
+      id: 'income_two_years_ago',
+      type: 'text',
+      label: 'Total Gross Income — Two Years Ago',
+      placeholder: 'e.g. $42,000 or Not sure',
+      helper: 'Total gross income from two years ago. Tax returns or estimates are fine.',
+    },
   ],
 };
 
@@ -999,6 +1120,8 @@ const stepRecentActivity: Step = {
       id: 'paid_creditor_600_details',
       type: 'textarea',
       label: 'Details (Creditor, amount, date(s))',
+      placeholder: 'e.g. Paid Chase $800 on 1/15/25; Paid medical bill $650 in Dec 2024',
+      helper: 'List each payment over $600: creditor name, amount, and approximate date. Your attorney will review.',
       showIf: (a) => a['paid_creditor_600'] === 'Yes',
     },
     {
@@ -1014,6 +1137,8 @@ const stepRecentActivity: Step = {
       id: 'repaid_loans_gifts_details',
       type: 'textarea',
       label: 'Details',
+      placeholder: 'e.g. Repaid sister $500 in March 2024; Gave $200 to nephew for graduation',
+      helper: 'Who you paid or gave money/property to, amount, and when. Required by law — your attorney will explain.',
       showIf: (a) => a['repaid_loans_gifts'] === 'Yes',
     },
     {
@@ -1029,6 +1154,8 @@ const stepRecentActivity: Step = {
       id: 'lawsuits_garnishments_details',
       type: 'textarea',
       label: 'Details',
+      placeholder: 'e.g. Credit card lawsuit in County Court; Wage garnishment from ABC Collections',
+      helper: 'Case name, court (if any), and current status. Your attorney will review.',
       showIf: (a) => a['lawsuits_garnishments'] === 'Yes',
     },
     {
@@ -1044,6 +1171,8 @@ const stepRecentActivity: Step = {
       id: 'repossession_foreclosure_details',
       type: 'textarea',
       label: 'Details',
+      placeholder: 'e.g. Car repossessed Jan 2025; Foreclosure sale scheduled for March 2025',
+      helper: 'What was repossessed or foreclosed, and when (or when scheduled).',
       showIf: (a) => a['repossession_foreclosure'] === 'Yes',
     },
     {
@@ -1059,6 +1188,8 @@ const stepRecentActivity: Step = {
       id: 'transferred_property_details',
       type: 'textarea',
       label: 'Details',
+      placeholder: 'e.g. Sold car to neighbor in June 2024 for $3,000; Gave furniture to brother',
+      helper: 'What you sold or transferred, to whom, when, and for how much (if any). Required by law.',
       showIf: (a) => a['transferred_property'] === 'Yes',
     },
     {
@@ -1074,6 +1205,8 @@ const stepRecentActivity: Step = {
       id: 'closed_accounts_details',
       type: 'textarea',
       label: 'Details',
+      placeholder: 'e.g. Closed Chase checking in Aug 2024; Closed credit union savings in Jan 2025',
+      helper: 'Which accounts you closed and when. Bank, credit union, or investment accounts.',
       showIf: (a) => a['closed_accounts'] === 'Yes',
     },
   ],

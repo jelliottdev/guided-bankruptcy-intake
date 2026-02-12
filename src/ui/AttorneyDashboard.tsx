@@ -13,6 +13,21 @@ import {
   isJointFiling,
 } from '../utils/logic';
 import { useIntake } from '../state/IntakeProvider';
+import { computeCaseReadiness } from '../attorney/readiness';
+import {
+  generateCaseSummary,
+  getStrategySignals,
+  getScheduleCoverage,
+  getDocumentSufficiency,
+  getFollowUpQuestions,
+  getTimelineReadiness,
+} from '../attorney/snapshot';
+import { buildCreditorMatrix, exportCreditorWorksheet } from '../attorney/creditorMatrix';
+import { computeClientReliability } from '../attorney/clientReliability';
+import {
+  buildSummaryInput,
+  generateTwoSentenceSummary,
+} from '../ai/localSummary';
 
 function formatDateForDisplay(value: unknown): string {
   if (value == null || (typeof value === 'string' && !value.trim())) return '(date unknown)';
@@ -183,6 +198,52 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       docPct,
     };
   }, [answers, errors.length, steps, uploads]);
+
+  const readiness = useMemo(
+    () => computeCaseReadiness(answers, uploads, flags),
+    [answers, uploads, flags]
+  );
+  const caseSummaryText = useMemo(
+    () => generateCaseSummary(answers, uploads, kpis.missingCount, flaggedItems.length),
+    [answers, uploads, kpis.missingCount, flaggedItems.length]
+  );
+  const strategySignals = useMemo(() => getStrategySignals(answers), [answers]);
+  const scheduleCoverage = useMemo(
+    () => getScheduleCoverage(answers, uploads),
+    [answers, uploads]
+  );
+  const documentSufficiency = useMemo(
+    () => getDocumentSufficiency(answers, uploads),
+    [answers, uploads]
+  );
+  const missingFieldLabels = useMemo(
+    () => errors.map((e) => {
+      const step = steps[e.stepIndex];
+      const field = step?.fields.find((f) => f.id === e.fieldId);
+      return field?.label ?? e.fieldId;
+    }),
+    [errors, steps]
+  );
+  const followUpQuestions = useMemo(
+    () => getFollowUpQuestions(answers, uploads, missingFieldLabels),
+    [answers, uploads, missingFieldLabels]
+  );
+  const timelineReadiness = useMemo(
+    () => getTimelineReadiness(answers, uploads, kpis.missingCount, readiness.score),
+    [answers, uploads, kpis.missingCount, readiness.score]
+  );
+  const clientReliability = useMemo(
+    () => computeClientReliability(answers, uploads, flags),
+    [answers, uploads, flags]
+  );
+  const creditorMatrix = useMemo(() => buildCreditorMatrix(answers), [answers]);
+
+  const [aiSummary, setAiSummary] = useState('');
+  const generateAiSummary = useCallback(() => {
+    const urgencyLabels = kpis.displayUrgencyList.map((v) => URGENCY_LABELS[v] ?? v);
+    const input = buildSummaryInput(answers, uploads, kpis.missingCount, flaggedItems.length, urgencyLabels);
+    setAiSummary(generateTwoSentenceSummary(input));
+  }, [answers, uploads, kpis.missingCount, kpis.displayUrgencyList, flaggedItems.length]);
 
   const actionItems = useMemo(() => {
     const items: { shortLabel: string; stepIndex: number; stepTitle: string; fieldId?: string; isEstimate: boolean }[] = [];
@@ -399,6 +460,18 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </header>
 
+      <div className="attorney-readiness-summary-row">
+        <div className={`attorney-card readiness-card readiness-${readiness.band}`}>
+          <div className="readiness-score">{readiness.score}%</div>
+          <div className="readiness-label">Case Readiness</div>
+          <div className="readiness-band">{readiness.bandLabel}</div>
+        </div>
+        <div className="attorney-card case-snapshot-card">
+          <h3 className="card-title">Case Snapshot Summary (Auto-Generated)</h3>
+          <p className="case-snapshot-text">{caseSummaryText}</p>
+        </div>
+      </div>
+
       <div className="attorney-kpi-strip">
         <div className={`kpi-card kpi-completion ${kpis.completionPct >= 80 ? 'green' : kpis.completionPct >= 50 ? 'amber' : 'red'}`}>
           <div className="kpi-value">{kpis.completionPct}%</div>
@@ -424,6 +497,36 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
           <div className="kpi-value">{kpis.docReceived}/{kpis.docTotal}</div>
           <div className="kpi-label">Documents</div>
           <div className="kpi-sublabel">Received</div>
+        </div>
+      </div>
+
+      <div className="attorney-strategy-schedules-row">
+        <div className="attorney-card strategy-signals-card">
+          <h3 className="card-title">Strategy Signals</h3>
+          {strategySignals.length === 0 ? (
+            <p className="strategy-empty">No signals — complete more intake for hints.</p>
+          ) : (
+            <ul className="strategy-list">
+              {strategySignals.map((s) => (
+                <li key={s.id} className="strategy-item">
+                  <span className="strategy-label">{s.label}</span>
+                  {s.note && <span className="strategy-note">{s.note}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="attorney-card schedule-coverage-card">
+          <h3 className="card-title">Schedules Coverage</h3>
+          <ul className="schedule-list">
+            {scheduleCoverage.map((row) => (
+              <li key={row.schedule} className={`schedule-row schedule-${row.status.toLowerCase()}`}>
+                <span className="schedule-name">{row.schedule}</span>
+                <span className="schedule-status">{row.status}</span>
+                <span className="schedule-detail">{row.detail}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -512,31 +615,109 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       </div>
 
       <div id="documents" className="dashboard-section attorney-card documents-card">
-        <h3 className="card-title">Document Status</h3>
+        <h3 className="card-title">Document Sufficiency</h3>
         <div className="doc-table-wrap">
           <table className="doc-table">
             <thead>
               <tr>
                 <th>Document Type</th>
                 <th>Status</th>
-                <th>Files</th>
+                <th>Detail</th>
               </tr>
             </thead>
             <tbody>
-              {DOCUMENT_IDS.map((d) => {
-                const files = uploads[d.id] ?? [];
-                const status = files.length > 0 ? 'Received' : answers[`${d.id}_dont_have`] === 'Yes' ? 'Pending' : 'Missing';
-                return (
-                  <tr key={d.id}>
-                    <td>{d.label}</td>
-                    <td><span className={`pill-badge pill-${status.toLowerCase()}`}>{status}</span></td>
-                    <td>{files.length}</td>
-                  </tr>
-                );
-              })}
+              {documentSufficiency.map((d) => (
+                <tr key={d.type}>
+                  <td>{d.type}</td>
+                  <td><span className={`pill-badge pill-${d.status.toLowerCase()}`}>{d.status}</span></td>
+                  <td className="doc-detail">{d.message}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="dashboard-section attorney-card creditor-reliability-row">
+        <div className="attorney-card creditor-matrix-card">
+          <h3 className="card-title">Creditor Matrix</h3>
+          <p className="card-sub">Secured, priority, unsecured, co-signed</p>
+          {creditorMatrix.length === 0 ? (
+            <p className="matrix-empty">No creditors listed yet.</p>
+          ) : (
+            <>
+              <ul className="creditor-matrix-list">
+                {creditorMatrix.slice(0, 12).map((row, i) => (
+                  <li key={i} className={`creditor-row type-${row.type.toLowerCase()}`}>
+                    <span className="creditor-name">{row.name}</span>
+                    <span className="creditor-type">{row.type}</span>
+                  </li>
+                ))}
+              </ul>
+              {creditorMatrix.length > 12 && <p className="matrix-more">+{creditorMatrix.length - 12} more</p>}
+              <button
+                type="button"
+                className="btn-export-creditor"
+                onClick={() => {
+                  const text = exportCreditorWorksheet(answers);
+                  navigator.clipboard.writeText(text).then(() => showToast('Copied')).catch(() => showToast('Copy failed'));
+                }}
+              >
+                Copy creditor worksheet
+              </button>
+            </>
+          )}
+        </div>
+        <div className="attorney-card client-reliability-card">
+          <h3 className="card-title">Client Reliability</h3>
+          <div className="reliability-score">{clientReliability.score}</div>
+          <div className="reliability-label">{clientReliability.label}</div>
+          {clientReliability.notes.length > 0 && (
+            <ul className="reliability-notes">
+              {clientReliability.notes.map((n, i) => (
+                <li key={i}>{n}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <div className="dashboard-section attorney-card follow-up-timeline-row">
+        <div className="attorney-card follow-up-card">
+          <h3 className="card-title">Suggested Follow-Up Questions</h3>
+          {followUpQuestions.length === 0 ? (
+            <p className="follow-up-empty">None — intake looks complete.</p>
+          ) : (
+            <ul className="follow-up-list">
+              {followUpQuestions.map((q, i) => (
+                <li key={i}>{q}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="attorney-card timeline-card">
+          <h3 className="card-title">Earliest Filing Readiness</h3>
+          <div className="timeline-days">~{timelineReadiness.days}</div>
+          <div className="timeline-note">{timelineReadiness.note}</div>
+        </div>
+      </div>
+
+      <div className="dashboard-section attorney-card ai-summary-card">
+        <h3 className="card-title">AI Intake Summary (Local)</h3>
+        <p className="ai-privacy">Runs locally in your browser; no data leaves this device.</p>
+        {aiSummary ? (
+          <>
+            <div className="ai-summary-output">{aiSummary}</div>
+            <div className="ai-summary-actions">
+              <button type="button" className="btn-copy-ai" onClick={() => navigator.clipboard.writeText(aiSummary).then(() => showToast('Copied')).catch(() => showToast('Copy failed'))}>Copy</button>
+              <button type="button" className="btn-regenerate-ai" onClick={generateAiSummary}>Regenerate</button>
+            </div>
+          </>
+        ) : (
+          <button type="button" className="btn-generate-ai" onClick={generateAiSummary}>
+            Generate 2-sentence summary
+          </button>
+        )}
       </div>
 
       <section id="action-items" className="dashboard-section attorney-card action-items-card">
