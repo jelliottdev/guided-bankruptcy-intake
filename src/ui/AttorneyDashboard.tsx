@@ -192,7 +192,7 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
             </button>
             <button
               type="button"
-              className={`modeToggle ${true ? 'on' : 'off'}`}
+              className="modeToggle on"
               onClick={() => setViewMode('client')}
               aria-pressed={true}
               aria-label="Switch to client view"
