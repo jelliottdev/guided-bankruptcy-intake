@@ -13,6 +13,7 @@ interface StepShellProps {
   onSubmit?: () => void;
   saveStatusText: string;
   focusFieldId?: string | null;
+  nextDisabled?: boolean;
 }
 
 export function StepShell({
@@ -26,13 +27,16 @@ export function StepShell({
   isLastStep,
   onSubmit,
   saveStatusText,
+  nextDisabled = false,
 }: StepShellProps) {
   return (
-    <>
-      <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
-      <h2>{title}</h2>
-      {description && <p className="header-subtext">{description}</p>}
-      <div style={{ marginBottom: '2rem' }}>{children}</div>
+    <div className="step-shell">
+      <div className="step-content">
+        <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
+        <h2>{title}</h2>
+        {description && <p className="header-subtext">{description}</p>}
+        <div style={{ marginBottom: '2rem' }}>{children}</div>
+      </div>
       <nav className="nav-bar">
         <div>
           <button
@@ -47,13 +51,18 @@ export function StepShell({
               Submit (Demo)
             </button>
           ) : (
-            <button type="button" className="primary" onClick={onNext}>
+            <button
+              type="button"
+              className="primary"
+              onClick={onNext}
+              disabled={nextDisabled}
+            >
               Next
             </button>
           )}
         </div>
         <p className="save-status">{saveStatusText}</p>
       </nav>
-    </>
+    </div>
   );
 }

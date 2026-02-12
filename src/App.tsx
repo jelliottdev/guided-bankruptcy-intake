@@ -5,6 +5,7 @@ import { StepShell } from './ui/StepShell';
 import { FieldRenderer } from './ui/FieldRenderer';
 import { Review } from './ui/Review';
 import { getVisibleSteps } from './form/steps';
+import { getErrorsForStep } from './form/validate';
 
 function lastSavedText(lastSavedAt: number | null): string {
   if (lastSavedAt == null) return 'Saved';
@@ -25,6 +26,16 @@ function AppContent() {
   const totalSteps = steps.length;
   const currentStep = steps[currentStepIndex];
   const isFinalReviewStep = currentStep?.id === 'final_review';
+
+  const currentStepErrors = useMemo(
+    () => (currentStep ? getErrorsForStep(answers, currentStepIndex) : []),
+    [answers, currentStepIndex, currentStep]
+  );
+  const nextDisabled = currentStepErrors.length > 0;
+  const errorsByFieldId = useMemo(
+    () => Object.fromEntries(currentStepErrors.map((e) => [e.fieldId, e.message])),
+    [currentStepErrors]
+  );
 
   const saveStatusText = saving ? 'Saving…' : lastSavedText(lastSavedAt);
 
@@ -110,6 +121,7 @@ function AppContent() {
         onNext={onNext}
         isLastStep={false}
         saveStatusText={saveStatusText}
+        nextDisabled={nextDisabled}
       >
         {currentStep.fields.map((field) => (
           <FieldRenderer
@@ -120,6 +132,7 @@ function AppContent() {
             onUpload={addUpload}
             uploads={field.type === 'file' ? uploads[field.id] : undefined}
             answers={answers}
+            error={errorsByFieldId[field.id]}
             focusFieldId={focusFieldId}
             onFocusDone={() => setFocusFieldId(null)}
           />

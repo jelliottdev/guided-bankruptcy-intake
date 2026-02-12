@@ -20,12 +20,13 @@ function always(): boolean {
 const stepFilingSetup: Step = {
   id: 'filing_setup',
   title: 'Filing Setup',
+  description: 'Choose whether you are filing alone or with your spouse.',
   showIf: always,
   fields: [
     {
       id: 'filing_setup',
       type: 'radio',
-      label: 'Filing Setup*',
+      label: 'Filing Setup',
       required: true,
       options: [
         { value: 'Filing alone', label: 'Filing alone' },
@@ -39,25 +40,26 @@ const stepFilingSetup: Step = {
 const stepDebtor: Step = {
   id: 'debtor',
   title: 'Debtor Information',
+  description: 'Tell us basic identity and contact information.',
   showIf: always,
   fields: [
-    { id: 'debtor_full_name', type: 'text', label: 'Full Legal Name (as it appears on ID) *', required: true },
+    { id: 'debtor_full_name', type: 'text', label: 'Full Legal Name (as it appears on ID)', required: true },
     { id: 'debtor_other_names', type: 'text', label: 'Other names used in the last 6 years' },
     {
       id: 'debtor_ssn_last4',
       type: 'text',
-      label: 'Social Security Number — Last 4 Digits Only *',
+      label: 'Social Security Number — Last 4 Digits Only',
       required: true,
       helper: 'Only the last 4 digits are needed here for security.',
     },
-    { id: 'debtor_dob', type: 'date', label: 'Date of Birth *', required: true },
-    { id: 'debtor_phone', type: 'text', label: 'Phone Number *', required: true },
-    { id: 'debtor_email', type: 'email', label: 'Email Address *', required: true },
-    { id: 'debtor_address', type: 'textarea', label: 'Current Street Address *', required: true },
+    { id: 'debtor_dob', type: 'date', label: 'Date of Birth', required: true },
+    { id: 'debtor_phone', type: 'text', label: 'Phone Number', required: true },
+    { id: 'debtor_email', type: 'email', label: 'Email Address', required: true },
+    { id: 'debtor_address', type: 'textarea', label: 'Current Street Address', required: true },
     {
       id: 'mailing_different',
       type: 'radio',
-      label: 'Is your mailing address different from your current street address? *',
+      label: 'Is your mailing address different from your current street address?',
       required: true,
       options: [
         { value: 'Yes', label: 'Yes' },
@@ -71,7 +73,7 @@ const stepDebtor: Step = {
       required: false,
       showIf: (a) => a['mailing_different'] === 'Yes',
     },
-    { id: 'county', type: 'text', label: 'County of Residence *', required: true },
+    { id: 'county', type: 'text', label: 'County of Residence', required: true },
     {
       id: 'addresses_6_years',
       type: 'textarea',
@@ -82,7 +84,7 @@ const stepDebtor: Step = {
     {
       id: 'prior_bankruptcy',
       type: 'radio',
-      label: 'Have you filed for bankruptcy before? *',
+      label: 'Have you filed for bankruptcy before?',
       required: true,
       options: [
         { value: 'Yes', label: 'Yes' },
@@ -103,19 +105,20 @@ const stepDebtor: Step = {
 const stepSpouse: Step = {
   id: 'spouse',
   title: 'Spouse Information (Only if Joint Filing)',
+  description: 'Spouse identity and contact details for joint filings.',
   showIf: isJointFiling,
   fields: [
-    { id: 'spouse_full_name', type: 'text', label: 'Spouse Full Legal Name (as it appears on ID) *', required: true },
+    { id: 'spouse_full_name', type: 'text', label: 'Spouse Full Legal Name (as it appears on ID)', required: true },
     { id: 'spouse_other_names', type: 'text', label: 'Spouse Other names used in the last 6 years' },
     {
       id: 'spouse_ssn_last4',
       type: 'text',
-      label: 'Spouse Social Security Number — Last 4 Digits Only *',
+      label: 'Spouse Social Security Number — Last 4 Digits Only',
       required: true,
     },
-    { id: 'spouse_dob', type: 'date', label: 'Spouse Date of Birth *', required: true },
-    { id: 'spouse_phone', type: 'text', label: 'Spouse Phone Number *', required: true },
-    { id: 'spouse_email', type: 'email', label: 'Spouse Email Address *', required: true },
+    { id: 'spouse_dob', type: 'date', label: 'Spouse Date of Birth', required: true },
+    { id: 'spouse_phone', type: 'text', label: 'Spouse Phone Number', required: true },
+    { id: 'spouse_email', type: 'email', label: 'Spouse Email Address', required: true },
   ],
 };
 
@@ -124,6 +127,7 @@ const URGENCY_NONE = 'None of the above';
 const stepUrgency: Step = {
   id: 'urgency',
   title: 'Urgency & Business Flags',
+  description: 'Tell us about wage garnishment, foreclosure risk, and business or co-signer situations.',
   showIf: always,
   fields: [
     {
@@ -169,7 +173,7 @@ const stepUrgency: Step = {
     {
       id: 'self_employed',
       type: 'radio',
-      label: 'Are you self-employed or operating a business?*',
+      label: 'Are you self-employed or operating a business?',
       required: true,
       options: [
         { value: 'Yes', label: 'Yes' },
@@ -185,7 +189,7 @@ const stepUrgency: Step = {
     {
       id: 'cosigner_debts',
       type: 'radio',
-      label: 'Do you have any debts with a co-signer or co-borrower?*',
+      label: 'Do you have any debts with a co-signer or co-borrower?',
       required: true,
       options: [
         { value: 'Yes', label: 'Yes' },
@@ -207,7 +211,7 @@ function buildRealEstateFields(): Step['fields'] {
     {
       id: 'real_estate_ownership',
       type: 'radio',
-      label: 'Real Estate Ownership*',
+      label: 'Real Estate Ownership',
       required: true,
       options: [
         { value: 'Yes, I own real estate', label: 'Yes, I own real estate' },
@@ -217,7 +221,7 @@ function buildRealEstateFields(): Step['fields'] {
     {
       id: 'real_estate_count',
       type: 'select',
-      label: 'If Yes, how many properties do you own? (Maximum 3)*',
+      label: 'If Yes, how many properties do you own? (Maximum 3)',
       required: true,
       showIf: hasRealEstate,
       options: [
@@ -233,14 +237,14 @@ function buildRealEstateFields(): Step['fields'] {
       {
         id: `${prefix}address`,
         type: 'text',
-        label: `Property ${n} Address*`,
+        label: `Property ${n} Address`,
         required: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
       },
       {
         id: `${prefix}type`,
         type: 'select',
-        label: `Property ${n} Type*`,
+        label: `Property ${n} Type`,
         required: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
         options: [
@@ -261,7 +265,7 @@ function buildRealEstateFields(): Step['fields'] {
       {
         id: `${prefix}mortgage`,
         type: 'radio',
-        label: `Does Property ${n} have a mortgage or lien?*`,
+        label: `Does Property ${n} have a mortgage or lien?`,
         required: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
         options: [
@@ -278,7 +282,7 @@ function buildRealEstateFields(): Step['fields'] {
       {
         id: `${prefix}plan`,
         type: 'radio',
-        label: `Property ${n} Plan*`,
+        label: `Property ${n} Plan`,
         required: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
         options: [
@@ -290,7 +294,7 @@ function buildRealEstateFields(): Step['fields'] {
       {
         id: `${prefix}hoa`,
         type: 'radio',
-        label: `Does Property ${n} have an HOA (Homeowners Association)?*`,
+        label: `Does Property ${n} have an HOA (Homeowners Association)?`,
         required: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
         options: [
@@ -319,6 +323,7 @@ function buildRealEstateFields(): Step['fields'] {
 const stepRealEstate: Step = {
   id: 'real_estate',
   title: 'Real Estate Ownership',
+  description: 'List any real property you own and how you want to treat it in the case.',
   showIf: always,
   fields: buildRealEstateFields(),
 };
@@ -329,7 +334,7 @@ function buildBankAccountFields(): Step['fields'] {
     {
       id: 'bank_accounts',
       type: 'radio',
-      label: 'Bank Accounts*',
+      label: 'Bank Accounts',
       required: true,
       options: [
         { value: 'Yes, I have bank accounts', label: 'Yes, I have bank accounts' },
@@ -339,7 +344,7 @@ function buildBankAccountFields(): Step['fields'] {
     {
       id: 'bank_account_count',
       type: 'select',
-      label: 'How many accounts do you have? (Maximum 3)*',
+      label: 'How many accounts do you have? (Maximum 3)',
       required: true,
       showIf: hasBankAccounts,
       options: [
@@ -386,6 +391,7 @@ function buildBankAccountFields(): Step['fields'] {
 const stepBankAccounts: Step = {
   id: 'bank_accounts',
   title: 'Bank Accounts',
+  description: 'List your bank accounts and upload recent statements if you have them.',
   showIf: always,
   fields: buildBankAccountFields(),
 };
@@ -399,7 +405,7 @@ const stepSecurityDeposits: Step = {
     {
       id: 'security_deposits',
       type: 'radio',
-      label: 'Security Deposits*',
+      label: 'Security Deposits',
       required: true,
       options: [
         { value: 'Yes, I have security deposits (e.g., rent, utilities)', label: 'Yes, I have security deposits (e.g., rent, utilities)' },
@@ -516,7 +522,7 @@ function buildVehicleFields(): Step['fields'] {
     {
       id: 'vehicles',
       type: 'radio',
-      label: 'Vehicles*',
+      label: 'Vehicles',
       required: true,
       options: [
         { value: 'Yes, I own vehicles (car, truck, motorcycle, boat, trailer)', label: 'Yes, I own vehicles (car, truck, motorcycle, boat, trailer)' },
@@ -526,7 +532,7 @@ function buildVehicleFields(): Step['fields'] {
     {
       id: 'vehicle_count',
       type: 'select',
-      label: 'How many vehicles do you own? (Maximum 3)*',
+      label: 'How many vehicles do you own? (Maximum 3)',
       required: true,
       showIf: hasVehicles,
       options: [
@@ -948,7 +954,7 @@ const stepFinalReview: Step = {
     {
       id: 'confidence',
       type: 'radio',
-      label: 'How confident are you that you have completed all sections accurately?*',
+      label: 'How confident are you that you have completed all sections accurately?',
       required: true,
       options: [
         { value: 'Very confident (feel I answered everything accurately)', label: 'Very confident (feel I answered everything accurately)' },

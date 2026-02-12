@@ -133,3 +133,8 @@ export function validateAll(answers: Answers): ValidationError[] {
 export function isFullyValid(answers: Answers): boolean {
   return validateAll(answers).length === 0;
 }
+
+/** Errors for a single step (for disabling Next and showing inline errors). */
+export function getErrorsForStep(answers: Answers, stepIndex: number): ValidationError[] {
+  return validateAll(answers).filter((e) => e.stepIndex === stepIndex);
+}
