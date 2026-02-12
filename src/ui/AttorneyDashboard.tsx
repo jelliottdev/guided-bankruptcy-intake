@@ -13,7 +13,6 @@ import {
   isJointFiling,
 } from '../utils/logic';
 import { useIntake } from '../state/IntakeProvider';
-import { maskEmail, maskPhone } from '../utils/mask';
 
 function formatDateForDisplay(value: unknown): string {
   if (value == null || (typeof value === 'string' && !value.trim())) return '(date unknown)';
@@ -104,21 +103,13 @@ export interface AttorneyDashboardProps {
   onReset: () => void;
 }
 
-export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: AttorneyDashboardProps) {
+export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, onReset }: AttorneyDashboardProps) {
   const { state, setViewMode, setFlagResolved } = useIntake();
   const { answers, uploads, flags, lastSavedAt } = state;
   const [rawOpen, setRawOpen] = useState(false);
-  const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
   const [copyToast, setCopyToast] = useState<'Copied' | 'Copy failed' | null>(null);
   const [actionItemsExpanded, setActionItemsExpanded] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const identityLine = useMemo(() => {
-    const parts: string[] = [];
-    if (email != null && String(email).trim()) parts.push(maskEmail(email));
-    if (phone != null && String(phone).trim()) parts.push(maskPhone(phone));
-    return parts.length > 0 ? parts.join(' | ') : 'Demo Case';
-  }, [email, phone]);
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
   const errors = useMemo(() => validateAll(answers, flags).filter((e) => e.severity !== 'warning'), [answers, flags]);
@@ -329,33 +320,50 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
 
-  const caseSummary = useMemo(() => {
-    const filing = answers['filing_setup'] === 'Filing with spouse' ? 'Joint filing' : 'Single filer';
-    const props = hasRealEstate(answers) ? getRealEstateCount(answers) : 0;
-    const vehicles = hasVehicles(answers) ? getVehicleCount(answers) : 0;
-    const banks = hasBankAccounts(answers) ? getBankAccountCount(answers) : 0;
-    const assets = props || vehicles || banks ? `${props} property, ${vehicles} vehicle, ${banks} bank` : 'No assets reported yet';
-    const urgencyList = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]).filter((v) => v && !v.includes('None of')) : [];
-    const urgency = urgencyList.length > 0 ? urgencyList.map((v) => URGENCY_LABELS[v] ?? v).join(', ') : 'No urgency flags';
-    const docCount = DOCUMENT_IDS.filter((d) => (uploads[d.id]?.length ?? 0) > 0).length;
-    const docs = docCount > 0 ? `${docCount} doc categories uploaded` : 'No documents uploaded';
-    return `${filing} · ${assets} · ${urgency} · ${docs}`;
-  }, [answers, uploads]);
-
-  const nextActionsPreview = actionItems.slice(0, 3).map((a) => a.shortLabel).join(', ');
-  const nextActionsEllipsis = actionItems.length > 3;
-  const ACTION_VISIBLE = 8;
-  const visibleActionItems = actionItemsExpanded ? actionItems : actionItems.slice(0, ACTION_VISIBLE);
-  const hasMoreActions = actionItems.length > ACTION_VISIBLE;
-  const visibleGrouped = useMemo(() => {
-    const map = new Map<string, typeof visibleActionItems>();
-    visibleActionItems.forEach((item) => {
-      const list = map.get(item.stepTitle) ?? [];
-      list.push(item);
-      map.set(item.stepTitle, list);
+  const urgencyStepIndex = useMemo(() => steps.findIndex((s) => s.id === 'urgency'), [steps]);
+  type AttentionRow =
+    | { type: 'FLAG'; id: string; label: string; stepIndex: number; fieldId: string; note: string }
+    | { type: 'URGENT'; id: string; label: string; date?: string; stepIndex: number }
+    | { type: 'MISSING'; id: string; label: string; stepIndex: number; fieldId: string };
+  const attentionRows = useMemo((): AttentionRow[] => {
+    const rows: AttentionRow[] = [];
+    flaggedItems.forEach((item) => {
+      rows.push({
+        type: 'FLAG',
+        id: `flag-${item.fieldId}`,
+        label: shortActionLabel(item.label, false),
+        stepIndex: item.stepIndex,
+        fieldId: item.fieldId,
+        note: item.note.length > 50 ? item.note.slice(0, 47) + '…' : item.note,
+      });
     });
-    return Array.from(map.entries());
-  }, [visibleActionItems]);
+    urgencyWithDates.forEach((u, i) => {
+      rows.push({
+        type: 'URGENT',
+        id: `urgent-${i}`,
+        label: u.label,
+        date: u.date,
+        stepIndex: urgencyStepIndex >= 0 ? urgencyStepIndex : 0,
+      });
+    });
+    errors.forEach((e) => {
+      const step = steps[e.stepIndex];
+      const field = step?.fields.find((f) => f.id === e.fieldId);
+      const label = field?.label ?? e.message.replace(/\s+is required\.?$/i, '').trim();
+      rows.push({
+        type: 'MISSING',
+        id: `missing-${e.fieldId}`,
+        label: shortActionLabel(label, false),
+        stepIndex: e.stepIndex,
+        fieldId: e.fieldId,
+      });
+    });
+    return rows;
+  }, [flaggedItems, urgencyWithDates, errors, steps, urgencyStepIndex]);
+
+  const ACTION_ITEMS_VISIBLE = 6;
+  const visibleActionItems = actionItemsExpanded ? actionItems : actionItems.slice(0, ACTION_ITEMS_VISIBLE);
+  const hasMoreActions = actionItems.length > ACTION_ITEMS_VISIBLE;
 
   function itemKey(item: (typeof actionItems)[0]): string {
     return `${item.stepIndex}-${item.fieldId ?? 'unknown'}`;
@@ -363,328 +371,198 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
 
   return (
     <div className="attorney-dashboard">
-      {urgencyWithDates.length > 0 && (
-        <div className="attorney-urgency-banner" role="alert">
-          Urgent: {urgencyWithDates[0].label}
-          {urgencyWithDates[0].date && ` (${urgencyWithDates[0].date})`}
+      <header className="attorney-header-bar">
+        <div className="attorney-header-left">
+          <h1 className="attorney-title">Attorney View</h1>
+          <span className="attorney-subtitle">Case Intake Snapshot</span>
         </div>
-      )}
-      <header className="attorney-header">
-        <div className="attorney-header-top">
-          <div>
-            <h1 className="attorney-title">Attorney View</h1>
-            <p className="attorney-subline">Case Intake Snapshot</p>
-          </div>
-          <div className="attorney-header-actions">
-            <span className="attorney-last-saved">Last saved: {lastSavedText(lastSavedAt)}</span>
-            <button type="button" className="btn btn-secondary" onClick={copyExportBundle} title="Copy full export (answers + uploads + timestamp)">
-              Copy JSON
-            </button>
-            {copyToast && <span className={`attorney-toast ${copyToast === 'Copy failed' ? 'attorney-toast-error' : ''}`}>{copyToast}</span>}
-            <button type="button" className="btn btn-secondary" onClick={onReset}>
-              Reset Demo
-            </button>
-            <button
-              type="button"
-              className="modeToggle on"
-              onClick={() => setViewMode('client')}
-              aria-pressed={true}
-              aria-label="Switch to client view"
-            >
-              <span className="pill"><span className="knob" /></span>
-              <span className="modeLabel">Client View</span>
-            </button>
-          </div>
+        <div className="attorney-header-right">
+          <span className="attorney-meta">{lastSavedText(lastSavedAt)}</span>
+          <span className="attorney-meta-sep">•</span>
+          <button type="button" className="btn-header" onClick={copyExportBundle} title="Copy full export">
+            Copy JSON
+          </button>
+          <span className="attorney-meta-sep">•</span>
+          <button type="button" className="btn-header" onClick={onReset}>Reset Demo</button>
+          <span className="attorney-meta-sep">•</span>
+          <button type="button" className="btn-header modeToggle on" onClick={() => setViewMode('client')} aria-label="Toggle Client View">
+            <span className="pill"><span className="knob" /></span>
+            Client View
+          </button>
+          {copyToast && <span className={`attorney-toast ${copyToast === 'Copy failed' ? 'attorney-toast-error' : ''}`}>{copyToast}</span>}
         </div>
-        <p className="attorney-identity">{identityLine}</p>
-        {actionItems.length > 0 && (
-          <p className="attorney-next-actions">
-            Next: {nextActionsPreview}{nextActionsEllipsis ? '…' : ''}
-          </p>
-        )}
-        <p className="attorney-case-summary">{caseSummary}</p>
       </header>
 
-      <div className="attorney-kpi-row">
+      <div className="attorney-kpi-strip">
         <div className={`kpi-card kpi-completion ${kpis.completionPct >= 80 ? 'green' : kpis.completionPct >= 50 ? 'amber' : 'red'}`}>
-          <div className="kpi-title">Completion</div>
           <div className="kpi-value">{kpis.completionPct}%</div>
-          <div className="kpi-sub">{kpis.completionText} required completed</div>
-          <div className="kpi-sub-note">visible required fields</div>
+          <div className="kpi-label">Completion</div>
+          <div className="kpi-sublabel">{kpis.completionText}</div>
         </div>
-        <div
-          className={`kpi-card kpi-card-action kpi-missing kpi-clickable ${kpis.missingCount > 0 ? 'has-action' : ''}`}
-          role="button"
-          tabIndex={0}
-          onClick={() => scrollToSection('action-items')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('action-items'); } }}
-          aria-label="Jump to missing required items"
-        >
-          {kpis.missingCount > 0 && <span className="kpi-badge" aria-hidden>Action needed</span>}
-          <div className="kpi-title">Missing Required</div>
+        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('attention-required')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('attention-required'); } }} aria-label="Jump to attention required">
           <div className="kpi-value">{kpis.missingCount}</div>
-          <div className="kpi-sub">{kpis.missingCount > 0 ? 'Click to review' : 'None'}</div>
+          <div className="kpi-label">Missing</div>
+          <div className="kpi-sublabel">Click to review</div>
         </div>
-        <div
-          className={`kpi-card kpi-card-action kpi-flags kpi-clickable ${flaggedItems.length > 0 ? 'has-action' : ''}`}
-          role="button"
-          tabIndex={0}
-          onClick={() => scrollToSection('client-flags')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('client-flags'); } }}
-          aria-label="Jump to client flags and notes"
-        >
-          {flaggedItems.length > 0 && <span className="kpi-badge" aria-hidden>Action needed</span>}
-          <div className="kpi-title">Client Flags</div>
+        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('attention-required')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('attention-required'); } }} aria-label="Jump to client flags">
           <div className="kpi-value">{flaggedItems.length}</div>
-          <div className="kpi-sub">{flaggedItems.length > 0 ? 'Click to review' : 'None'}</div>
+          <div className="kpi-label">Client Flags</div>
+          <div className="kpi-sublabel">{flaggedItems.length > 0 ? 'Click to review' : 'None'}</div>
         </div>
-        <div
-          className={`kpi-card kpi-card-action kpi-urgency kpi-clickable ${kpis.urgencyCount > 0 ? 'has-action' : ''}`}
-          role="button"
-          tabIndex={0}
-          onClick={() => scrollToSection('urgent-signals')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('urgent-signals'); } }}
-          aria-label="Jump to urgent risk signals"
-        >
-          {kpis.urgencyCount > 0 && <span className="kpi-badge" aria-hidden>Action needed</span>}
-          <div className="kpi-title">Urgency Flags</div>
+        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('attention-required')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('attention-required'); } }} aria-label="Jump to urgency">
           <div className="kpi-value">{kpis.urgencyCount}</div>
-          <div className="kpi-sub">
-            {kpis.displayUrgencyList.length > 0
-              ? kpis.displayUrgencyList.map((v) => URGENCY_LABELS[v] ?? v).slice(0, 2).join(', ')
-              : 'None'}
-          </div>
+          <div className="kpi-label">Urgency</div>
+          <div className="kpi-sublabel">{kpis.urgencyCount > 0 ? 'Click to review' : 'None'}</div>
         </div>
-        <div
-          className="kpi-card kpi-docs kpi-clickable"
-          role="button"
-          tabIndex={0}
-          onClick={() => scrollToSection('documents')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('documents'); } }}
-          aria-label="Jump to documents"
-        >
-          <div className="kpi-title">Documents</div>
-          <div className="kpi-value">{kpis.docReceived} / {kpis.docTotal}</div>
-          <div className="kpi-sub">Required uploads received</div>
+        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('documents')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('documents'); } }} aria-label="Jump to documents">
+          <div className="kpi-value">{kpis.docReceived}/{kpis.docTotal}</div>
+          <div className="kpi-label">Documents</div>
+          <div className="kpi-sublabel">Received</div>
         </div>
       </div>
 
-      <div id="client-flags" className="attorney-card attorney-client-flags">
-        <h3>Client Flags &amp; Notes</h3>
-        {flaggedItems.length === 0 && resolvedFlagItems.length === 0 ? (
-          <p className="muted">No client flags. Required fields that the client could not answer yet will appear here with their note.</p>
+      <div id="attention-required" className="attorney-card attention-required-card">
+        <h3 className="card-title">Attention Required</h3>
+        {attentionRows.length === 0 ? (
+          <div className="attention-empty">None</div>
         ) : (
-          <>
-            {flaggedItems.length > 0 && (
-              <ul className="client-flags-list">
-                {flaggedItems.map((item) => (
-                  <li key={item.fieldId} className="client-flag-item">
-                    <div className="client-flag-label">{item.label} (Required)</div>
-                    <div className="client-flag-note">Client note: &ldquo;{item.note}&rdquo;</div>
-                    <div className="client-flag-actions">
-                      <button type="button" className="btn-action-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>
-                        Go to field
-                      </button>
-                      <button type="button" className="btn-action-state" onClick={() => setFlagResolved(item.fieldId, true)}>
-                        Mark resolved
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {resolvedFlagItems.length > 0 && (
-              <details className="client-flags-resolved">
-                <summary>Resolved ({resolvedFlagItems.length})</summary>
-                <ul className="client-flags-list">
-                  {resolvedFlagItems.map((item) => (
-                    <li key={item.fieldId} className="client-flag-item resolved">
-                      <div className="client-flag-label">{item.label}</div>
-                      <div className="client-flag-note">Client note: &ldquo;{item.note}&rdquo;</div>
-                      <div className="client-flag-actions">
-                        <button type="button" className="btn-action-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>
-                          Go to field
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </>
+          <ul className="attention-rows">
+            {attentionRows.map((row) => (
+              <li key={row.id} className="attention-row">
+                <span className={`badge badge-${row.type.toLowerCase()}`}>{row.type}</span>
+                <span className="attention-label">
+                  {row.type === 'FLAG' && `${row.label} — client note provided`}
+                  {row.type === 'URGENT' && (row.date ? `${row.label} — ${row.date}` : row.label)}
+                  {row.type === 'MISSING' && `${row.label} — missing`}
+                </span>
+                <span className="attention-actions">
+                  {row.type === 'FLAG' && (
+                    <>
+                      <button type="button" className="btn-open" onClick={() => onGoToWizard(row.stepIndex, row.fieldId)}>Open</button>
+                      <button type="button" className="btn-state" onClick={() => setFlagResolved(row.fieldId, true)}>Mark resolved</button>
+                    </>
+                  )}
+                  {row.type === 'URGENT' && (
+                    <button type="button" className="btn-open" onClick={() => onGoToWizard(row.stepIndex)}>Open</button>
+                  )}
+                  {row.type === 'MISSING' && (
+                    <button type="button" className="btn-open" onClick={() => onGoToWizard(row.stepIndex, row.fieldId)}>Open</button>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
-      </div>
-
-      <div className="attorney-row-2">
-        <div id="action-items" className="attorney-card attorney-action-items">
-          <h3>Action Items</h3>
-          {actionItems.length === 0 ? (
-            <p className="muted">No missing required or estimate items.</p>
-          ) : (
-            <>
-              <div className="action-list-grouped">
-                {visibleGrouped.map(([sectionTitle, items]) => (
-                  <div key={sectionTitle} className="action-group">
-                    <div className="action-group-title">{sectionTitle}</div>
-                    <ul className="action-list">
-                      {items.map((item) => {
-                        const key = itemKey(item);
-                        const review = actionReview[key];
-                        return (
-                          <li key={key}>
-                            <span className="action-label">{item.shortLabel}</span>
-                            <span className="action-actions">
-                              <button
-                                type="button"
-                                className="btn-action-open"
-                                onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}
-                              >
-                                Open
-                              </button>
-                              {review === 'reviewed' ? (
-                                <button
-                                  type="button"
-                                  className="btn-action-state reviewed"
-                                  onClick={() => setItemReview(key, null)}
-                                  title="Clear reviewed"
-                                >
-                                  ✓ Reviewed
-                                </button>
-                              ) : review === 'follow-up' ? (
-                                <button
-                                  type="button"
-                                  className="btn-action-state follow-up"
-                                  onClick={() => setItemReview(key, null)}
-                                  title="Clear follow-up"
-                                >
-                                  Needs follow-up
-                                </button>
-                              ) : (
-                                <>
-                                  <button
-                                    type="button"
-                                    className="btn-action-state"
-                                    onClick={() => setItemReview(key, 'reviewed')}
-                                    title="Mark reviewed"
-                                  >
-                                    ✓ Reviewed
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="btn-action-state"
-                                    onClick={() => setItemReview(key, 'follow-up')}
-                                    title="Mark needs follow-up"
-                                  >
-                                    Needs follow-up
-                                  </button>
-                                </>
-                              )}
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-              {hasMoreActions && !actionItemsExpanded && (
-                <button type="button" className="link-button show-more" onClick={() => setActionItemsExpanded(true)}>
-                  Show more ({actionItems.length - ACTION_VISIBLE} more)
-                </button>
-              )}
-            </>
-          )}
-        </div>
-        <div id="urgent-signals" className={`attorney-card attorney-urgency-card ${urgencyWithDates.length === 0 ? 'urgency-empty' : ''}`}>
-          <h3>Urgent Risk Signals</h3>
-          {urgencyWithDates.length === 0 ? (
-            <p className="urgency-empty-badge">No urgent issues reported</p>
-          ) : (
-            <ul className="urgency-list">
-              {urgencyWithDates.map((u, i) => (
-                <li key={i}>
-                  {u.label}
-                  {u.date && <span className="urgency-date"> — {u.date}</span>}
+        {resolvedFlagItems.length > 0 && (
+          <details className="attention-resolved">
+            <summary>Resolved ({resolvedFlagItems.length})</summary>
+            <ul className="attention-rows">
+              {resolvedFlagItems.map((item) => (
+                <li key={item.fieldId} className="attention-row resolved">
+                  <span className="badge badge-flag">FLAG</span>
+                  <span className="attention-label">{item.label}</span>
+                  <button type="button" className="btn-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
+                  <blockquote className="attention-note-block">&ldquo;{item.note}&rdquo;</blockquote>
                 </li>
               ))}
             </ul>
-          )}
+          </details>
+        )}
+      </div>
+
+      <div className="attorney-snapshot-grid">
+        <div className="attorney-card snapshot-card">
+          <h3 className="card-title">Assets Snapshot</h3>
+          <dl className="snapshot-dl">
+            <dt>Properties</dt><dd>{assetsSnapshot.properties}</dd>
+            <dt>Vehicles</dt><dd>{assetsSnapshot.vehicles}</dd>
+            <dt>Bank Accts</dt><dd>{assetsSnapshot.bankAccounts}</dd>
+            <dt>Valuables</dt><dd>{assetsSnapshot.valuables ? 'Yes' : 'No'}</dd>
+          </dl>
+        </div>
+        <div className="attorney-card snapshot-card">
+          <h3 className="card-title">Debts Snapshot</h3>
+          <dl className="snapshot-dl">
+            <dt>Priority</dt><dd>{debtsSnapshot.priority ? 'Yes' : 'No'}</dd>
+            <dt>Secured</dt><dd>{debtsSnapshot.otherSecured ? 'Yes' : 'No'}</dd>
+            <dt>Co-signed</dt><dd>{debtsSnapshot.cosigned ? 'Yes' : 'No'}</dd>
+            {debtsSnapshot.unsecuredText && <><dt>Largest unsecured</dt><dd>{debtsSnapshot.unsecuredText}</dd></>}
+          </dl>
+        </div>
+        <div className="attorney-card snapshot-card">
+          <h3 className="card-title">Income Snapshot</h3>
+          <dl className="snapshot-dl">
+            <dt>Employed</dt><dd>{incomeSnapshot.debtorEmployed ? 'Yes' : 'No'}</dd>
+            {isJointFiling(answers) && <><dt>Spouse employed</dt><dd>{incomeSnapshot.spouseEmployed ? 'Yes' : 'No'}</dd></>}
+            <dt>Other income</dt><dd>{incomeSnapshot.otherList.length > 0 ? 'Yes' : 'No'}</dd>
+            <dt>Docs</dt><dd>{incomeSnapshot.incomeDocsUploaded ? 'Received' : 'Missing'}</dd>
+          </dl>
         </div>
       </div>
 
-      <div className="attorney-row-3">
-        <div className="attorney-card snapshot-card">
-          <h3>Assets Snapshot</h3>
-          <ul className="snapshot-list">
-            <li>Properties: {assetsSnapshot.properties}</li>
-            <li>Vehicles: {assetsSnapshot.vehicles}</li>
-            <li>Bank accounts: {assetsSnapshot.bankAccounts}</li>
-            <li>Valuables: {assetsSnapshot.valuables ? 'Yes' : 'No'}</li>
-          </ul>
+      <div id="documents" className="attorney-card documents-card">
+        <h3 className="card-title">Document Status</h3>
+        <div className="doc-table-wrap">
+          <table className="doc-table">
+            <thead>
+              <tr>
+                <th>Document Type</th>
+                <th>Status</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              {DOCUMENT_IDS.map((d) => {
+                const files = uploads[d.id] ?? [];
+                const status = files.length > 0 ? 'Received' : answers[`${d.id}_dont_have`] === 'Yes' ? 'Pending' : 'Missing';
+                return (
+                  <tr key={d.id}>
+                    <td>{d.label}</td>
+                    <td><span className={`pill-badge pill-${status.toLowerCase()}`}>{status}</span></td>
+                    <td>{files.length}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-        <div className="attorney-card snapshot-card">
-          <h3>Debts Snapshot</h3>
-          <ul className="snapshot-list">
-            <li>Priority debts: {debtsSnapshot.priority ? 'Yes' : 'No'}</li>
-            <li>Other secured: {debtsSnapshot.otherSecured ? 'Yes' : 'No'}</li>
-            <li>Co-signed debts: {debtsSnapshot.cosigned ? 'Yes' : 'No'}</li>
-            {debtsSnapshot.unsecuredText && <li>Largest unsecured: {debtsSnapshot.unsecuredText}</li>}
-          </ul>
-        </div>
-        <div className="attorney-card snapshot-card">
-          <h3>Income Snapshot</h3>
-          <ul className="snapshot-list">
-            <li>Debtor employed: {incomeSnapshot.debtorEmployed ? 'Yes' : 'No'}</li>
-            {isJointFiling(answers) && <li>Spouse employed: {incomeSnapshot.spouseEmployed ? 'Yes' : 'No'}</li>}
-            {incomeSnapshot.otherList.length > 0 && (
-              <li>Other income: {incomeSnapshot.otherList.join(', ')}</li>
+      </div>
+
+      <div id="action-items" className="attorney-card action-items-card">
+        <h3 className="card-title">Action Items ({actionItems.length})</h3>
+        {actionItems.length === 0 ? (
+          <div className="action-items-empty">None</div>
+        ) : (
+          <>
+            <ul className="action-rows">
+              {visibleActionItems.map((item) => {
+                const key = itemKey(item);
+                const review = actionReview[key];
+                return (
+                  <li key={key} className="action-row">
+                    <span className="action-label">{item.shortLabel}</span>
+                    <span className="action-buttons">
+                      <button type="button" className="btn-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
+                      {review === 'reviewed' ? (
+                        <button type="button" className="btn-state reviewed" onClick={() => setItemReview(key, null)}>✓ Reviewed</button>
+                      ) : review === 'follow-up' ? (
+                        <button type="button" className="btn-state follow-up" onClick={() => setItemReview(key, null)}>Follow-up</button>
+                      ) : (
+                        <>
+                          <button type="button" className="btn-state" onClick={() => setItemReview(key, 'reviewed')}>✓ Reviewed</button>
+                          <button type="button" className="btn-state" onClick={() => setItemReview(key, 'follow-up')}>Follow-up</button>
+                        </>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            {hasMoreActions && !actionItemsExpanded && (
+              <button type="button" className="show-more-btn" onClick={() => setActionItemsExpanded(true)}>Show more ▼</button>
             )}
-            <li>Income docs uploaded: {incomeSnapshot.incomeDocsUploaded ? 'Yes' : 'No'}</li>
-          </ul>
-        </div>
-      </div>
-
-      <div id="documents" className="attorney-card documents-section">
-        <h3>Documents</h3>
-        <div className="doc-table">
-          {DOCUMENT_IDS.map((d) => {
-            const files = uploads[d.id] ?? [];
-            const status =
-              files.length > 0
-                ? 'Received'
-                : answers[`${d.id}_dont_have`] === 'Yes'
-                  ? 'Pending (client marked)'
-                  : 'Missing';
-            const isExpanded = expandedDoc === d.id;
-            return (
-              <div key={d.id} className="doc-row">
-                <div
-                  className="doc-row-head"
-                  onClick={() => setExpandedDoc(isExpanded ? null : d.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setExpandedDoc(isExpanded ? null : d.id);
-                    }
-                  }}
-                >
-                  <span className="doc-category">{d.label}</span>
-                  <span className={`doc-status ${status === 'Missing' ? 'missing' : ''} ${status === 'Pending (client marked)' ? 'pending' : ''}`}>{status}</span>
-                  <span className="doc-count">{files.length} file(s)</span>
-                </div>
-                {isExpanded && files.length > 0 && (
-                  <ul className="doc-filenames">
-                    {files.map((f) => (
-                      <li key={f}>{f}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            );
-          })}
-        </div>
+          </>
+        )}
       </div>
 
       <div className="attorney-card raw-section">

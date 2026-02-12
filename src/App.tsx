@@ -52,7 +52,7 @@ function AppContent() {
     window.scrollTo({ top: 0, behavior: 'instant' });
     const firstFieldId = steps[currentStepIndex]?.fields[0]?.id ?? null;
     setFocusFieldId(firstFieldId);
-  }, [currentStepIndex, steps]);
+  }, [currentStepIndex]); // Intentionally omit steps — only reset focus on step change, not on every keystroke (prevents focus loss)
 
   useEffect(() => {
     const hasData = Object.keys(answers).some((k) => {

@@ -736,8 +736,8 @@ select:focus {
   min-height: 100vh;
   background: #0b0f14;
   color: #e5e7eb;
-  padding: 24px 32px 48px;
-  max-width: 1200px;
+  padding: 20px 24px 48px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -758,62 +758,68 @@ select:focus {
   background: #4b5563;
 }
 
-.attorney-header {
-  margin-bottom: 24px;
+/* Header bar — one row */
+.attorney-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-.attorney-header-top {
+.attorney-header-left {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .attorney-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #f9fafb;
 }
 
-.attorney-subline {
-  margin: 0.25rem 0 0;
-  font-size: 0.875rem;
+.attorney-subtitle {
+  font-size: 0.8125rem;
   color: #9ca3af;
 }
 
-.attorney-header-actions {
+.attorney-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.attorney-last-saved {
-  font-size: 0.8125rem;
+.attorney-meta {
+  font-size: 0.75rem;
   color: #9ca3af;
 }
 
-.attorney-identity {
-  margin: 0.5rem 0 0;
-  font-size: 0.8125rem;
-  color: #9ca3af;
+.attorney-meta-sep {
+  color: #4b5563;
+  font-size: 0.75rem;
 }
 
-.attorney-next-actions {
-  margin: 0.5rem 0 0;
-  font-size: 0.875rem;
-  color: #e5e7eb;
-  font-weight: 500;
+.btn-header {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  padding: 0;
 }
 
-.attorney-case-summary {
-  margin: 0.5rem 0 0;
-  font-size: 0.8125rem;
-  color: #9ca3af;
-  line-height: 1.5;
-  max-width: 72ch;
+.btn-header:hover {
+  color: #bfdbfe;
+}
+
+.attorney-header-right .modeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .attorney-toast {
@@ -873,20 +879,23 @@ select:focus {
   color: #e5e7eb;
 }
 
+.attorney-kpi-strip,
 .attorney-kpi-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 @media (max-width: 1100px) {
+  .attorney-kpi-strip,
   .attorney-kpi-row {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 500px) {
+  .attorney-kpi-strip,
   .attorney-kpi-row {
     grid-template-columns: 1fr;
   }
@@ -895,22 +904,37 @@ select:focus {
 .kpi-card {
   background: #111827;
   border: 1px solid #1f2937;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 16px;
 }
 
-.kpi-card .kpi-title {
+.kpi-card .kpi-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f9fafb;
+  line-height: 1.2;
+}
+
+.kpi-card .kpi-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.kpi-card .kpi-sublabel {
   font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.kpi-card .kpi-title {
+  font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #9ca3af;
   margin-bottom: 4px;
-}
-
-.kpi-card .kpi-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #f9fafb;
 }
 
 .kpi-card .kpi-sub {
@@ -966,7 +990,289 @@ select:focus {
   background: #292524;
 }
 
-/* Action Items: higher contrast, grouped, mini-buttons */
+/* Cards: consistent padding + border + header */
+.attorney-card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.attorney-card .card-title {
+  margin: 0 0 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+/* Attention Required — single merged card */
+.attention-required-card .attention-empty {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.attention-rows {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.attention-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.8);
+  font-size: 0.875rem;
+}
+
+.attention-row:last-child {
+  border-bottom: none;
+}
+
+.attention-row.resolved {
+  opacity: 0.8;
+  grid-template-rows: auto auto;
+}
+
+.attention-row .attention-note-block {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  font-style: italic;
+  background: #1f2937;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border-left: 3px solid #374151;
+}
+
+.badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.badge-flag {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-urgent {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-missing {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.attention-label {
+  color: #e5e7eb;
+  min-width: 0;
+}
+
+.attention-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.attention-required-card .btn-open,
+.action-items-card .btn-open {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+.attention-required-card .btn-open:hover,
+.action-items-card .btn-open:hover {
+  background: #374151;
+}
+
+.attention-required-card .btn-state,
+.action-items-card .btn-state {
+  font-size: 0.6875rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #374151;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.attention-required-card .btn-state.reviewed,
+.action-items-card .btn-state.reviewed {
+  color: #86efac;
+  border-color: #166534;
+}
+
+.attention-required-card .btn-state.follow-up,
+.action-items-card .btn-state.follow-up {
+  color: #fcd34d;
+  border-color: #b45309;
+}
+
+.attention-resolved {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #1f2937;
+}
+
+.attention-resolved summary {
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+/* Snapshot grid — 3 cards */
+.attorney-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .attorney-snapshot-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.snapshot-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.snapshot-dl dt {
+  color: #9ca3af;
+  margin: 0;
+}
+
+.snapshot-dl dd {
+  margin: 0;
+  color: #e5e7eb;
+}
+
+/* Document Status — table */
+.doc-table-wrap {
+  overflow-x: auto;
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.doc-table th,
+.doc-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #1f2937;
+}
+
+.doc-table th {
+  color: #9ca3af;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+}
+
+.doc-table td {
+  color: #e5e7eb;
+}
+
+.pill-badge {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.pill-received {
+  background: #166534;
+  color: #86efac;
+}
+
+.pill-pending {
+  background: #b45309;
+  color: #fef3c7;
+}
+
+.pill-missing {
+  background: #374151;
+  color: #9ca3af;
+}
+
+/* Action Items — rows, 6 default, Show more */
+.action-rows {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.8);
+  font-size: 0.875rem;
+}
+
+.action-row .action-label {
+  flex: 1;
+  min-width: 0;
+  color: #e5e7eb;
+}
+
+.action-row .action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-items-empty {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.show-more-btn {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.8125rem;
+  color: #60a5fa;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.show-more-btn:hover {
+  color: #93c5fd;
+}
+
+/* Action Items: higher contrast, grouped, mini-buttons (legacy) */
 .attorney-action-items.attorney-card {
   background: #0f1419;
   border-color: #1a2332;
