@@ -1,7 +1,16 @@
 {
   "name": "guided-bankruptcy-intake",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "TurboTax-style guided bankruptcy intake questionnaire (client-facing demo)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jelliottdev/guided-bankruptcy-intake.git"
+  },
+  "homepage": "https://jelliottdev.github.io/guided-bankruptcy-intake/",
+  "bugs": {
+    "url": "https://github.com/jelliottdev/guided-bankruptcy-intake/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

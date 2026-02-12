@@ -1,5 +1,7 @@
 # Guided Bankruptcy Intake
 
+**Live demo:** [jelliottdev.github.io/guided-bankruptcy-intake](https://jelliottdev.github.io/guided-bankruptcy-intake/)
+
 TurboTax-style guided bankruptcy intake that replaces paper packets with a step-by-step smart questionnaire. Designed to help attorneys collect complete, structured client information and documents with less follow-up.
 
 This repository contains a prototype guided intake flow for attorney review and pilot testing.
@@ -70,10 +72,13 @@ npm run preview  # preview production build locally
 
 1. **Enable GitHub Pages** (one-time): In the repo go to **Settings → Pages**. Under **Build and deployment**, set **Source** to **GitHub Actions**.
 
-2. **Deploy**: Push to `main` (or run the workflow manually from **Actions → Deploy to GitHub Pages → Run workflow**). The workflow builds the app and deploys the `dist/` artifact to GitHub Pages.
+2. **Push using a token** (no password needed):
+   - Open **.env** and paste your [GitHub Personal Access Token](https://github.com/settings/tokens) after `GITHUB_TOKEN=` (create a token with `repo` scope; use Google login on GitHub, then Settings → Developer settings → Personal access tokens).
+   - Run: `./scripts/push.sh`  
+   The script pushes to `main` and restores your remote URL. `.env` is gitignored and never committed.
 
-3. **Live site**: After deployment, the app is available at  
-   `https://<your-username>.github.io/guided-bankruptcy-intake/`
+3. **Live site**: After the workflow runs, the app is at  
+   **https://jelliottdev.github.io/guided-bankruptcy-intake/**
 
 ---
 

@@ -24,7 +24,6 @@ export function FieldRenderer({
   focusFieldId,
   onFocusDone,
 }: FieldRendererProps) {
-  if (field.showIf && !field.showIf(answers)) return null;
   const shouldFocus = focusFieldId === field.id;
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(null);
   useEffect(() => {
@@ -33,6 +32,8 @@ export function FieldRenderer({
       onFocusDone?.();
     }
   }, [shouldFocus, onFocusDone]);
+
+  if (field.showIf && !field.showIf(answers)) return null;
 
   const label = (
     <label htmlFor={field.id}>

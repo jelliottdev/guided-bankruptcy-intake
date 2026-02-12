@@ -165,6 +165,8 @@ function AutosaveEffect({
       dispatch({ type: 'SET_SAVING', saving: false });
     }, DEBOUNCE_MS);
     return () => clearTimeout(t);
+    // Intentionally omit state.lastSavedAt to avoid re-running on every save
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.answers, state.uploads, state.currentStepIndex, dispatch]);
 
   return null;
