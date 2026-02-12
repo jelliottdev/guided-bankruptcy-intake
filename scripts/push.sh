@@ -7,11 +7,9 @@ cd "$(dirname "$0")/.."
 
 MSG="${1:-Update and republish}"
 git add -A
-if git diff --staged --quiet; then
-  echo "Nothing to commit (working tree clean)."
-  exit 0
+if ! git diff --staged --quiet; then
+  git commit -m "$MSG"
 fi
-git commit -m "$MSG"
 
 if [ ! -f .env ]; then
   echo "No .env file. Copy .env.example to .env and paste your GitHub token after GITHUB_TOKEN="
