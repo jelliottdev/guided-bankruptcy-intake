@@ -35,9 +35,9 @@ export function FieldRenderer({
 
   if (field.showIf && !field.showIf(answers)) return null;
 
-  // Single source of truth: strip any trailing asterisk(s) from label, then add exactly one " *" when required.
-  const rawLabel = String(field.label).trimEnd();
-  const displayLabel = rawLabel.replace(/\*+$/, '').trimEnd();
+  // Single source of truth: strip ALL asterisks from label, then add exactly one " *" when required (avoids double asterisk from any source/cache).
+  const rawLabel = String(field.label).trim();
+  const displayLabel = rawLabel.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
   const requiredSuffix = field.required ? ' *' : '';
 
   const label = (
