@@ -15,13 +15,14 @@ import {
 import { useIntake } from '../state/IntakeProvider';
 import { computeCaseReadiness } from '../attorney/readiness';
 import {
-  generateCaseSummary,
   getStrategySignals,
   getScheduleCoverage,
   getDocumentSufficiency,
   getFollowUpQuestions,
   getTimelineReadiness,
+  generateFilingChecklist,
 } from '../attorney/snapshot';
+import { getPrimaryBlockers } from '../attorney/readiness';
 import { buildCreditorMatrix, exportCreditorWorksheet } from '../attorney/creditorMatrix';
 import { computeClientReliability } from '../attorney/clientReliability';
 import {
@@ -86,31 +87,6 @@ function shortActionLabel(fullLabel: string, _isEstimate: boolean): string {
   return words.slice(0, 4).join(' ');
 }
 
-const ACTION_REVIEW_KEY = 'gbi:action-review';
-
-function loadActionReview(): Record<string, 'reviewed' | 'follow-up'> {
-  try {
-    const raw = localStorage.getItem(ACTION_REVIEW_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as Record<string, string>;
-    const out: Record<string, 'reviewed' | 'follow-up'> = {};
-    for (const [k, v] of Object.entries(parsed)) {
-      if (v === 'reviewed' || v === 'follow-up') out[k] = v;
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-function saveActionReview(map: Record<string, 'reviewed' | 'follow-up'>) {
-  try {
-    localStorage.setItem(ACTION_REVIEW_KEY, JSON.stringify(map));
-  } catch {
-    /* ignore */
-  }
-}
-
 export interface AttorneyDashboardProps {
   email?: string | null;
   phone?: string | null;
@@ -123,7 +99,12 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
   const { answers, uploads, flags, lastSavedAt } = state;
   const [rawOpen, setRawOpen] = useState(false);
   const [copyToast, setCopyToast] = useState<'Copied' | 'Copy failed' | null>(null);
-  const [actionItemsExpanded, setActionItemsExpanded] = useState(false);
+  const [filingChecklistOpen, setFilingChecklistOpen] = useState(false);
+  const [actionQueueOpen, setActionQueueOpen] = useState<Record<'critical' | 'important' | 'follow-up', boolean>>(() => ({
+    critical: true,
+    important: false,
+    'follow-up': false,
+  }));
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
@@ -147,25 +128,6 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       });
     });
     return list.sort((a, b) => a.stepIndex !== b.stepIndex ? a.stepIndex - b.stepIndex : a.fieldId.localeCompare(b.fieldId));
-  }, [flags, steps]);
-
-  const resolvedFlagItems = useMemo(() => {
-    const list: { fieldId: string; stepIndex: number; stepTitle: string; label: string; note: string }[] = [];
-    Object.entries(flags).forEach(([fieldId, entry]) => {
-      if (!entry.flagged || !entry.resolved) return;
-      const stepIdx = steps.findIndex((s) => s.fields.some((f) => f.id === fieldId));
-      if (stepIdx < 0) return;
-      const step = steps[stepIdx];
-      const field = step.fields.find((f) => f.id === fieldId);
-      list.push({
-        fieldId,
-        stepIndex: stepIdx,
-        stepTitle: step.title,
-        label: field?.label ?? fieldId,
-        note: (entry.note ?? '').trim(),
-      });
-    });
-    return list.sort((a, b) => a.stepTitle.localeCompare(b.stepTitle) || a.fieldId.localeCompare(b.fieldId));
   }, [flags, steps]);
 
   const kpis = useMemo(() => {
@@ -203,10 +165,6 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     () => computeCaseReadiness(answers, uploads, flags),
     [answers, uploads, flags]
   );
-  const caseSummaryText = useMemo(
-    () => generateCaseSummary(answers, uploads, kpis.missingCount, flaggedItems.length),
-    [answers, uploads, kpis.missingCount, flaggedItems.length]
-  );
   const strategySignals = useMemo(() => getStrategySignals(answers), [answers]);
   const scheduleCoverage = useMemo(
     () => getScheduleCoverage(answers, uploads),
@@ -237,6 +195,14 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     [answers, uploads, flags]
   );
   const creditorMatrix = useMemo(() => buildCreditorMatrix(answers), [answers]);
+  const primaryBlockers = useMemo(
+    () => getPrimaryBlockers(answers, uploads, missingFieldLabels),
+    [answers, uploads, missingFieldLabels]
+  );
+  const filingChecklist = useMemo(
+    () => generateFilingChecklist(answers, uploads, documentSufficiency, missingFieldLabels),
+    [answers, uploads, documentSufficiency, missingFieldLabels]
+  );
 
   const [aiSummary, setAiSummary] = useState('');
   const generateAiSummary = useCallback(() => {
@@ -290,17 +256,6 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     items.sort((a, b) => a.stepIndex !== b.stepIndex ? a.stepIndex - b.stepIndex : (a.fieldId ?? '').localeCompare(b.fieldId ?? ''));
     return items;
   }, [answers, errors, steps]);
-
-  const [actionReview, setActionReview] = useState<Record<string, 'reviewed' | 'follow-up'>>(loadActionReview);
-  const setItemReview = useCallback((key: string, value: 'reviewed' | 'follow-up' | null) => {
-    setActionReview((prev) => {
-      const next = { ...prev };
-      if (value == null) delete next[key];
-      else next[key] = value;
-      saveActionReview(next);
-      return next;
-    });
-  }, []);
 
   const urgencyWithDates = useMemo(() => {
     const list = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]) : [];
@@ -377,23 +332,24 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     }
   }, [answers, uploads, showToast]);
 
-  const scrollToSection = useCallback((id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, []);
-
   const urgencyStepIndex = useMemo(() => steps.findIndex((s) => s.id === 'urgency'), [steps]);
   type AttentionRow =
-    | { type: 'FLAG'; id: string; label: string; stepIndex: number; fieldId: string; note: string }
-    | { type: 'URGENT'; id: string; label: string; date?: string; stepIndex: number }
-    | { type: 'MISSING'; id: string; label: string; stepIndex: number; fieldId: string };
+    | { type: 'FLAG'; id: string; label: string; stepIndex: number; stepTitle: string; fieldId: string; note: string }
+    | { type: 'URGENT'; id: string; label: string; date?: string; stepIndex: number; stepTitle: string }
+    | { type: 'MISSING'; id: string; label: string; stepIndex: number; stepTitle: string; fieldId: string };
   const attentionRows = useMemo((): AttentionRow[] => {
+    const seen = new Set<string>();
     const rows: AttentionRow[] = [];
     flaggedItems.forEach((item) => {
+      const id = `flag-${item.fieldId}`;
+      if (seen.has(id)) return;
+      seen.add(id);
       rows.push({
         type: 'FLAG',
-        id: `flag-${item.fieldId}`,
+        id,
         label: shortActionLabel(item.label, false),
         stepIndex: item.stepIndex,
+        stepTitle: item.stepTitle,
         fieldId: item.fieldId,
         note: item.note.length > 50 ? item.note.slice(0, 47) + '…' : item.note,
       });
@@ -405,39 +361,74 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         label: u.label,
         date: u.date,
         stepIndex: urgencyStepIndex >= 0 ? urgencyStepIndex : 0,
+        stepTitle: steps[urgencyStepIndex]?.title ?? 'Urgency',
       });
     });
     errors.forEach((e) => {
+      const id = `missing-${e.stepIndex}-${e.fieldId}`;
+      if (seen.has(id)) return;
+      seen.add(id);
       const step = steps[e.stepIndex];
       const field = step?.fields.find((f) => f.id === e.fieldId);
       const label = field?.label ?? e.message.replace(/\s+is required\.?$/i, '').trim();
       rows.push({
         type: 'MISSING',
-        id: `missing-${e.fieldId}`,
+        id,
         label: shortActionLabel(label, false),
         stepIndex: e.stepIndex,
+        stepTitle: step?.title ?? 'Other',
         fieldId: e.fieldId,
       });
     });
     return rows;
   }, [flaggedItems, urgencyWithDates, errors, steps, urgencyStepIndex]);
 
-  const ACTION_ITEMS_VISIBLE = 6;
-  const visibleActionItems = actionItemsExpanded ? actionItems : actionItems.slice(0, ACTION_ITEMS_VISIBLE);
-  const hasMoreActions = actionItems.length > ACTION_ITEMS_VISIBLE;
-  const visibleActionGrouped = useMemo(() => {
-    const map = new Map<string, typeof visibleActionItems>();
-    visibleActionItems.forEach((item) => {
-      const list = map.get(item.stepTitle) ?? [];
-      list.push(item);
-      map.set(item.stepTitle, list);
+  // Group attention rows by step (section) for collapsible UI
+  type ActionQueueItem = { severity: 'critical' | 'important' | 'follow-up'; label: string; stepIndex: number; fieldId?: string };
+  const actionQueue = useMemo((): ActionQueueItem[] => {
+    const seen = new Set<string>();
+    const queue: ActionQueueItem[] = [];
+    attentionRows.forEach((row) => {
+      if (row.type === 'MISSING') {
+        const key = `missing-${row.stepIndex}-${row.fieldId}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        queue.push({ severity: 'critical', label: row.label, stepIndex: row.stepIndex, fieldId: row.fieldId });
+      } else if (row.type === 'URGENT') {
+        queue.push({ severity: 'critical', label: row.label + (row.date ? ` (${row.date})` : ''), stepIndex: row.stepIndex });
+      } else if (row.type === 'FLAG') {
+        const key = `flag-${row.fieldId}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        queue.push({ severity: 'important', label: row.label + ' — client note', stepIndex: row.stepIndex, fieldId: row.fieldId });
+      }
     });
-    return Array.from(map.entries());
-  }, [visibleActionItems]);
+    actionItems.forEach((item) => {
+      const key = `${item.stepIndex}-${item.fieldId ?? ''}`;
+      if (seen.has(key)) return;
+      if (item.isEstimate) {
+        seen.add(key);
+        queue.push({ severity: 'important', label: item.shortLabel.replace(' — missing', ' — needs estimate'), stepIndex: item.stepIndex, fieldId: item.fieldId });
+      }
+    });
+    followUpQuestions.slice(0, 5).forEach((q) => {
+      queue.push({ severity: 'follow-up', label: q, stepIndex: 0 });
+    });
+    return queue;
+  }, [attentionRows, actionItems, followUpQuestions]);
+  const actionQueueCritical = actionQueue.filter((a) => a.severity === 'critical');
+  const actionQueueImportant = actionQueue.filter((a) => a.severity === 'important');
+  const actionQueueFollowUp = actionQueue.filter((a) => a.severity === 'follow-up');
 
-  function itemKey(item: (typeof actionItems)[0]): string {
-    return `${item.stepIndex}-${item.fieldId ?? 'unknown'}`;
-  }
+  const toggleActionQueueGroup = useCallback((key: 'critical' | 'important' | 'follow-up') => {
+    setActionQueueOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+  const expandAllActionQueue = useCallback(() => {
+    setActionQueueOpen({ critical: true, important: true, 'follow-up': true });
+  }, []);
+  const collapseAllActionQueue = useCallback(() => {
+    setActionQueueOpen({ critical: false, important: false, 'follow-up': false });
+  }, []);
 
   return (
     <div className="attorney-dashboard">
@@ -460,52 +451,39 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </header>
 
-      <div className="attorney-readiness-summary-row">
-        <div className={`attorney-card readiness-card readiness-${readiness.band}`}>
-          <div className="readiness-score">{readiness.score}%</div>
-          <div className="readiness-label">Case Readiness</div>
-          <div className="readiness-band">{readiness.bandLabel}</div>
+      <div className={`case-status-bar case-status-${readiness.band}`} role="status">
+        <div className="case-status-heading">
+          <span className="case-status-label">Case status</span>
+          <span className="case-status-value">
+            {readiness.band === 'ready' ? 'Ready to file' : readiness.band === 'minor' ? 'Close — minor follow-up' : readiness.band === 'gaps' ? 'Not ready — major gaps' : 'Not ready to file'}
+          </span>
         </div>
-        <div className="attorney-card case-snapshot-card">
-          <h3 className="card-title">Case Snapshot Summary (Auto-Generated)</h3>
-          <p className="case-snapshot-text">{caseSummaryText}</p>
+        <div className="case-status-metrics">
+          <span>Readiness: {readiness.score}%</span>
+          <span>Missing: {kpis.missingCount} required</span>
+          <span>Docs: {kpis.docReceived}/{kpis.docTotal}</span>
+          <span>Risk flags: {flaggedItems.length + kpis.urgencyCount}</span>
         </div>
+        {primaryBlockers.length > 0 && (
+          <div className="case-status-blockers">
+            Primary blockers: {primaryBlockers.join(', ')}
+          </div>
+        )}
       </div>
 
-      <div className="attorney-kpi-strip">
-        <div className={`kpi-card kpi-completion ${kpis.completionPct >= 80 ? 'green' : kpis.completionPct >= 50 ? 'amber' : 'red'}`}>
-          <div className="kpi-value">{kpis.completionPct}%</div>
-          <div className="kpi-label">Completion</div>
-          <div className="kpi-sublabel">{kpis.completionText}</div>
-        </div>
-        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('attention-required')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('attention-required'); } }} aria-label="Jump to attention required">
-          <div className="kpi-value">{kpis.missingCount}</div>
-          <div className="kpi-label">Missing</div>
-          <div className="kpi-sublabel">Click to review</div>
-        </div>
-        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('attention-required')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('attention-required'); } }} aria-label="Jump to client flags">
-          <div className="kpi-value">{flaggedItems.length}</div>
-          <div className="kpi-label">Client Flags</div>
-          <div className="kpi-sublabel">{flaggedItems.length > 0 ? 'Click to review' : 'None'}</div>
-        </div>
-        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('attention-required')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('attention-required'); } }} aria-label="Jump to urgency">
-          <div className="kpi-value">{kpis.urgencyCount}</div>
-          <div className="kpi-label">Urgency</div>
-          <div className="kpi-sublabel">{kpis.urgencyCount > 0 ? 'Click to review' : 'None'}</div>
-        </div>
-        <div className="kpi-card kpi-clickable" role="button" tabIndex={0} onClick={() => scrollToSection('documents')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('documents'); } }} aria-label="Jump to documents">
-          <div className="kpi-value">{kpis.docReceived}/{kpis.docTotal}</div>
-          <div className="kpi-label">Documents</div>
-          <div className="kpi-sublabel">Received</div>
-        </div>
+      <div className="ai-summary-top-box">
+        <div className="ai-summary-top-header">AI case summary</div>
+        {aiSummary ? (
+          <p className="ai-summary-top-text">{aiSummary}</p>
+        ) : (
+          <button type="button" className="btn-generate-ai-inline" onClick={generateAiSummary}>Generate 2-sentence summary</button>
+        )}
       </div>
 
       <div className="attorney-strategy-schedules-row">
-        <div className="attorney-card strategy-signals-card">
-          <h3 className="card-title">Strategy Signals</h3>
-          {strategySignals.length === 0 ? (
-            <p className="strategy-empty">No signals — complete more intake for hints.</p>
-          ) : (
+        {strategySignals.length > 0 && (
+          <div className="attorney-card strategy-signals-card">
+            <h3 className="card-title">Strategy Signals</h3>
             <ul className="strategy-list">
               {strategySignals.map((s) => (
                 <li key={s.id} className="strategy-item">
@@ -514,8 +492,8 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
                 </li>
               ))}
             </ul>
-          )}
-        </div>
+          </div>
+        )}
         <div className="attorney-card schedule-coverage-card">
           <h3 className="card-title">Schedules Coverage</h3>
           <ul className="schedule-list">
@@ -530,87 +508,136 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </div>
 
-      <section id="attention-required" className="dashboard-section attorney-card attention-required-card">
-        <h3 className="card-title">Attention Required</h3>
-        {attentionRows.length === 0 ? (
-          <div className="attention-empty">None</div>
+      <section id="action-queue" className="dashboard-section attorney-card action-queue-card">
+        <div className="action-queue-header">
+          <h3 className="card-title">Action Queue</h3>
+          {actionQueue.length > 0 && (
+            <div className="action-queue-summary">
+              <span className="action-queue-counts">
+                {actionQueueCritical.length > 0 && <span>{actionQueueCritical.length} critical</span>}
+                {actionQueueImportant.length > 0 && <span>{actionQueueImportant.length} important</span>}
+                {actionQueueFollowUp.length > 0 && <span>{actionQueueFollowUp.length} follow-up</span>}
+              </span>
+              <span className="action-queue-toggles">
+                <button type="button" className="btn-action-queue-toggle" onClick={expandAllActionQueue}>Expand all</button>
+                <button type="button" className="btn-action-queue-toggle" onClick={collapseAllActionQueue}>Collapse all</button>
+              </span>
+            </div>
+          )}
+        </div>
+        {actionQueue.length === 0 ? (
+          <div className="action-queue-empty">None</div>
         ) : (
-          <ul className="attention-rows">
-            {attentionRows.map((row) => (
-              <li key={row.id} className={`attention-row ${row.type === 'URGENT' ? 'attention-row-urgent' : ''}`}>
-                <span className={`badge badge-${row.type.toLowerCase()}`}>{row.type}</span>
-                <span className="attention-label-block">
-                  {row.type === 'FLAG' && <><span className="attention-label">{row.label}</span><span className="attention-meta">Client note provided</span></>}
-                  {row.type === 'URGENT' && (
-                    <>
-                      <span className="attention-label">{row.label}</span>
-                      {row.date && <span className="attention-meta">Date: {row.date}</span>}
-                    </>
-                  )}
-                  {row.type === 'MISSING' && <span className="attention-label">{row.label} — missing</span>}
-                </span>
-                <span className="attention-actions">
-                  {row.type === 'FLAG' && (
-                    <>
-                      <button type="button" className="btn-open" onClick={() => onGoToWizard(row.stepIndex, row.fieldId)}>Open</button>
-                      <button type="button" className="btn-state" onClick={() => setFlagResolved(row.fieldId, true)}>Mark resolved</button>
-                    </>
-                  )}
-                  {row.type === 'URGENT' && (
-                    <button type="button" className="btn-open" onClick={() => onGoToWizard(row.stepIndex)}>Open</button>
-                  )}
-                  {row.type === 'MISSING' && (
-                    <button type="button" className="btn-open" onClick={() => onGoToWizard(row.stepIndex, row.fieldId)}>Open</button>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-        {resolvedFlagItems.length > 0 && (
-          <details className="attention-resolved">
-            <summary>Resolved ({resolvedFlagItems.length})</summary>
-            <ul className="attention-rows">
-              {resolvedFlagItems.map((item) => (
-                <li key={item.fieldId} className="attention-row resolved">
-                  <span className="badge badge-flag">FLAG</span>
-                  <span className="attention-label">{item.label}</span>
-                  <button type="button" className="btn-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
-                  <blockquote className="attention-note-block">&ldquo;{item.note}&rdquo;</blockquote>
-                </li>
-              ))}
-            </ul>
-          </details>
+          <div className="action-queue-groups">
+            {actionQueueCritical.length > 0 && (
+              <div className="action-queue-group">
+                <button
+                  type="button"
+                  className={`action-queue-group-header ${actionQueueOpen.critical ? 'is-open' : ''}`}
+                  onClick={() => toggleActionQueueGroup('critical')}
+                  aria-expanded={actionQueueOpen.critical}
+                >
+                  <span className={`action-queue-chevron ${actionQueueOpen.critical ? 'is-open' : ''}`} aria-hidden />
+                  <span className="action-queue-group-title">Critical (blocks filing)</span>
+                  <span className="action-queue-group-count">{actionQueueCritical.length}</span>
+                </button>
+                {actionQueueOpen.critical && (
+                  <ul className="action-queue-rows">
+                    {actionQueueCritical.map((item, i) => (
+                      <li key={`c-${i}`} className="action-queue-row">
+                        <span className="action-queue-label">{item.label}</span>
+                        <button type="button" className="btn-open btn-open-sm" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            {actionQueueImportant.length > 0 && (
+              <div className="action-queue-group">
+                <button
+                  type="button"
+                  className={`action-queue-group-header ${actionQueueOpen.important ? 'is-open' : ''}`}
+                  onClick={() => toggleActionQueueGroup('important')}
+                  aria-expanded={actionQueueOpen.important}
+                >
+                  <span className={`action-queue-chevron ${actionQueueOpen.important ? 'is-open' : ''}`} aria-hidden />
+                  <span className="action-queue-group-title">Important</span>
+                  <span className="action-queue-group-count">{actionQueueImportant.length}</span>
+                </button>
+                {actionQueueOpen.important && (
+                  <ul className="action-queue-rows">
+                    {actionQueueImportant.map((item, i) => (
+                      <li key={`i-${i}`} className="action-queue-row">
+                        <span className="action-queue-label">{item.label}</span>
+                        <span className="action-queue-actions">
+                          <button type="button" className="btn-open btn-open-sm" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
+                          {item.fieldId && (
+                            <button type="button" className="btn-state btn-state-sm" onClick={() => setFlagResolved(item.fieldId!, true)}>Resolved</button>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            {actionQueueFollowUp.length > 0 && (
+              <div className="action-queue-group">
+                <button
+                  type="button"
+                  className={`action-queue-group-header ${actionQueueOpen['follow-up'] ? 'is-open' : ''}`}
+                  onClick={() => toggleActionQueueGroup('follow-up')}
+                  aria-expanded={actionQueueOpen['follow-up']}
+                >
+                  <span className={`action-queue-chevron ${actionQueueOpen['follow-up'] ? 'is-open' : ''}`} aria-hidden />
+                  <span className="action-queue-group-title">Follow-up</span>
+                  <span className="action-queue-group-count">{actionQueueFollowUp.length}</span>
+                </button>
+                {actionQueueOpen['follow-up'] && (
+                  <ul className="action-queue-rows">
+                    {actionQueueFollowUp.map((item, i) => (
+                      <li key={`f-${i}`} className="action-queue-row">
+                        <span className="action-queue-label">{item.label}</span>
+                        {item.fieldId ? (
+                          <button type="button" className="btn-open btn-open-sm" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
         )}
       </section>
 
-      <div className="attorney-snapshot-grid">
-        <div className="attorney-card card-secondary snapshot-card">
-          <h3 className="card-title">Assets Snapshot</h3>
-          <dl className="snapshot-dl">
-            <dt>Properties</dt><dd>{assetsSnapshot.properties}</dd>
-            <dt>Vehicles</dt><dd>{assetsSnapshot.vehicles}</dd>
-            <dt>Bank Accts</dt><dd>{assetsSnapshot.bankAccounts}</dd>
-            <dt>Valuables</dt><dd>{assetsSnapshot.valuables ? 'Yes' : 'No'}</dd>
-          </dl>
-        </div>
-        <div className="attorney-card card-secondary snapshot-card">
-          <h3 className="card-title">Debts Snapshot</h3>
-          <dl className="snapshot-dl">
-            <dt>Priority</dt><dd>{debtsSnapshot.priority ? 'Yes' : 'No'}</dd>
-            <dt>Secured</dt><dd>{debtsSnapshot.otherSecured ? 'Yes' : 'No'}</dd>
-            <dt>Co-signed</dt><dd>{debtsSnapshot.cosigned ? 'Yes' : 'No'}</dd>
-            {debtsSnapshot.unsecuredText && <><dt>Largest unsecured</dt><dd>{debtsSnapshot.unsecuredText}</dd></>}
-          </dl>
-        </div>
-        <div className="attorney-card card-secondary snapshot-card">
-          <h3 className="card-title">Income Snapshot</h3>
-          <dl className="snapshot-dl">
-            <dt>Employed</dt><dd>{incomeSnapshot.debtorEmployed ? 'Yes' : 'No'}</dd>
-            {isJointFiling(answers) && <><dt>Spouse employed</dt><dd>{incomeSnapshot.spouseEmployed ? 'Yes' : 'No'}</dd></>}
-            <dt>Other income</dt><dd>{incomeSnapshot.otherList.length > 0 ? 'Yes' : 'No'}</dd>
-            <dt>Docs</dt><dd>{incomeSnapshot.incomeDocsUploaded ? 'Received' : 'Missing'}</dd>
-          </dl>
+      <div className="attorney-card financial-snapshot-card">
+        <h3 className="card-title">Financial Snapshot</h3>
+        <div className="financial-snapshot-grid">
+          <div className="financial-snapshot-line">
+            <span className="financial-snapshot-term">Assets</span>
+            <span className="financial-snapshot-desc">
+              {assetsSnapshot.vehicles} vehicle{assetsSnapshot.vehicles !== 1 ? 's' : ''}, {assetsSnapshot.properties > 0 ? `${assetsSnapshot.properties} real estate` : 'no real estate'}, {assetsSnapshot.bankAccounts} bank account{assetsSnapshot.bankAccounts !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="financial-snapshot-line">
+            <span className="financial-snapshot-term">Debts</span>
+            <span className="financial-snapshot-desc">
+              {debtsSnapshot.priority ? 'Priority' : ''}{debtsSnapshot.priority && debtsSnapshot.otherSecured ? ', ' : ''}{debtsSnapshot.otherSecured ? 'secured' : ''}{!debtsSnapshot.priority && !debtsSnapshot.otherSecured ? 'Unsecured' : ''} {debtsSnapshot.cosigned ? '; co-signed' : ''}
+              {debtsSnapshot.unsecuredText ? ` — ${debtsSnapshot.unsecuredText}` : ''}
+            </span>
+          </div>
+          <div className="financial-snapshot-line">
+            <span className="financial-snapshot-term">Income</span>
+            <span className="financial-snapshot-desc">
+              {incomeSnapshot.debtorEmployed ? 'Employed' : 'Not employed'}{isJointFiling(answers) ? `; spouse ${incomeSnapshot.spouseEmployed ? 'employed' : 'not employed'}` : ''}. Docs: {incomeSnapshot.incomeDocsUploaded ? 'received' : 'missing'}
+            </span>
+          </div>
+          <div className="financial-snapshot-line">
+            <span className="financial-snapshot-term">Co-signed</span>
+            <span className="financial-snapshot-desc">{debtsSnapshot.cosigned ? 'Yes' : 'None'}</span>
+          </div>
         </div>
       </div>
 
@@ -620,9 +647,10 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
           <table className="doc-table">
             <thead>
               <tr>
-                <th>Document Type</th>
+                <th>Document</th>
                 <th>Status</th>
-                <th>Detail</th>
+                <th>Need</th>
+                <th>Last detected</th>
               </tr>
             </thead>
             <tbody>
@@ -630,7 +658,8 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
                 <tr key={d.type}>
                   <td>{d.type}</td>
                   <td><span className={`pill-badge pill-${d.status.toLowerCase()}`}>{d.status}</span></td>
-                  <td className="doc-detail">{d.message}</td>
+                  <td>{d.coverageRule}</td>
+                  <td>{d.lastDetected ?? '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -672,97 +701,45 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
           <h3 className="card-title">Client Reliability</h3>
           <div className="reliability-score">{clientReliability.score}</div>
           <div className="reliability-label">{clientReliability.label}</div>
-          {clientReliability.notes.length > 0 && (
-            <ul className="reliability-notes">
-              {clientReliability.notes.map((n, i) => (
-                <li key={i}>{n}</li>
-              ))}
-            </ul>
-          )}
+          <dl className="reliability-breakdown">
+            <dt>Missing required fields</dt><dd>{clientReliability.breakdown.missingRequired}</dd>
+            <dt>Docs missing</dt><dd>{clientReliability.breakdown.docsMissing}</dd>
+            <dt>Flagged answers</dt><dd>{clientReliability.breakdown.flaggedAnswers}</dd>
+          </dl>
         </div>
       </div>
 
-      <div className="dashboard-section attorney-card follow-up-timeline-row">
-        <div className="attorney-card follow-up-card">
-          <h3 className="card-title">Suggested Follow-Up Questions</h3>
-          {followUpQuestions.length === 0 ? (
-            <p className="follow-up-empty">None — intake looks complete.</p>
-          ) : (
-            <ul className="follow-up-list">
-              {followUpQuestions.map((q, i) => (
-                <li key={i}>{q}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+      <div className="dashboard-section attorney-card timeline-filing-row">
         <div className="attorney-card timeline-card">
           <h3 className="card-title">Earliest Filing Readiness</h3>
           <div className="timeline-days">~{timelineReadiness.days}</div>
           <div className="timeline-note">{timelineReadiness.note}</div>
         </div>
-      </div>
-
-      <div className="dashboard-section attorney-card ai-summary-card">
-        <h3 className="card-title">AI Intake Summary (Local)</h3>
-        <p className="ai-privacy">Runs locally in your browser; no data leaves this device.</p>
-        {aiSummary ? (
-          <>
-            <div className="ai-summary-output">{aiSummary}</div>
-            <div className="ai-summary-actions">
-              <button type="button" className="btn-copy-ai" onClick={() => navigator.clipboard.writeText(aiSummary).then(() => showToast('Copied')).catch(() => showToast('Copy failed'))}>Copy</button>
-              <button type="button" className="btn-regenerate-ai" onClick={generateAiSummary}>Regenerate</button>
-            </div>
-          </>
-        ) : (
-          <button type="button" className="btn-generate-ai" onClick={generateAiSummary}>
-            Generate 2-sentence summary
-          </button>
-        )}
-      </div>
-
-      <section id="action-items" className="dashboard-section attorney-card action-items-card">
-        <h3 className="card-title">Action Items ({actionItems.length})</h3>
-        {actionItems.length === 0 ? (
-          <div className="action-items-empty">None</div>
-        ) : (
-          <>
-            {visibleActionGrouped.map(([category, items]) => (
-              <div key={category} className="action-category">
-                <div className="action-category-header">{category.toUpperCase()}</div>
-                <ul className="action-rows">
-                  {items.map((item) => {
-                    const key = itemKey(item);
-                    const review = actionReview[key];
-                    return (
-                      <li key={key} className="action-row">
-                        <span className="action-label">{item.shortLabel}</span>
-                        <span className="action-buttons">
-                          <button type="button" className="btn-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
-                          <span className="action-row-secondary">
-                            {review === 'reviewed' ? (
-                              <button type="button" className="btn-state reviewed" onClick={() => setItemReview(key, null)}>✓ Reviewed</button>
-                            ) : review === 'follow-up' ? (
-                              <button type="button" className="btn-state follow-up" onClick={() => setItemReview(key, null)}>Follow-up</button>
-                            ) : (
-                              <>
-                                <button type="button" className="btn-state" onClick={() => setItemReview(key, 'reviewed')}>✓ Reviewed</button>
-                                <button type="button" className="btn-state" onClick={() => setItemReview(key, 'follow-up')}>Follow-up</button>
-                              </>
-                            )}
-                          </span>
-                        </span>
-                      </li>
-                    );
-                  })}
+        <div className="attorney-card filing-checklist-card">
+          <h3 className="card-title">Filing Checklist</h3>
+          {!filingChecklistOpen ? (
+            <button type="button" className="btn-generate-checklist" onClick={() => setFilingChecklistOpen(true)}>
+              Generate filing checklist
+            </button>
+          ) : (
+            <div className="filing-checklist-output">
+              <div className="filing-checklist-section">
+                <div className="filing-checklist-heading">Client must provide</div>
+                <ul>
+                  {filingChecklist.clientMustProvide.length === 0 ? <li>None listed</li> : filingChecklist.clientMustProvide.map((item, i) => <li key={i}>{item}</li>)}
                 </ul>
               </div>
-            ))}
-            {hasMoreActions && !actionItemsExpanded && (
-              <button type="button" className="show-more-btn" onClick={() => setActionItemsExpanded(true)}>Show {actionItems.length - ACTION_ITEMS_VISIBLE} more</button>
-            )}
-          </>
-        )}
-      </section>
+              <div className="filing-checklist-section">
+                <div className="filing-checklist-heading">Attorney must confirm</div>
+                <ul>
+                  {filingChecklist.attorneyMustConfirm.length === 0 ? <li>None listed</li> : filingChecklist.attorneyMustConfirm.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              </div>
+              <button type="button" className="btn-regenerate-checklist" onClick={() => setFilingChecklistOpen(false)}>Hide</button>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="attorney-card raw-section">
         <button
@@ -771,7 +748,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
           onClick={() => setRawOpen(!rawOpen)}
           aria-expanded={rawOpen}
         >
-          Raw Intake Data
+          Developer / Debug Data
         </button>
         {rawOpen && (
           <div className="raw-content">

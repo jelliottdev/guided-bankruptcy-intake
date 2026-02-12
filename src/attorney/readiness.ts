@@ -168,3 +168,33 @@ export function computeCaseReadiness(
 
   return { score: clamped, band, bandLabel };
 }
+
+/** Primary blockers for filing (top 2–3) for the decision bar */
+export function getPrimaryBlockers(
+  answers: Answers,
+  uploads: Record<string, string[]>,
+  missingFieldLabels: string[]
+): string[] {
+  const blockers: string[] = [];
+  if ((uploads['upload_paystubs']?.length ?? 0) === 0 && answers['upload_paystubs_dont_have'] !== 'Yes') {
+    blockers.push('Paystubs missing');
+  }
+  if ((uploads['upload_tax_returns']?.length ?? 0) === 0 && answers['upload_tax_returns_dont_have'] !== 'Yes') {
+    blockers.push('Tax returns missing');
+  }
+  const incomeIncomplete = isEmpty(answers['debtor_gross_pay']) || isEmpty(answers['income_current_ytd']);
+  if (incomeIncomplete && (uploads['upload_paystubs']?.length ?? 0) === 0) {
+    if (!blockers.includes('Paystubs missing')) blockers.push('Income section incomplete');
+    else blockers.push('Income incomplete');
+  } else if (incomeIncomplete) {
+    blockers.push('Income section incomplete');
+  }
+  missingFieldLabels.slice(0, 2).forEach((label) => {
+    if (blockers.length >= 3) return;
+    const short = label.length > 35 ? label.slice(0, 32) + '…' : label;
+    if (!blockers.some((b) => b.toLowerCase().includes(short.slice(0, 10).toLowerCase()))) {
+      blockers.push(short);
+    }
+  });
+  return blockers.slice(0, 3);
+}

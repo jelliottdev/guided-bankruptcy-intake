@@ -211,25 +211,43 @@ export function getScheduleCoverage(
   return coverage;
 }
 
-/** Document sufficiency: per-doc status with useful message */
+export type DocSufficiencyRow = {
+  type: string;
+  status: 'OK' | 'Partial' | 'Missing' | 'Waived';
+  message: string;
+  lastDetected: string | null;
+  coverageRule: string;
+};
+
+/** Document sufficiency: per-doc status with last detected, coverage rule */
 export function getDocumentSufficiency(
   answers: Answers,
   uploads: Record<string, string[]>
-): { type: string; status: 'OK' | 'Partial' | 'Missing' | 'Waived'; message: string }[] {
+): DocSufficiencyRow[] {
   return DOCUMENT_IDS.map((d) => {
     const files = uploads[d.id] ?? [];
     const waived = answers[`${d.id}_dont_have`] === 'Yes';
-    if (waived) return { type: d.label, status: 'Waived', message: 'Client will provide later' };
+    let lastDetected: string | null = null;
+    if (files.length > 0 && typeof files[0] === 'string') {
+      const name = files[0];
+      const match = name.match(/(\d{4})-(\d{2})/);
+      if (match) lastDetected = `${match[1]}-${match[2]}`;
+    }
+    if (waived) {
+      return { type: d.label, status: 'Waived', message: 'Client will provide later', lastDetected: null, coverageRule: '—' };
+    }
     if (files.length === 0) {
-      if (d.id === 'upload_paystubs') return { type: d.label, status: 'Missing', message: 'Missing — need last 60 days' };
-      if (d.id === 'upload_bank_statements') return { type: d.label, status: 'Missing', message: 'Missing — need 2–3 months' };
-      if (d.id === 'upload_tax_returns') return { type: d.label, status: 'Missing', message: 'Missing — last 2 years' };
-      return { type: d.label, status: 'Missing', message: 'Missing' };
+      if (d.id === 'upload_paystubs') return { type: d.label, status: 'Missing', message: 'Missing — need last 60 days', lastDetected: null, coverageRule: 'Last 60 days' };
+      if (d.id === 'upload_bank_statements') return { type: d.label, status: 'Missing', message: 'Missing — need 2–3 months', lastDetected: null, coverageRule: '2–3 months' };
+      if (d.id === 'upload_tax_returns') return { type: d.label, status: 'Missing', message: 'Missing — last 2 years', lastDetected: null, coverageRule: 'Last 2 years' };
+      return { type: d.label, status: 'Missing', message: 'Missing', lastDetected: null, coverageRule: '—' };
     }
     if (d.id === 'upload_bank_statements' && files.length < 2) {
-      return { type: d.label, status: 'Partial', message: `Only ${files.length} of 2–3 months` };
+      return { type: d.label, status: 'Partial', message: `Only ${files.length} of 2–3 months`, lastDetected, coverageRule: '2–3 months' };
     }
-    return { type: d.label, status: 'OK', message: 'OK' };
+    if (d.id === 'upload_paystubs') return { type: d.label, status: 'OK', message: 'OK', lastDetected, coverageRule: 'Last 60 days' };
+    if (d.id === 'upload_tax_returns') return { type: d.label, status: 'OK', message: 'OK', lastDetected, coverageRule: 'Last 2 years' };
+    return { type: d.label, status: 'OK', message: 'OK', lastDetected, coverageRule: '—' };
   });
 }
 
@@ -289,4 +307,45 @@ export function getTimelineReadiness(
     return { days: '3–7 days', note: 'Near complete — quick review' };
   }
   return { days: '~7–14 days', note: 'Moderate follow-up needed' };
+}
+
+/** Auto-generated filing checklist: client must provide / attorney must confirm */
+export function generateFilingChecklist(
+  answers: Answers,
+  _uploads: Record<string, string[]>,
+  documentSufficiency: DocSufficiencyRow[],
+  missingFieldLabels: string[]
+): { clientMustProvide: string[]; attorneyMustConfirm: string[] } {
+  const clientMustProvide: string[] = [];
+  documentSufficiency.forEach((row) => {
+    if (row.status === 'Missing' && row.coverageRule !== '—') {
+      clientMustProvide.push(`${row.type}: ${row.coverageRule}`);
+    }
+    if (row.status === 'Partial' && row.message) {
+      clientMustProvide.push(`${row.type} — ${row.message}`);
+    }
+  });
+  const attorneyMustConfirm: string[] = [];
+  if (missingFieldLabels.some((l) => l.toLowerCase().includes('vehicle') || l.toLowerCase().includes('value'))) {
+    attorneyMustConfirm.push('Vehicle values');
+  }
+  if (answers['prior_bankruptcy'] === 'Yes' && missingFieldLabels.some((l) => l.toLowerCase().includes('prior'))) {
+    attorneyMustConfirm.push('Prior bankruptcy filing date');
+  }
+  if (hasRealEstate(answers) && missingFieldLabels.some((l) => l.toLowerCase().includes('property') || l.toLowerCase().includes('value'))) {
+    attorneyMustConfirm.push('Real property values');
+  }
+  if (missingFieldLabels.some((l) => l.toLowerCase().includes('bank') || l.toLowerCase().includes('balance'))) {
+    attorneyMustConfirm.push('Bank balances');
+  }
+  missingFieldLabels.slice(0, 3).forEach((label) => {
+    const short = label.length > 40 ? label.slice(0, 37) + '…' : label;
+    if (!attorneyMustConfirm.some((a) => a.toLowerCase().includes(short.slice(0, 12).toLowerCase()))) {
+      attorneyMustConfirm.push(short);
+    }
+  });
+  return {
+    clientMustProvide: [...new Set(clientMustProvide)],
+    attorneyMustConfirm: [...new Set(attorneyMustConfirm)].slice(0, 8),
+  };
 }

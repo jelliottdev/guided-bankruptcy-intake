@@ -17,9 +17,9 @@ function isEmpty(value: unknown): boolean {
  */
 export function computeClientReliability(
   answers: Answers,
-  _uploads: Record<string, string[]>,
+  uploads: Record<string, string[]>,
   flags?: Flags
-): { score: number; label: string; notes: string[] } {
+): { score: number; label: string; notes: string[]; breakdown: { missingRequired: number; docsMissing: number; flaggedAnswers: number } } {
   const errors = validateAll(answers, flags).filter((e) => e.severity !== 'warning');
   const missingCount = errors.length;
 
@@ -72,5 +72,15 @@ export function computeClientReliability(
   else if (clamped >= 40) label = 'Lower — plan for outreach';
   else label = 'Needs significant hand-holding';
 
-  return { score: clamped, label, notes };
+  const docsMissing = DOCUMENT_IDS.filter((id) => (uploads[id]?.length ?? 0) === 0 && answers[`${id}_dont_have`] !== 'Yes').length;
+  return {
+    score: clamped,
+    label,
+    notes,
+    breakdown: {
+      missingRequired: missingCount,
+      docsMissing,
+      flaggedAnswers: flagCount,
+    },
+  };
 }
