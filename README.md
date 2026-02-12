@@ -55,14 +55,36 @@ Not production-ready for sensitive legal data.
 
 ---
 
+## Development
+
+```bash
+npm install
+npm run dev      # dev server at http://localhost:5173
+npm run build    # production build to dist/
+npm run preview  # preview production build locally
+```
+
+---
+
+## Deploy to GitHub Pages
+
+1. **Enable GitHub Pages** (one-time): In the repo go to **Settings → Pages**. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+
+2. **Deploy**: Push to `main` (or run the workflow manually from **Actions → Deploy to GitHub Pages → Run workflow**). The workflow builds the app and deploys the `dist/` artifact to GitHub Pages.
+
+3. **Live site**: After deployment, the app is available at  
+   `https://<your-username>.github.io/guided-bankruptcy-intake/`
+
+---
+
 ## Roadmap
 
-- [ ] Guided multi-step intake UI
-- [ ] Conditional branching logic
-- [ ] Full bankruptcy intake question coverage
-- [ ] Section-based document upload prompts
-- [ ] Client autosave
-- [ ] Progress and completeness tracking
+- [x] Guided multi-step intake UI
+- [x] Conditional branching logic
+- [x] Full bankruptcy intake question coverage
+- [x] Section-based document upload prompts
+- [x] Client autosave
+- [x] Progress and completeness tracking
 - [ ] Attorney review mode
 - [ ] Magic link client access
 - [ ] Secure document storage
