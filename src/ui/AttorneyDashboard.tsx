@@ -1,3 +1,7 @@
+/**
+ * Attorney View dashboard: case status, AI summary, quick actions, health metrics,
+ * action queue (blocks filing / important / follow-up), documents, schedules, financial signals.
+ */
 import { useMemo, useState, useCallback, useRef } from 'react';
 import { getVisibleSteps } from '../form/steps';
 import type { FieldValue } from '../form/types';
@@ -21,6 +25,7 @@ import {
   getFollowUpQuestions,
   getTimelineReadiness,
   generateFilingChecklist,
+  generateClientDocRequest,
 } from '../attorney/snapshot';
 import { getPrimaryBlockers } from '../attorney/readiness';
 import { buildCreditorMatrix, exportCreditorWorksheet } from '../attorney/creditorMatrix';
@@ -203,6 +208,10 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     () => generateFilingChecklist(answers, uploads, documentSufficiency, missingFieldLabels),
     [answers, uploads, documentSufficiency, missingFieldLabels]
   );
+  const clientDocRequestText = useMemo(
+    () => generateClientDocRequest(documentSufficiency),
+    [documentSufficiency]
+  );
 
   const [aiSummary, setAiSummary] = useState('');
   const generateAiSummary = useCallback(() => {
@@ -383,8 +392,15 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     return rows;
   }, [flaggedItems, urgencyWithDates, errors, steps, urgencyStepIndex]);
 
-  // Group attention rows by step (section) for collapsible UI
-  type ActionQueueItem = { severity: 'critical' | 'important' | 'follow-up'; label: string; stepIndex: number; fieldId?: string };
+  type ActionQueueItem = {
+    severity: 'critical' | 'important' | 'follow-up';
+    label: string;
+    reason: string;
+    clientNote?: string;
+    action: string;
+    stepIndex: number;
+    fieldId?: string;
+  };
   const actionQueue = useMemo((): ActionQueueItem[] => {
     const seen = new Set<string>();
     const queue: ActionQueueItem[] = [];
@@ -393,14 +409,35 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         const key = `missing-${row.stepIndex}-${row.fieldId}`;
         if (seen.has(key)) return;
         seen.add(key);
-        queue.push({ severity: 'critical', label: row.label, stepIndex: row.stepIndex, fieldId: row.fieldId });
+        queue.push({
+          severity: 'critical',
+          label: row.label,
+          reason: 'Required for petition',
+          action: 'Request from client',
+          stepIndex: row.stepIndex,
+          fieldId: row.fieldId,
+        });
       } else if (row.type === 'URGENT') {
-        queue.push({ severity: 'critical', label: row.label + (row.date ? ` (${row.date})` : ''), stepIndex: row.stepIndex });
+        queue.push({
+          severity: 'critical',
+          label: row.label + (row.date ? ` (${row.date})` : ''),
+          reason: 'Urgency',
+          action: 'Review in intake',
+          stepIndex: row.stepIndex,
+        });
       } else if (row.type === 'FLAG') {
         const key = `flag-${row.fieldId}`;
         if (seen.has(key)) return;
         seen.add(key);
-        queue.push({ severity: 'important', label: row.label + ' — client note', stepIndex: row.stepIndex, fieldId: row.fieldId });
+        queue.push({
+          severity: 'important',
+          label: row.label,
+          reason: 'Client note',
+          clientNote: row.note,
+          action: 'Follow up or mark resolved',
+          stepIndex: row.stepIndex,
+          fieldId: row.fieldId,
+        });
       }
     });
     actionItems.forEach((item) => {
@@ -408,11 +445,24 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       if (seen.has(key)) return;
       if (item.isEstimate) {
         seen.add(key);
-        queue.push({ severity: 'important', label: item.shortLabel.replace(' — missing', ' — needs estimate'), stepIndex: item.stepIndex, fieldId: item.fieldId });
+        queue.push({
+          severity: 'important',
+          label: item.shortLabel.replace(' — missing', '').replace(' — needs estimate', '').trim(),
+          reason: 'Needs estimate',
+          action: 'Verify value',
+          stepIndex: item.stepIndex,
+          fieldId: item.fieldId,
+        });
       }
     });
     followUpQuestions.slice(0, 5).forEach((q) => {
-      queue.push({ severity: 'follow-up', label: q, stepIndex: 0 });
+      queue.push({
+        severity: 'follow-up',
+        label: q,
+        reason: 'Clarify',
+        action: 'Ask client',
+        stepIndex: 0,
+      });
     });
     return queue;
   }, [attentionRows, actionItems, followUpQuestions]);
@@ -451,68 +501,52 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </header>
 
-      <div className={`case-status-bar case-status-${readiness.band}`} role="status">
-        <div className="case-status-heading">
-          <span className="case-status-label">Case status</span>
-          <span className="case-status-value">
-            {readiness.band === 'ready' ? 'Ready to file' : readiness.band === 'minor' ? 'Close — minor follow-up' : readiness.band === 'gaps' ? 'Not ready — major gaps' : 'Not ready to file'}
-          </span>
-        </div>
-        <div className="case-status-metrics">
-          <span>Readiness: {readiness.score}%</span>
-          <span>Missing: {kpis.missingCount} required</span>
-          <span>Docs: {kpis.docReceived}/{kpis.docTotal}</span>
-          <span>Risk flags: {flaggedItems.length + kpis.urgencyCount}</span>
-        </div>
-        {primaryBlockers.length > 0 && (
-          <div className="case-status-blockers">
-            Primary blockers: {primaryBlockers.join(', ')}
+      <div className="dashboard-header-grid">
+        <div className={`dashboard-card case-status-card case-status-${readiness.band}`} role="status">
+          <div className="dashboard-card-title">Case status</div>
+          <div className="case-status-value">{readiness.band === 'ready' ? 'Ready to file' : readiness.band === 'minor' ? 'Close' : 'Not ready'}</div>
+          <div className="case-status-metrics-inline">
+            <span>{readiness.score}%</span>
+            <span>{kpis.missingCount} missing</span>
+            <span>{kpis.docReceived}/{kpis.docTotal} docs</span>
+            <span>{flaggedItems.length + kpis.urgencyCount} flags</span>
           </div>
-        )}
-      </div>
-
-      <div className="ai-summary-top-box">
-        <div className="ai-summary-top-header">AI case summary</div>
-        {aiSummary ? (
-          <p className="ai-summary-top-text">{aiSummary}</p>
-        ) : (
-          <button type="button" className="btn-generate-ai-inline" onClick={generateAiSummary}>Generate 2-sentence summary</button>
-        )}
-      </div>
-
-      <div className="attorney-strategy-schedules-row">
-        {strategySignals.length > 0 && (
-          <div className="attorney-card strategy-signals-card">
-            <h3 className="card-title">Strategy Signals</h3>
-            <ul className="strategy-list">
-              {strategySignals.map((s) => (
-                <li key={s.id} className="strategy-item">
-                  <span className="strategy-label">{s.label}</span>
-                  {s.note && <span className="strategy-note">{s.note}</span>}
-                </li>
-              ))}
-            </ul>
+          {primaryBlockers.length > 0 && (
+            <div className="case-status-blockers-inline">{primaryBlockers.join(', ')}</div>
+          )}
+        </div>
+        <div className="dashboard-card ai-summary-card">
+          <div className="dashboard-card-title">AI summary</div>
+          {aiSummary ? (
+            <p className="ai-summary-memo">{aiSummary}</p>
+          ) : (
+            <button type="button" className="btn-generate-ai-inline" onClick={generateAiSummary}>Generate summary</button>
+          )}
+        </div>
+        <div className="dashboard-card quick-actions-card">
+          <div className="dashboard-card-title">Quick actions</div>
+          <div className="quick-actions-buttons">
+            <button type="button" className="btn-quick-action" onClick={() => setFilingChecklistOpen(true)}>Generate checklist</button>
+            <button type="button" className="btn-quick-action" onClick={() => navigator.clipboard.writeText(clientDocRequestText).then(() => showToast('Copied')).catch(() => showToast('Copy failed'))}>Copy doc request</button>
+            <button type="button" className="btn-quick-action" onClick={() => navigator.clipboard.writeText(followUpQuestions.join('\n')).then(() => showToast('Copied')).catch(() => showToast('Copy failed'))}>Copy follow-up questions</button>
+            <button type="button" className="btn-quick-action" onClick={copyExportBundle}>Copy intake</button>
           </div>
-        )}
-        <div className="attorney-card schedule-coverage-card">
-          <h3 className="card-title">Schedules Coverage</h3>
-          <ul className="schedule-list">
-            {scheduleCoverage.map((row) => (
-              <li key={row.schedule} className={`schedule-row schedule-${row.status.toLowerCase()}`}>
-                <span className="schedule-name">{row.schedule}</span>
-                <span className="schedule-status">{row.status}</span>
-                <span className="schedule-detail">{row.detail}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 
-      <section id="action-queue" className="dashboard-section attorney-card action-queue-card">
-        <div className="action-queue-header">
-          <h3 className="card-title">Action Queue</h3>
+      <div className="dashboard-health-row">
+        <span className="health-tile"><strong>Completion</strong> {kpis.completionPct}%</span>
+        <span className="health-tile"><strong>Required missing</strong> {kpis.missingCount}</span>
+        <span className="health-tile"><strong>Docs missing</strong> {kpis.docTotal - kpis.docReceived}</span>
+        <span className="health-tile"><strong>Flags</strong> {flaggedItems.length + kpis.urgencyCount}</span>
+        <span className="health-tile"><strong>Reliability</strong> {clientReliability.score}</span>
+      </div>
+
+      <div className="dashboard-split">
+        <section id="action-queue" className="dashboard-panel action-queue-panel">
+          <div className="dashboard-panel-title">Action Queue</div>
           {actionQueue.length > 0 && (
-            <div className="action-queue-summary">
+            <div className="action-queue-toolbar">
               <span className="action-queue-counts">
                 {actionQueueCritical.length > 0 && <span>{actionQueueCritical.length} critical</span>}
                 {actionQueueImportant.length > 0 && <span>{actionQueueImportant.length} important</span>}
@@ -524,222 +558,193 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
               </span>
             </div>
           )}
-        </div>
-        {actionQueue.length === 0 ? (
-          <div className="action-queue-empty">None</div>
-        ) : (
-          <div className="action-queue-groups">
-            {actionQueueCritical.length > 0 && (
-              <div className="action-queue-group">
-                <button
-                  type="button"
-                  className={`action-queue-group-header ${actionQueueOpen.critical ? 'is-open' : ''}`}
-                  onClick={() => toggleActionQueueGroup('critical')}
-                  aria-expanded={actionQueueOpen.critical}
-                >
-                  <span className={`action-queue-chevron ${actionQueueOpen.critical ? 'is-open' : ''}`} aria-hidden />
-                  <span className="action-queue-group-title">Critical (blocks filing)</span>
-                  <span className="action-queue-group-count">{actionQueueCritical.length}</span>
-                </button>
-                {actionQueueOpen.critical && (
-                  <ul className="action-queue-rows">
-                    {actionQueueCritical.map((item, i) => (
-                      <li key={`c-${i}`} className="action-queue-row">
-                        <span className="action-queue-label">{item.label}</span>
-                        <button type="button" className="btn-open btn-open-sm" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-            {actionQueueImportant.length > 0 && (
-              <div className="action-queue-group">
-                <button
-                  type="button"
-                  className={`action-queue-group-header ${actionQueueOpen.important ? 'is-open' : ''}`}
-                  onClick={() => toggleActionQueueGroup('important')}
-                  aria-expanded={actionQueueOpen.important}
-                >
-                  <span className={`action-queue-chevron ${actionQueueOpen.important ? 'is-open' : ''}`} aria-hidden />
-                  <span className="action-queue-group-title">Important</span>
-                  <span className="action-queue-group-count">{actionQueueImportant.length}</span>
-                </button>
-                {actionQueueOpen.important && (
-                  <ul className="action-queue-rows">
-                    {actionQueueImportant.map((item, i) => (
-                      <li key={`i-${i}`} className="action-queue-row">
-                        <span className="action-queue-label">{item.label}</span>
-                        <span className="action-queue-actions">
-                          <button type="button" className="btn-open btn-open-sm" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
-                          {item.fieldId && (
-                            <button type="button" className="btn-state btn-state-sm" onClick={() => setFlagResolved(item.fieldId!, true)}>Resolved</button>
-                          )}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-            {actionQueueFollowUp.length > 0 && (
-              <div className="action-queue-group">
-                <button
-                  type="button"
-                  className={`action-queue-group-header ${actionQueueOpen['follow-up'] ? 'is-open' : ''}`}
-                  onClick={() => toggleActionQueueGroup('follow-up')}
-                  aria-expanded={actionQueueOpen['follow-up']}
-                >
-                  <span className={`action-queue-chevron ${actionQueueOpen['follow-up'] ? 'is-open' : ''}`} aria-hidden />
-                  <span className="action-queue-group-title">Follow-up</span>
-                  <span className="action-queue-group-count">{actionQueueFollowUp.length}</span>
-                </button>
-                {actionQueueOpen['follow-up'] && (
-                  <ul className="action-queue-rows">
-                    {actionQueueFollowUp.map((item, i) => (
-                      <li key={`f-${i}`} className="action-queue-row">
-                        <span className="action-queue-label">{item.label}</span>
-                        {item.fieldId ? (
-                          <button type="button" className="btn-open btn-open-sm" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-
-      <div className="attorney-card financial-snapshot-card">
-        <h3 className="card-title">Financial Snapshot</h3>
-        <div className="financial-snapshot-grid">
-          <div className="financial-snapshot-line">
-            <span className="financial-snapshot-term">Assets</span>
-            <span className="financial-snapshot-desc">
-              {assetsSnapshot.vehicles} vehicle{assetsSnapshot.vehicles !== 1 ? 's' : ''}, {assetsSnapshot.properties > 0 ? `${assetsSnapshot.properties} real estate` : 'no real estate'}, {assetsSnapshot.bankAccounts} bank account{assetsSnapshot.bankAccounts !== 1 ? 's' : ''}
-            </span>
-          </div>
-          <div className="financial-snapshot-line">
-            <span className="financial-snapshot-term">Debts</span>
-            <span className="financial-snapshot-desc">
-              {debtsSnapshot.priority ? 'Priority' : ''}{debtsSnapshot.priority && debtsSnapshot.otherSecured ? ', ' : ''}{debtsSnapshot.otherSecured ? 'secured' : ''}{!debtsSnapshot.priority && !debtsSnapshot.otherSecured ? 'Unsecured' : ''} {debtsSnapshot.cosigned ? '; co-signed' : ''}
-              {debtsSnapshot.unsecuredText ? ` — ${debtsSnapshot.unsecuredText}` : ''}
-            </span>
-          </div>
-          <div className="financial-snapshot-line">
-            <span className="financial-snapshot-term">Income</span>
-            <span className="financial-snapshot-desc">
-              {incomeSnapshot.debtorEmployed ? 'Employed' : 'Not employed'}{isJointFiling(answers) ? `; spouse ${incomeSnapshot.spouseEmployed ? 'employed' : 'not employed'}` : ''}. Docs: {incomeSnapshot.incomeDocsUploaded ? 'received' : 'missing'}
-            </span>
-          </div>
-          <div className="financial-snapshot-line">
-            <span className="financial-snapshot-term">Co-signed</span>
-            <span className="financial-snapshot-desc">{debtsSnapshot.cosigned ? 'Yes' : 'None'}</span>
-          </div>
-        </div>
-      </div>
-
-      <div id="documents" className="dashboard-section attorney-card documents-card">
-        <h3 className="card-title">Document Sufficiency</h3>
-        <div className="doc-table-wrap">
-          <table className="doc-table">
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th>Status</th>
-                <th>Need</th>
-                <th>Last detected</th>
-              </tr>
-            </thead>
-            <tbody>
-              {documentSufficiency.map((d) => (
-                <tr key={d.type}>
-                  <td>{d.type}</td>
-                  <td><span className={`pill-badge pill-${d.status.toLowerCase()}`}>{d.status}</span></td>
-                  <td>{d.coverageRule}</td>
-                  <td>{d.lastDetected ?? '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="dashboard-section attorney-card creditor-reliability-row">
-        <div className="attorney-card creditor-matrix-card">
-          <h3 className="card-title">Creditor Matrix</h3>
-          <p className="card-sub">Secured, priority, unsecured, co-signed</p>
-          {creditorMatrix.length === 0 ? (
-            <p className="matrix-empty">No creditors listed yet.</p>
+          {actionQueue.length === 0 ? (
+            <div className="action-queue-empty">None</div>
           ) : (
+            <div className="action-queue-groups">
+              {actionQueueCritical.length > 0 && (
+                <div className="action-queue-group">
+                  <button type="button" className={`action-queue-group-header ${actionQueueOpen.critical ? 'is-open' : ''}`} onClick={() => toggleActionQueueGroup('critical')} aria-expanded={actionQueueOpen.critical}>
+                    <span className={`action-queue-chevron ${actionQueueOpen.critical ? 'is-open' : ''}`} aria-hidden />
+                    <span className="action-queue-group-title">Blocks filing</span>
+                    <span className="action-queue-group-count">{actionQueueCritical.length}</span>
+                  </button>
+                  {actionQueueOpen.critical && (
+                    <ul className="action-queue-rows">
+                      {actionQueueCritical.map((item, i) => (
+                        <li key={`c-${i}`} className="action-queue-task-row">
+                          <div className="action-queue-task-field">{item.label}</div>
+                          <div className="action-queue-task-meta"><span className="action-queue-reason">{item.reason}</span> · <span className="action-queue-action">{item.action}</span></div>
+                          <button type="button" className="btn-jump" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Jump to field</button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+              {actionQueueImportant.length > 0 && (
+                <div className="action-queue-group">
+                  <button type="button" className={`action-queue-group-header ${actionQueueOpen.important ? 'is-open' : ''}`} onClick={() => toggleActionQueueGroup('important')} aria-expanded={actionQueueOpen.important}>
+                    <span className={`action-queue-chevron ${actionQueueOpen.important ? 'is-open' : ''}`} aria-hidden />
+                    <span className="action-queue-group-title">Important</span>
+                    <span className="action-queue-group-count">{actionQueueImportant.length}</span>
+                  </button>
+                  {actionQueueOpen.important && (
+                    <ul className="action-queue-rows">
+                      {actionQueueImportant.map((item, i) => (
+                        <li key={`i-${i}`} className="action-queue-task-row">
+                          <div className="action-queue-task-field">{item.label}</div>
+                          {item.clientNote && <div className="action-queue-client-note">&ldquo;{item.clientNote}&rdquo;</div>}
+                          <div className="action-queue-task-meta"><span className="action-queue-reason">{item.reason}</span> · <span className="action-queue-action">{item.action}</span></div>
+                          <span className="action-queue-task-buttons">
+                            <button type="button" className="btn-jump" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Jump to field</button>
+                            {item.fieldId && <button type="button" className="btn-state btn-state-sm" onClick={() => setFlagResolved(item.fieldId!, true)}>Resolved</button>}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+              {actionQueueFollowUp.length > 0 && (
+                <div className="action-queue-group">
+                  <button type="button" className={`action-queue-group-header ${actionQueueOpen['follow-up'] ? 'is-open' : ''}`} onClick={() => toggleActionQueueGroup('follow-up')} aria-expanded={actionQueueOpen['follow-up']}>
+                    <span className={`action-queue-chevron ${actionQueueOpen['follow-up'] ? 'is-open' : ''}`} aria-hidden />
+                    <span className="action-queue-group-title">Follow-up</span>
+                    <span className="action-queue-group-count">{actionQueueFollowUp.length}</span>
+                  </button>
+                  {actionQueueOpen['follow-up'] && (
+                    <ul className="action-queue-rows">
+                      {actionQueueFollowUp.map((item, i) => (
+                        <li key={`f-${i}`} className="action-queue-task-row">
+                          <div className="action-queue-task-field">{item.label}</div>
+                          <div className="action-queue-task-meta"><span className="action-queue-action">{item.action}</span></div>
+                          {item.fieldId ? <button type="button" className="btn-jump" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Jump to field</button> : null}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        <div className="dashboard-right-panel">
+          <div id="documents" className="dashboard-card doc-sufficiency-card">
+            <div className="dashboard-card-title">Document sufficiency</div>
+            <div className="doc-table-wrap">
+              <table className="doc-table doc-table-compact">
+                <thead>
+                  <tr>
+                    <th>Document</th>
+                    <th>Status</th>
+                    <th>Need</th>
+                    <th>Last</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {documentSufficiency.map((d) => (
+                    <tr key={d.type}>
+                      <td>{d.type}</td>
+                      <td><span className={`pill-badge pill-${d.status.toLowerCase()}`}>{d.status}</span></td>
+                      <td>{d.coverageRule}</td>
+                      <td>{d.lastDetected ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="dashboard-card schedules-checklist-card">
+            <div className="dashboard-card-title">Schedules coverage</div>
+            <ul className="schedules-checklist">
+              {scheduleCoverage.map((row) => (
+                <li key={row.schedule} className={`schedules-checklist-item schedule-${row.status.toLowerCase()}`}>
+                  <span className="schedules-checklist-mark">{row.status === 'Ready' ? '✓' : '✗'}</span>
+                  <span className="schedules-checklist-name">{row.schedule}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="dashboard-analysis">
+        <div className="dashboard-card financial-signals-card">
+          <div className="dashboard-card-title">Financial signals</div>
+          <div className="financial-signals-grid">
+            <div className="financial-signals-line">
+              <span className="financial-signals-term">Assets</span>
+              <span className="financial-signals-desc">{assetsSnapshot.vehicles} vehicles, {assetsSnapshot.properties > 0 ? `${assetsSnapshot.properties} real estate` : 'no real estate'}, {assetsSnapshot.bankAccounts} bank accounts</span>
+            </div>
+            <div className="financial-signals-line">
+              <span className="financial-signals-term">Debts</span>
+              <span className="financial-signals-desc">{debtsSnapshot.priority ? 'Priority' : ''}{debtsSnapshot.priority && debtsSnapshot.otherSecured ? ', ' : ''}{debtsSnapshot.otherSecured ? 'Secured' : ''}{!debtsSnapshot.priority && !debtsSnapshot.otherSecured ? 'Unsecured' : ''}{debtsSnapshot.cosigned ? '; co-signed' : ''}</span>
+            </div>
+            <div className="financial-signals-line">
+              <span className="financial-signals-term">Income</span>
+              <span className="financial-signals-desc">{incomeSnapshot.debtorEmployed ? 'Employed' : 'Not employed'}; docs {incomeSnapshot.incomeDocsUploaded ? 'received' : 'missing'}</span>
+            </div>
+            <div className="financial-signals-placeholder">Income trend, expense ratio, debt mix — coming with OCR pipeline</div>
+          </div>
+        </div>
+        <div className="dashboard-card timeline-card-inline">
+          <div className="dashboard-card-title">Earliest filing</div>
+          <div className="timeline-value">~{timelineReadiness.days}</div>
+          <div className="timeline-detail">{timelineReadiness.note}</div>
+        </div>
+      </div>
+
+      {strategySignals.length > 0 && (
+        <div className="dashboard-card strategy-signals-inline">
+          <div className="dashboard-card-title">Strategy signals</div>
+          <ul className="strategy-list-inline">
+            {strategySignals.map((s) => (
+              <li key={s.id}><span className="strategy-label">{s.label}</span>{s.note && <span className="strategy-note"> — {s.note}</span>}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="dashboard-footer-row">
+        <div className="dashboard-card creditor-export-card">
+          <div className="dashboard-card-title">Creditor matrix</div>
+          {creditorMatrix.length === 0 ? <p className="muted-inline">None yet</p> : (
             <>
-              <ul className="creditor-matrix-list">
-                {creditorMatrix.slice(0, 12).map((row, i) => (
-                  <li key={i} className={`creditor-row type-${row.type.toLowerCase()}`}>
-                    <span className="creditor-name">{row.name}</span>
-                    <span className="creditor-type">{row.type}</span>
-                  </li>
+              <ul className="creditor-matrix-list compact">
+                {creditorMatrix.slice(0, 8).map((row, i) => (
+                  <li key={i} className={`creditor-row type-${row.type.toLowerCase()}`}><span className="creditor-name">{row.name}</span> <span className="creditor-type">{row.type}</span></li>
                 ))}
               </ul>
-              {creditorMatrix.length > 12 && <p className="matrix-more">+{creditorMatrix.length - 12} more</p>}
-              <button
-                type="button"
-                className="btn-export-creditor"
-                onClick={() => {
-                  const text = exportCreditorWorksheet(answers);
-                  navigator.clipboard.writeText(text).then(() => showToast('Copied')).catch(() => showToast('Copy failed'));
-                }}
-              >
-                Copy creditor worksheet
-              </button>
+              {creditorMatrix.length > 8 && <p className="muted-inline">+{creditorMatrix.length - 8} more</p>}
+              <button type="button" className="btn-quick-action" onClick={() => { const t = exportCreditorWorksheet(answers); navigator.clipboard.writeText(t).then(() => showToast('Copied')).catch(() => showToast('Copy failed')); }}>Copy worksheet</button>
             </>
           )}
         </div>
-        <div className="attorney-card client-reliability-card">
-          <h3 className="card-title">Client Reliability</h3>
-          <div className="reliability-score">{clientReliability.score}</div>
-          <div className="reliability-label">{clientReliability.label}</div>
-          <dl className="reliability-breakdown">
-            <dt>Missing required fields</dt><dd>{clientReliability.breakdown.missingRequired}</dd>
-            <dt>Docs missing</dt><dd>{clientReliability.breakdown.docsMissing}</dd>
-            <dt>Flagged answers</dt><dd>{clientReliability.breakdown.flaggedAnswers}</dd>
-          </dl>
+        <div className="dashboard-card reliability-inline">
+          <div className="dashboard-card-title">Client reliability</div>
+          <div className="reliability-inline-score">{clientReliability.score}</div>
+          <div className="reliability-inline-detail">{clientReliability.breakdown.missingRequired} missing, {clientReliability.breakdown.docsMissing} docs, {clientReliability.breakdown.flaggedAnswers} flagged</div>
         </div>
       </div>
 
-      <div className="dashboard-section attorney-card timeline-filing-row">
-        <div className="attorney-card timeline-card">
-          <h3 className="card-title">Earliest Filing Readiness</h3>
-          <div className="timeline-days">~{timelineReadiness.days}</div>
-          <div className="timeline-note">{timelineReadiness.note}</div>
-        </div>
-        <div className="attorney-card filing-checklist-card">
-          <h3 className="card-title">Filing Checklist</h3>
-          {!filingChecklistOpen ? (
-            <button type="button" className="btn-generate-checklist" onClick={() => setFilingChecklistOpen(true)}>
-              Generate filing checklist
-            </button>
-          ) : (
-            <div className="filing-checklist-output">
-              <div className="filing-checklist-section">
-                <div className="filing-checklist-heading">Client must provide</div>
-                <ul>
-                  {filingChecklist.clientMustProvide.length === 0 ? <li>None listed</li> : filingChecklist.clientMustProvide.map((item, i) => <li key={i}>{item}</li>)}
-                </ul>
-              </div>
-              <div className="filing-checklist-section">
-                <div className="filing-checklist-heading">Attorney must confirm</div>
-                <ul>
-                  {filingChecklist.attorneyMustConfirm.length === 0 ? <li>None listed</li> : filingChecklist.attorneyMustConfirm.map((item, i) => <li key={i}>{item}</li>)}
-                </ul>
-              </div>
-              <button type="button" className="btn-regenerate-checklist" onClick={() => setFilingChecklistOpen(false)}>Hide</button>
+      {filingChecklistOpen && (
+        <div className="dashboard-card filing-checklist-panel">
+          <div className="dashboard-card-title">Filing checklist</div>
+          <div className="filing-checklist-two-col">
+            <div className="filing-checklist-section">
+              <div className="filing-checklist-heading">Client must provide</div>
+              <ul>{filingChecklist.clientMustProvide.length === 0 ? <li>None</li> : filingChecklist.clientMustProvide.map((item, i) => <li key={i}>{item}</li>)}</ul>
             </div>
-          )}
+            <div className="filing-checklist-section">
+              <div className="filing-checklist-heading">Attorney must confirm</div>
+              <ul>{filingChecklist.attorneyMustConfirm.length === 0 ? <li>None</li> : filingChecklist.attorneyMustConfirm.map((item, i) => <li key={i}>{item}</li>)}</ul>
+            </div>
+          </div>
+          <button type="button" className="btn-close-checklist" onClick={() => setFilingChecklistOpen(false)}>Close</button>
         </div>
-      </div>
+      )}
 
       <div className="attorney-card raw-section">
         <button

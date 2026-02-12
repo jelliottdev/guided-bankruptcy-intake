@@ -1,3 +1,7 @@
+/**
+ * Intake step and field definitions. Visibility (showIf) and options depend on answers.
+ * Used by the client wizard and by attorney logic (e.g. readiness, labels).
+ */
 import type { Answers } from './types';
 import type { Step } from './types';
 import {

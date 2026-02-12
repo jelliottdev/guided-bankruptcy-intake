@@ -349,3 +349,23 @@ export function generateFilingChecklist(
     attorneyMustConfirm: [...new Set(attorneyMustConfirm)].slice(0, 8),
   };
 }
+
+/** Copyable client-facing document request (email/memo body). */
+export function generateClientDocRequest(documentSufficiency: DocSufficiencyRow[]): string {
+  const lines: string[] = [
+    'Please upload the following documents:',
+    '',
+  ];
+  documentSufficiency.forEach((row) => {
+    if (row.status === 'Missing' && row.coverageRule !== '—') {
+      lines.push(`- ${row.type} (${row.coverageRule})`);
+    }
+    if (row.status === 'Partial' && row.message) {
+      lines.push(`- ${row.type} — ${row.message}`);
+    }
+  });
+  if (lines.length === 2) {
+    lines.push('None required at this time.');
+  }
+  return lines.join('\n');
+}

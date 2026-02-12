@@ -1,59 +1,69 @@
 # Guided Bankruptcy Intake
 
+A TurboTax-style guided intake for bankruptcy: a step-by-step client questionnaire plus an **Attorney View** dashboard for case triage, readiness, and next actions.
+
 **Live demo:** [jelliottdev.github.io/guided-bankruptcy-intake](https://jelliottdev.github.io/guided-bankruptcy-intake/)
 
-TurboTax-style guided bankruptcy intake that replaces paper packets with a step-by-step smart questionnaire. Designed to help attorneys collect complete, structured client information and documents with less follow-up.
+---
 
-This repository contains a prototype guided intake flow for attorney review and pilot testing.
+## What this is
+
+- **Client flow** — Multi-step wizard: filing setup, debtor/spouse info, urgency, assets, debts, income, expenses, document uploads, final review. Conditional branching and autosave.
+- **Attorney View** — Dashboard with case status, AI summary, action queue (blocks filing / important / follow-up), document sufficiency, schedules coverage, financial signals, timeline, and quick actions (checklist, doc request, follow-up questions).
+
+Built for workflow validation and attorney feedback. Not production-ready for sensitive data.
 
 ---
 
-## Overview
+## Tech stack
 
-Guided Bankruptcy Intake is a client-facing intake wizard that:
-
-- Replaces paper bankruptcy intake packets
-- Uses short, guided question screens
-- Applies conditional branching logic
-- Prompts for documents by topic
-- Standardizes intake data collection
-- Improves client completion rates
-
-The focus is usability, coverage, and flow clarity before production integrations.
+- **React 18** + **TypeScript**
+- **Vite** (build and dev server)
+- No backend: state and uploads live in memory/localStorage for the prototype
 
 ---
 
-## Intake Flow
+## Project structure
 
-High-level sections:
+```
+src/
+  App.tsx              # Root: client wizard vs attorney dashboard, routing
+  main.tsx             # Entry, error boundary
+  index.css            # Global + attorney dashboard styles
 
-1. Filing setup (individual or joint)
-2. Debtor and spouse information
-3. Urgency and risk flags
-4. Assets and property
-5. Debts and creditors
-6. Income and employment
-7. Monthly expenses
-8. Recent financial activity
-9. Document uploads
-10. Final review
+  form/                # Intake definition and validation
+    steps.ts           # Step and field definitions, visibility logic
+    types.ts           # Answers, flags, field value types
+    validate.ts        # Required-field and step-level validation
+    defaults.ts        # Default answers
 
----
+  state/               # Global state
+    IntakeProvider.tsx # Context: answers, uploads, flags, step, autosave
+    autosave.ts        # Debounced persist to localStorage
 
-## Purpose
+  ui/                  # Client-facing UI
+    Layout.tsx         # Shell, nav, save status
+    StepShell.tsx      # Per-step container, next/back
+    FieldRenderer.tsx  # Renders one field by type
+    Progress.tsx       # Step progress
+    Review.tsx         # Final review step
 
-- Reduce incomplete intakes  
-- Reduce staff follow-up time  
-- Eliminate handwritten packet errors  
-- Improve client experience  
-- Create structured intake data  
+  ui/AttorneyDashboard.tsx   # Attorney View: status, queue, docs, schedules, actions
 
----
+  attorney/            # Attorney logic (no UI)
+    readiness.ts       # Case readiness %, bands, primary blockers
+    snapshot.ts        # Case summary, strategy signals, schedule coverage,
+                       # doc sufficiency, follow-up questions, timeline, checklists
+    clientReliability.ts  # Reliability score and breakdown
+    creditorMatrix.ts     # Creditor list and worksheet export
 
-## Status
+  ai/
+    localSummary.ts    # Local 2-sentence AI case summary (no API)
 
-Prototype UI and logic flow for demonstration and feedback.  
-Not production-ready for sensitive legal data.
+  utils/
+    logic.ts           # Helpers: isJointFiling, hasVehicles, counts, etc.
+    mask.ts            # Input masking (SSN, phone)
+```
 
 ---
 
@@ -61,47 +71,49 @@ Not production-ready for sensitive legal data.
 
 ```bash
 npm install
-npm run dev      # restores dev index.html, then dev server at http://localhost:5173
-npm run build    # production build to dist/
-npm run deploy   # build and copy to root for Pages (branch deploy)
-npm run preview  # preview production build locally
+npm run dev      # Dev server at http://localhost:5173
+npm run build    # Production build → dist/
+npm run preview  # Preview production build locally
+npm run lint     # ESLint
 ```
+
+- **Client flow:** Open the app, complete steps, use “Attorney View” in the header to switch to the dashboard.
+- **Attorney View:** Toggle back to “Client View” to return to the wizard. “Copy” copies the full intake payload (answers + uploads) as JSON.
 
 ---
 
-## Deploy to GitHub Pages (from branch main / root)
+## Deployment (GitHub Pages)
 
-The site is built and served from the **root of the main branch** (Settings → Pages → Source: **Deploy from a branch** → Branch: **main** → Folder: **/(root)**).
+Deploys via **GitHub Actions** on push to `main`.
 
-1. **Build and copy to root** (one-time, required or you’ll get a 404):
-   - Open the repo on GitHub → **Settings** (tab) → **Pages** (left sidebar under “Code and automation”).
-   - Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
-   - Save. The next push (or a manual run of the workflow) will deploy the site.
+1. **Settings** → **Pages** → **Source**: **GitHub Actions**.
+2. Push to `main`; the “Deploy to GitHub Pages” workflow builds and publishes the site.
 
-2. **Commit and push**:  
-   `git add index.html assets/ && git commit -m "Deploy" && ./scripts/push.sh`  
-   (Or push however you prefer; `.env` + `./scripts/push.sh` uses a token.)
+See [docs/GITHUB_PAGES_SETUP.md](docs/GITHUB_PAGES_SETUP.md) for details and the manual-deploy option.
 
-3. **Live site**:  
-   **https://jelliottdev.github.io/guided-bankruptcy-intake/**
+---
+
+## Environment
+
+- **Development:** No env vars required.
+- **Deploy script / push from CI:** Copy `.env.example` to `.env` and set `GITHUB_TOKEN` if you use the repo’s push script. `.env` is gitignored.
 
 ---
 
 ## Roadmap
 
-- [x] Guided multi-step intake UI
-- [x] Conditional branching logic
-- [x] Full bankruptcy intake question coverage
-- [x] Section-based document upload prompts
-- [x] Client autosave
-- [x] Progress and completeness tracking
-- [ ] Attorney review mode
-- [ ] Magic link client access
+- [x] Guided multi-step intake with conditional logic
+- [x] Document upload prompts by section
+- [x] Client autosave and progress
+- [x] Attorney View with case status and action queue
+- [x] Document sufficiency and schedules coverage
+- [x] Filing checklist and client doc request generator
+- [ ] Magic link / client access
 - [ ] Secure document storage
-- [ ] Attorney dashboard
+- [ ] Production auth and data handling
 
 ---
 
-## Notes
+## License
 
-This prototype is intended for workflow validation and attorney feedback before adding authentication, storage, and security layers.
+See [LICENSE](LICENSE).

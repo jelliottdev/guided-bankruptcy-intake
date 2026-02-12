@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, type ReactNode } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
 import { IntakeProvider, useIntake } from './state/IntakeProvider';
 import { Layout } from './ui/Layout';
 import { StepShell } from './ui/StepShell';
@@ -56,11 +56,15 @@ function AppContent() {
 
   const saveStatusText = saving ? 'Saving…' : lastSavedText(lastSavedAt);
 
+  const prevStepIndexRef = useRef(currentStepIndex);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-    const firstFieldId = steps[currentStepIndex]?.fields[0]?.id ?? null;
-    setFocusFieldId(firstFieldId);
-  }, [currentStepIndex]); // Intentionally omit steps — only reset focus on step change, not on every keystroke (prevents focus loss)
+    if (prevStepIndexRef.current !== currentStepIndex) {
+      prevStepIndexRef.current = currentStepIndex;
+      const firstFieldId = steps[currentStepIndex]?.fields[0]?.id ?? null;
+      setFocusFieldId(firstFieldId);
+    }
+  }, [currentStepIndex, steps]);
 
   useEffect(() => {
     const hasData = Object.keys(answers).some((k) => {
