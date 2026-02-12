@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
 # Stage everything, commit, push to main. GitHub Actions will build and republish the site.
-# Usage: ./scripts/push.sh [commit message]
+# Usage: ./scripts/push.sh [commit message] [--force]
 #   If no message is given, uses "Update and republish"
+#   Use --force only after a history rewrite (e.g. to replace remote with cleaned history)
 set -e
 cd "$(dirname "$0")/.."
 
-MSG="${1:-Update and republish}"
+FORCE_PUSH=
+MSG="Update and republish"
+for arg in "$@"; do
+  if [ "$arg" = "--force" ]; then
+    FORCE_PUSH=1
+  else
+    MSG="$arg"
+  fi
+done
+
 git add -A
 if ! git diff --staged --quiet; then
   git commit -m "$MSG"
@@ -25,7 +35,7 @@ if [ -z "$GITHUB_TOKEN" ]; then
 fi
 ORIGIN=$(git remote get-url origin)
 git remote set-url origin "https://jelliottdev:${GITHUB_TOKEN}@github.com/jelliottdev/guided-bankruptcy-intake.git"
-if ! git push origin main; then
+if ! git push origin main ${FORCE_PUSH:+--force}; then
   git remote set-url origin "$ORIGIN"
   echo ""
   echo "Push failed. Check: .env has a valid token (repo scope), not expired. Create one at https://github.com/settings/tokens"
