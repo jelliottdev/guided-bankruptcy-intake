@@ -35,10 +35,38 @@ export function FieldRenderer({
 
   if (field.showIf && !field.showIf(answers)) return null;
 
+  // Single source of truth: strip any trailing asterisk(s) from label, then add exactly one " *" when required.
+  const rawLabel = String(field.label).trimEnd();
+  const displayLabel = rawLabel.replace(/\*+$/, '').trimEnd();
+  const requiredSuffix = field.required ? ' *' : '';
+
+  // #region agent log
+  if (field.id === 'filing_setup' || field.id === 'debtor_full_name') {
+    fetch('http://127.0.0.1:7244/ingest/ed8c60a8-54eb-46b5-9773-6e134f1ba6f0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hypothesisId: 'A,B,C,D',
+        runId: 'post-fix',
+        location: 'FieldRenderer.tsx:label',
+        message: 'label asterisk after fix',
+        data: {
+          fieldId: field.id,
+          labelRaw: field.label,
+          displayLabel,
+          requiredSuffix,
+          required: field.required,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  }
+  // #endregion
+
   const label = (
     <label id={`${field.id}-label`} htmlFor={field.id}>
-      {field.label}
-      {field.required && !String(field.label).trimEnd().endsWith('*') ? ' *' : ''}
+      {displayLabel}
+      {requiredSuffix}
     </label>
   );
 
