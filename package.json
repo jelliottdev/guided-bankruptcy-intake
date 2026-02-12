@@ -13,8 +13,9 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "cp index.source.html index.html && vite",
     "build": "tsc -b && vite build",
+    "deploy": "./scripts/deploy-to-root.sh",
     "lint": "eslint .",
     "preview": "vite preview",
     "preview:pages": "npm run build && vite preview --port 4173"

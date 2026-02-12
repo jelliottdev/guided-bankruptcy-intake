@@ -61,26 +61,28 @@ Not production-ready for sensitive legal data.
 
 ```bash
 npm install
-npm run dev      # dev server at http://localhost:5173
+npm run dev      # restores dev index.html, then dev server at http://localhost:5173
 npm run build    # production build to dist/
+npm run deploy   # build and copy to root for Pages (branch deploy)
 npm run preview  # preview production build locally
 ```
 
 ---
 
-## Deploy to GitHub Pages
+## Deploy to GitHub Pages (from branch main / root)
 
-1. **Enable GitHub Pages** (one-time, required or you’ll get a 404):
+The site is built and served from the **root of the main branch** (Settings → Pages → Source: **Deploy from a branch** → Branch: **main** → Folder: **/(root)**).
+
+1. **Build and copy to root** (one-time, required or you’ll get a 404):
    - Open the repo on GitHub → **Settings** (tab) → **Pages** (left sidebar under “Code and automation”).
    - Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
    - Save. The next push (or a manual run of the workflow) will deploy the site.
 
-2. **Push using a token** (no password needed):
-   - Open **.env** and paste your [GitHub Personal Access Token](https://github.com/settings/tokens) after `GITHUB_TOKEN=` (create a token with `repo` scope; use Google login on GitHub, then Settings → Developer settings → Personal access tokens).
-   - Run: `./scripts/push.sh`  
-   The script pushes to `main` and restores your remote URL. `.env` is gitignored and never committed.
+2. **Commit and push**:  
+   `git add index.html assets/ && git commit -m "Deploy" && ./scripts/push.sh`  
+   (Or push however you prefer; `.env` + `./scripts/push.sh` uses a token.)
 
-3. **Live site**: After the workflow runs, the app is at  
+3. **Live site**:  
    **https://jelliottdev.github.io/guided-bankruptcy-intake/**
 
 ---
