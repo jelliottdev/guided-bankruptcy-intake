@@ -70,7 +70,10 @@ npm run preview  # preview production build locally
 
 ## Deploy to GitHub Pages
 
-1. **Enable GitHub Pages** (one-time): In the repo go to **Settings → Pages**. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+1. **Enable GitHub Pages** (one-time, required or you’ll get a 404):
+   - Open the repo on GitHub → **Settings** (tab) → **Pages** (left sidebar under “Code and automation”).
+   - Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
+   - Save. The next push (or a manual run of the workflow) will deploy the site.
 
 2. **Push using a token** (no password needed):
    - Open **.env** and paste your [GitHub Personal Access Token](https://github.com/settings/tokens) after `GITHUB_TOKEN=` (create a token with `repo` scope; use Google login on GitHub, then Settings → Developer settings → Personal access tokens).
