@@ -36,7 +36,7 @@ export function FieldRenderer({
   if (field.showIf && !field.showIf(answers)) return null;
 
   const label = (
-    <label htmlFor={field.id}>
+    <label id={`${field.id}-label`} htmlFor={field.id}>
       {field.label}
       {field.required && !String(field.label).trimEnd().endsWith('*') ? ' *' : ''}
     </label>
@@ -85,12 +85,13 @@ export function FieldRenderer({
       return (
         <div className="field-wrap">
           {label}
-          <div className="field-radio">
+          <div className="field-radio" role="radiogroup" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
-              <label key={opt.value}>
+              <label key={opt.value} htmlFor={idx === 0 ? field.id : undefined}>
                 <input
                   ref={shouldFocus && idx === 0 ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
                   type="radio"
+                  id={idx === 0 ? field.id : undefined}
                   name={field.id}
                   value={opt.value}
                   checked={(value as string) === opt.value}
@@ -122,11 +123,12 @@ export function FieldRenderer({
       return (
         <div className="field-wrap">
           {label}
-          <div className="field-checkbox">
-            {field.options?.map((opt) => (
-              <label key={opt.value}>
+          <div className="field-checkbox" role="group" aria-labelledby={`${field.id}-label`}>
+            {field.options?.map((opt, idx) => (
+              <label key={opt.value} htmlFor={idx === 0 ? field.id : undefined}>
                 <input
                   type="checkbox"
+                  id={idx === 0 ? field.id : undefined}
                   value={opt.value}
                   checked={arr.includes(opt.value)}
                   onChange={(e) => handleChange(opt.value, e.target.checked)}
@@ -185,13 +187,14 @@ export function FieldRenderer({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row) => (
+                {rows.map((row, rowIdx) => (
                   <tr key={row.id}>
                     <td>{row.label}</td>
-                    {columns.map((col) => (
+                    {columns.map((col, colIdx) => (
                       <td key={col.id}>
                         <input
                           type="radio"
+                          id={rowIdx === 0 && colIdx === 0 ? field.id : undefined}
                           name={`${field.id}_${row.id}`}
                           value={col.id}
                           checked={gridVal[row.id] === col.id}
