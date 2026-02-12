@@ -38,7 +38,7 @@ export function FieldRenderer({
   const label = (
     <label htmlFor={field.id}>
       {field.label}
-      {field.required ? ' *' : ''}
+      {field.required && !String(field.label).trimEnd().endsWith('*') ? ' *' : ''}
     </label>
   );
 
