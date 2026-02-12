@@ -8,8 +8,8 @@ export function Progress({ currentStepIndex, totalSteps }: ProgressProps) {
   const pct = totalSteps > 0 ? (stepNum / totalSteps) * 100 : 0;
 
   return (
-    <div>
-      <p>
+    <div className="progress-block">
+      <p className="progress-step-counter">
         Step {stepNum} of {totalSteps}
       </p>
       <div className="progress-bar">

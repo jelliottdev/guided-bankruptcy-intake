@@ -36,8 +36,12 @@ export function FieldRenderer({
   if (field.showIf && !field.showIf(answers)) return null;
 
   // Single source of truth: labels are plain text; required marker comes only from the renderer (one place).
+  // Strip ALL asterisk-like chars (ASCII * and Unicode variants) so we never double up.
   const rawLabel = String(field.label).trim();
-  const displayLabel = rawLabel.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
+  const displayLabel = rawLabel
+    .replace(/[\*\u2217\u204E\u2055\uFF0A]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 
   const label = (
     <label id={`${field.id}-label`} htmlFor={field.id}>

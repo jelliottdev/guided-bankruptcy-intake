@@ -35,8 +35,9 @@ export function StepShell({
         <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
         <h2>{title}</h2>
         {description && <p className="header-subtext">{description}</p>}
-        <div style={{ marginBottom: '2rem' }}>{children}</div>
+        <div style={{ marginBottom: '24px' }}>{children}</div>
       </div>
+      <div className="step-footer">
       <nav className="nav-bar">
         <div>
           <button
@@ -63,6 +64,7 @@ export function StepShell({
         </div>
         <p className="save-status">{saveStatusText}</p>
       </nav>
+      </div>
     </div>
   );
 }

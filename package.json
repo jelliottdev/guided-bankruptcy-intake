@@ -18,7 +18,8 @@
     "deploy": "./scripts/deploy-to-root.sh",
     "lint": "eslint .",
     "preview": "vite preview",
-    "preview:pages": "npm run build && vite preview --port 4173"
+    "preview:pages": "npm run build && vite preview --port 4173",
+    "local": "npm run build && vite preview --port 4173"
   },
   "dependencies": {
     "react": "^18.3.1",
