@@ -142,6 +142,35 @@ select:focus {
   padding: 0.5rem;
 }
 
+.upload-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.upload-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.upload-remove {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.25rem 0;
+}
+
+.upload-remove:hover {
+  color: #2563eb;
+}
+
 /* Step shell: scrollable content + nav stuck to bottom */
 .step-shell {
   display: flex;

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { IntakeProvider, useIntake } from './state/IntakeProvider';
 import { Layout } from './ui/Layout';
 import { StepShell } from './ui/StepShell';
@@ -17,10 +17,12 @@ function lastSavedText(lastSavedAt: number | null): string {
 }
 
 function AppContent() {
-  const { state, dispatch, setAnswer, addUpload, setStep, reset } = useIntake();
+  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset } = useIntake();
   const { answers, uploads, currentStepIndex, lastSavedAt, saving, submitted } = state;
 
   const [focusFieldId, setFocusFieldId] = useState<string | null>(null);
+  /** Steps where user has pressed Next (so we show errors only after attempt, not on first render or after Back). */
+  const [attemptedSteps, setAttemptedSteps] = useState<Set<number>>(() => new Set());
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
   const totalSteps = steps.length;
@@ -32,12 +34,20 @@ function AppContent() {
     [answers, currentStepIndex, currentStep]
   );
   const nextDisabled = currentStepErrors.length > 0;
+  const showErrorsForCurrentStep = attemptedSteps.has(currentStepIndex);
   const errorsByFieldId = useMemo(
-    () => Object.fromEntries(currentStepErrors.map((e) => [e.fieldId, e.message])),
-    [currentStepErrors]
+    () =>
+      showErrorsForCurrentStep
+        ? Object.fromEntries(currentStepErrors.map((e) => [e.fieldId, e.message]))
+        : {},
+    [currentStepErrors, showErrorsForCurrentStep]
   );
 
   const saveStatusText = saving ? 'Saving…' : lastSavedText(lastSavedAt);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentStepIndex]);
 
   const onBack = useCallback(() => {
     setFocusFieldId(null);
@@ -45,9 +55,11 @@ function AppContent() {
   }, [currentStepIndex, setStep]);
 
   const onNext = useCallback(() => {
+    setAttemptedSteps((prev) => new Set(prev).add(currentStepIndex));
     setFocusFieldId(null);
+    if (currentStepErrors.length > 0) return;
     setStep(Math.min(totalSteps - 1, currentStepIndex + 1));
-  }, [currentStepIndex, totalSteps, setStep]);
+  }, [currentStepIndex, totalSteps, setStep, currentStepErrors.length]);
 
   const jumpToStep = useCallback(
     (stepIndex: number, fieldId?: string) => {
@@ -123,20 +135,23 @@ function AppContent() {
         saveStatusText={saveStatusText}
         nextDisabled={nextDisabled}
       >
-        {currentStep.fields.map((field) => (
-          <FieldRenderer
-            key={field.id}
-            field={field}
-            value={answers[field.id]}
-            onChange={(value) => setAnswer(field.id, value)}
-            onUpload={addUpload}
-            uploads={field.type === 'file' ? uploads[field.id] : undefined}
-            answers={answers}
-            error={errorsByFieldId[field.id]}
-            focusFieldId={focusFieldId}
-            onFocusDone={() => setFocusFieldId(null)}
-          />
-        ))}
+        <form onSubmit={(e) => e.preventDefault()} style={{ marginBottom: 0 }}>
+          {currentStep.fields.map((field) => (
+            <FieldRenderer
+              key={field.id}
+              field={field}
+              value={answers[field.id]}
+              onChange={(value) => setAnswer(field.id, value)}
+              onUpload={addUpload}
+              onRemoveUpload={removeUpload}
+              uploads={field.type === 'file' ? uploads[field.id] : undefined}
+              answers={answers}
+              error={errorsByFieldId[field.id]}
+              focusFieldId={focusFieldId}
+              onFocusDone={() => setFocusFieldId(null)}
+            />
+          ))}
+        </form>
       </StepShell>
     </Layout>
   );

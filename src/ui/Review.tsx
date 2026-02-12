@@ -14,8 +14,23 @@ interface ReviewProps {
   submitted: boolean;
 }
 
-function formatVal(value: unknown): string {
+/** Format YYYY-MM-DD as MM/DD/YYYY for display. */
+function formatDate(value: unknown): string | null {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const d = new Date(value.trim());
+  if (Number.isNaN(d.getTime())) return null;
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const y = d.getFullYear();
+  return `${m}/${day}/${y}`;
+}
+
+function formatVal(value: unknown, isDate = false): string {
   if (value == null) return '—';
+  if (isDate) {
+    const formatted = formatDate(value);
+    return formatted ?? (typeof value === 'string' ? value : '—');
+  }
   if (typeof value === 'string') return value || '—';
   if (Array.isArray(value)) return value.length ? value.join(', ') : '—';
   if (typeof value === 'object') return Object.keys(value).length ? JSON.stringify(value) : '—';
@@ -33,6 +48,7 @@ export function Review({
 }: ReviewProps) {
   const { state, setAnswer } = useIntake();
   const { answers } = state;
+  const visibleSteps = getVisibleSteps(answers);
   const errors = validateAll(answers);
 
   if (submitted) {
@@ -60,37 +76,25 @@ export function Review({
       saveStatusText={saveStatusText}
     >
       <h3>Summary by section</h3>
-      <div className="review-card">
-        <h4>Filing Setup</h4>
-        <p>{formatVal(answers['filing_setup'])}</p>
-      </div>
-      <div className="review-card">
-        <h4>Debtor / Spouse</h4>
-        <p>Debtor: {formatVal(answers['debtor_full_name'])}</p>
-        {answers['spouse_full_name'] && <p>Spouse: {formatVal(answers['spouse_full_name'])}</p>}
-      </div>
-      <div className="review-card">
-        <h4>Assets</h4>
-        <p>Real estate: {formatVal(answers['real_estate_ownership'])}</p>
-        <p>Bank accounts: {formatVal(answers['bank_accounts'])}</p>
-        <p>Vehicles: {formatVal(answers['vehicles'])}</p>
-      </div>
-      <div className="review-card">
-        <h4>Debts</h4>
-        <p>Unsecured / Priority / Secured summarized above.</p>
-      </div>
-      <div className="review-card">
-        <h4>Income / Expenses</h4>
-        <p>Employment and expense estimates captured.</p>
-      </div>
-      <div className="review-card">
-        <h4>Recent Activity</h4>
-        <p>Recent financial activity answers captured.</p>
-      </div>
-      <div className="review-card">
-        <h4>Uploads</h4>
-        <p>Document uploads (filenames) stored for demo.</p>
-      </div>
+      {visibleSteps
+        .filter((step) => step.id !== 'final_review')
+        .map((step) => (
+          <div key={step.id} className="review-card">
+            <h4>{step.title}</h4>
+            {step.fields
+              .filter((f) => !f.showIf || f.showIf(answers))
+              .map((f) => {
+                const v = answers[f.id];
+                const label = typeof f.label === 'string' ? f.label.replace(/\*/g, '').trim() : String(f.id);
+                const isDate = f.type === 'date';
+                return (
+                  <p key={f.id}>
+                    {label}: {formatVal(v, isDate)}
+                  </p>
+                );
+              })}
+          </div>
+        ))}
 
       {errors.length > 0 && (
         <>
@@ -114,7 +118,7 @@ export function Review({
 
       <h3>Confidence</h3>
       {(() => {
-        const step = getVisibleSteps(answers).find((s) => s.id === 'final_review');
+        const step = visibleSteps.find((s) => s.id === 'final_review');
         const confidenceField = step?.fields.find((f) => f.id === 'confidence');
         if (!confidenceField) return null;
         return (

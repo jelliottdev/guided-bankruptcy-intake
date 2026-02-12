@@ -6,6 +6,7 @@ interface FieldRendererProps {
   value: FieldValue | undefined;
   onChange: (value: FieldValue) => void;
   onUpload?: (fieldId: string, filenames: string[]) => void;
+  onRemoveUpload?: (fieldId: string, filename: string) => void;
   uploads?: string[];
   error?: string;
   answers: Record<string, FieldValue>;
@@ -18,6 +19,7 @@ export function FieldRenderer({
   value,
   onChange,
   onUpload,
+  onRemoveUpload,
   uploads = [],
   error,
   answers,
@@ -39,7 +41,7 @@ export function FieldRenderer({
   // Strip ALL asterisk-like chars (ASCII * and Unicode variants) so we never double up.
   const rawLabel = String(field.label).trim();
   const displayLabel = rawLabel
-    .replace(/[\*\u2217\u204E\u2055\uFF0A]/g, '')
+    .replace(/[*\u2217\u204E\u2055\uFF0A]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -239,9 +241,21 @@ export function FieldRenderer({
               }}
             />
             {uploads.length > 0 && (
-              <ul>
+              <ul className="upload-list">
                 {uploads.map((name) => (
-                  <li key={name}>{name}</li>
+                  <li key={name}>
+                    <span>{name}</span>
+                    {onRemoveUpload && (
+                      <button
+                        type="button"
+                        className="upload-remove"
+                        onClick={() => onRemoveUpload(field.id, name)}
+                        aria-label={`Remove ${name}`}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </li>
                 ))}
               </ul>
             )}
