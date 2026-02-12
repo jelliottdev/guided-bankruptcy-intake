@@ -193,14 +193,37 @@ label {
 .req {
   color: #c62828;
   font-weight: 700;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 .helper {
   font-size: 13px;
-  color: #6b7280;
+  color: #4b5563;
   margin-top: 0.25rem;
   margin-bottom: 0.5rem;
+}
+
+.field-warning {
+  font-size: 0.8125rem;
+  color: #b45309;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.field-why-we-ask {
+  margin: 0.25rem 0 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.field-why-we-ask-link {
+  color: #2563eb;
+  cursor: help;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+}
+
+.field-why-we-ask-link:hover {
+  text-decoration: underline;
 }
 
 .error {
@@ -472,11 +495,36 @@ select:focus {
 }
 
 .step-content h2 {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .step-content .header-subtext {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+.step-reassurance {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-top: 0;
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.step-fields {
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.step-fields .field-wrap:first-child {
+  margin-top: 0;
+}
+
+.step-fields .field-wrap.field-group-start {
+  margin-top: 28px;
+}
+
+.step-fields .field-wrap.field-group-start:first-child {
+  margin-top: 0;
 }
 
 .upload-instructions-block {
@@ -793,6 +841,23 @@ select:focus {
   flex-wrap: wrap;
 }
 
+.header-action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-header-group {
+  padding: 4px 10px;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  background: #1f2937;
+}
+
+.btn-header-group:hover {
+  background: #374151;
+}
+
 .attorney-meta {
   font-size: 0.75rem;
   color: #9ca3af;
@@ -905,7 +970,11 @@ select:focus {
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px 14px;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .kpi-card .kpi-value {
@@ -916,15 +985,16 @@ select:focus {
 }
 
 .kpi-card .kpi-label {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: #9ca3af;
   margin-top: 4px;
 }
 
 .kpi-card .kpi-sublabel {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   color: #6b7280;
   margin-top: 2px;
 }
@@ -990,13 +1060,24 @@ select:focus {
   background: #292524;
 }
 
-/* Cards: consistent padding + border + header */
+/* Cards: consistent padding + border + header; two tones for layering */
 .attorney-card {
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 20px;
+}
+
+.attorney-card.card-secondary {
+  background: #0f1419;
+  border-color: #1a2332;
+}
+
+.dashboard-section {
+  margin-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 18px;
 }
 
 .attorney-card .card-title {
@@ -1038,6 +1119,24 @@ select:focus {
   grid-template-rows: auto auto;
 }
 
+.attention-row-urgent {
+  border-left: 3px solid #ff4d4d;
+  padding-left: 12px;
+  margin-left: -1px;
+}
+
+.attention-label-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.attention-meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
 .attention-row .attention-note-block {
   grid-column: 1 / -1;
   margin: 4px 0 0;
@@ -1060,8 +1159,9 @@ select:focus {
 }
 
 .badge-flag {
-  background: #fef3c7;
-  color: #92400e;
+  background: transparent;
+  color: #d97706;
+  border: 1px solid #d97706;
 }
 
 .badge-urgent {
@@ -1076,7 +1176,6 @@ select:focus {
 
 .attention-label {
   color: #e5e7eb;
-  min-width: 0;
 }
 
 .attention-actions {
@@ -1153,10 +1252,11 @@ select:focus {
 
 .snapshot-dl {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px 16px;
+  grid-template-columns: 1fr auto;
+  gap: 6px 20px;
   margin: 0;
   font-size: 0.8125rem;
+  align-items: baseline;
 }
 
 .snapshot-dl dt {
@@ -1167,6 +1267,7 @@ select:focus {
 .snapshot-dl dd {
   margin: 0;
   color: #e5e7eb;
+  text-align: right;
 }
 
 /* Document Status — table */
@@ -1182,9 +1283,17 @@ select:focus {
 
 .doc-table th,
 .doc-table td {
-  padding: 10px 12px;
+  padding: 0 12px;
   text-align: left;
   border-bottom: 1px solid #1f2937;
+}
+
+.doc-table tbody tr {
+  height: 38px;
+}
+
+.doc-table tbody td {
+  vertical-align: middle;
 }
 
 .doc-table th {
@@ -1218,8 +1327,8 @@ select:focus {
 }
 
 .pill-missing {
-  background: #374151;
-  color: #9ca3af;
+  background: #4b5563;
+  color: #d1d5db;
 }
 
 /* Action Items — rows, 6 default, Show more */
@@ -1246,10 +1355,37 @@ select:focus {
   color: #e5e7eb;
 }
 
+.action-category {
+  margin-bottom: 16px;
+}
+
+.action-category:last-child {
+  margin-bottom: 0;
+}
+
+.action-category-header {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
 .action-row .action-buttons {
   display: flex;
+  align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.action-row-secondary {
+  display: none;
+  gap: 6px;
+}
+
+.action-row:hover .action-row-secondary,
+.action-row:focus-within .action-row-secondary {
+  display: inline-flex;
 }
 
 .action-items-empty {
@@ -1258,18 +1394,21 @@ select:focus {
 }
 
 .show-more-btn {
-  display: block;
-  margin-top: 12px;
+  display: inline-block;
+  margin-top: 14px;
   font-size: 0.8125rem;
-  color: #60a5fa;
-  background: none;
-  border: none;
+  font-weight: 500;
+  color: #e5e7eb;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 14px;
   cursor: pointer;
-  padding: 0;
 }
 
 .show-more-btn:hover {
-  color: #93c5fd;
+  background: #374151;
+  border-color: #4b5563;
 }
 
 /* Action Items: higher contrast, grouped, mini-buttons (legacy) */

@@ -4,6 +4,8 @@ import { Progress } from './Progress';
 interface StepShellProps {
   title: string;
   description?: string;
+  /** One-line reassurance under header (e.g. "If you're unsure, enter your best estimate.") */
+  reassurance?: string;
   /** Shown at top of step when present (e.g. global document upload instructions) */
   uploadInstructions?: string;
   children: ReactNode;
@@ -23,6 +25,7 @@ interface StepShellProps {
 export function StepShell({
   title,
   description,
+  reassurance,
   uploadInstructions,
   children,
   currentStepIndex,
@@ -42,6 +45,7 @@ export function StepShell({
         <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
         <h2>{title}</h2>
         {description && <p className="header-subtext">{description}</p>}
+        {reassurance && <p className="step-reassurance" aria-live="polite">{reassurance}</p>}
         {uploadInstructions && (
           <div className="upload-instructions-block" role="region" aria-label="Document upload instructions">
             {uploadInstructions.split('\n').map((line, i) => (
@@ -50,7 +54,7 @@ export function StepShell({
           </div>
         )}
         {stepBanner && <p className="step-banner" role="alert">{stepBanner}</p>}
-        <div style={{ marginBottom: '24px' }}>{children}</div>
+        <div className="step-fields">{children}</div>
       </div>
       <div className="step-footer">
       <nav className="nav-bar">

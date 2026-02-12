@@ -28,6 +28,18 @@ function emailFormat(value: unknown): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
+/** True if string contains @ (soft check for inline hint). */
+function emailHasAt(value: unknown): boolean {
+  if (typeof value !== 'string') return false;
+  return value.includes('@');
+}
+
+/** Digits only from phone input; length for "too short" warning. */
+function phoneDigitCount(value: unknown): number {
+  if (typeof value !== 'string') return 0;
+  return (value.replace(/\D/g, '')).length;
+}
+
 function dateFormat(value: unknown): boolean {
   if (typeof value !== 'string') return false;
   const d = new Date(value);
@@ -85,15 +97,36 @@ export function validateAll(answers: Answers, flags?: Flags): ValidationError[] 
               stepId: step.id,
               fieldId: field.id,
               message: 'Enter exactly 4 digits',
+              severity: 'warning',
+            });
+          }
+        } else if (field.id === 'debtor_phone' || field.id === 'spouse_phone') {
+          const digits = phoneDigitCount(value);
+          if (digits > 0 && digits < 10) {
+            errors.push({
+              stepIndex,
+              stepId: step.id,
+              fieldId: field.id,
+              message: 'Enter at least 10 digits (e.g. (555) 555-5555)',
+              severity: 'warning',
             });
           }
         } else if (field.type === 'email' && typeof value === 'string') {
-          if (!emailFormat(value)) {
+          if (!emailHasAt(value)) {
+            errors.push({
+              stepIndex,
+              stepId: step.id,
+              fieldId: field.id,
+              message: 'Enter an email with @ (e.g. name@email.com)',
+              severity: 'warning',
+            });
+          } else if (!emailFormat(value)) {
             errors.push({
               stepIndex,
               stepId: step.id,
               fieldId: field.id,
               message: 'Enter a valid email address',
+              severity: 'warning',
             });
           }
         } else if (field.type === 'date' && typeof value === 'string') {
@@ -166,6 +199,7 @@ export function validateAll(answers: Answers, flags?: Flags): ValidationError[] 
           stepId: steps[spouseStepIndex].id,
           fieldId: 'spouse_ssn_last4',
           message: 'Enter exactly 4 digits',
+          severity: 'warning',
         });
       }
     }
@@ -181,6 +215,11 @@ export function isFullyValid(answers: Answers, flags?: Flags): boolean {
 /** Errors for a single step (for disabling Next and showing inline errors). Only blocking errors (not warnings). */
 export function getErrorsForStep(answers: Answers, stepIndex: number, flags?: Flags): ValidationError[] {
   return validateAll(answers, flags).filter((e) => e.stepIndex === stepIndex && e.severity !== 'warning');
+}
+
+/** Warnings for a single step (inline hints only; do not block Next). */
+export function getWarningsForStep(answers: Answers, stepIndex: number, flags?: Flags): ValidationError[] {
+  return validateAll(answers, flags).filter((e) => e.stepIndex === stepIndex && e.severity === 'warning');
 }
 
 export { MIN_FLAG_NOTE_LENGTH };

@@ -35,6 +35,12 @@ export interface Field {
   label: string;
   required?: boolean;
   helper?: string;
+  /** Placeholder for text/email inputs (e.g. (555) 555-5555, name@email.com) */
+  placeholder?: string;
+  /** One-line "Why we ask" text for sensitive fields; shown as tooltip/link */
+  whyWeAsk?: string;
+  /** Start of a logical cluster; adds extra spacing above this field */
+  groupStart?: boolean;
   options?: FieldOption[];
   rows?: GridRow[];
   columns?: GridColumn[];
@@ -60,6 +66,8 @@ export interface Step {
   id: string;
   title: string;
   description?: string;
+  /** One-line reassurance under header (e.g. "If you're unsure, enter your best estimate.") */
+  reassurance?: string;
   /** Shown at top of step when present (e.g. global document upload instructions) */
   uploadInstructions?: string;
   fields: Field[];

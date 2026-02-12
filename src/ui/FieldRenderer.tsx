@@ -10,6 +10,8 @@ interface FieldRendererProps {
   onRemoveUpload?: (fieldId: string, filename: string) => void;
   uploads?: string[];
   error?: string;
+  /** Inline hint (does not block Next); e.g. format warnings */
+  warning?: string;
   answers: Record<string, FieldValue>;
   flags?: Flags;
   focusFieldId?: string | null;
@@ -28,6 +30,7 @@ export function FieldRenderer({
   onRemoveUpload,
   uploads = [],
   error,
+  warning,
   answers,
   flags,
   focusFieldId,
@@ -121,33 +124,52 @@ export function FieldRenderer({
 
   const helper = field.helper ? <p className="helper">{field.helper}</p> : null;
   const err = error ? <p className="error">{error}</p> : null;
+  const warn = warning ? <p className="field-warning" role="status">{warning}</p> : null;
+  const whyWeAskEl = field.whyWeAsk ? (
+    <p className="field-why-we-ask">
+      <span className="field-why-we-ask-link" title={field.whyWeAsk}>Why we ask this</span>
+    </p>
+  ) : null;
+  const wrapClass = `field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}${field.groupStart ? ' field-group-start' : ''}`;
 
   switch (field.type) {
     case 'text':
     case 'email':
     case 'date': {
       const v = (value as string) ?? '';
+      const isSsnLast4 = field.id === 'debtor_ssn_last4' || field.id === 'spouse_ssn_last4';
+      const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let next = e.target.value;
+        if (isSsnLast4) next = next.replace(/\D/g, '').slice(0, 4);
+        onChange(next);
+      };
       return (
-        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={wrapClass}>
           {label}
+          {whyWeAskEl}
           <input
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
             id={field.id}
             type={field.type}
             value={v}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={handleTextChange}
+            placeholder={field.placeholder}
+            inputMode={isSsnLast4 ? 'numeric' : undefined}
+            maxLength={isSsnLast4 ? 4 : undefined}
             aria-invalid={!!error}
           />
           {helper}
           {renderFlagBlock()}
           {err}
+          {warn}
         </div>
       );
     }
     case 'textarea':
       return (
-        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={wrapClass}>
           {label}
+          {whyWeAskEl}
           <textarea
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLTextAreaElement>) : undefined}
             id={field.id}
@@ -158,11 +180,12 @@ export function FieldRenderer({
           {helper}
           {renderFlagBlock()}
           {err}
+          {warn}
         </div>
       );
     case 'radio':
       return (
-        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={wrapClass}>
           {label}
           <div className="field-radio" role="radiogroup" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -184,6 +207,7 @@ export function FieldRenderer({
           {helper}
           {renderFlagBlock()}
           {err}
+          {warn}
         </div>
       );
     case 'checkbox': {
@@ -201,7 +225,7 @@ export function FieldRenderer({
         }
       };
       return (
-        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={wrapClass}>
           {label}
           <div className="field-checkbox" role="group" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -221,13 +245,14 @@ export function FieldRenderer({
           {helper}
           {renderFlagBlock()}
           {err}
+          {warn}
         </div>
       );
     }
     case 'select': {
       const v = (value as string) ?? '';
       return (
-        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={wrapClass}>
           {label}
           <select
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLSelectElement>) : undefined}
@@ -246,6 +271,7 @@ export function FieldRenderer({
           {helper}
           {renderFlagBlock()}
           {err}
+          {warn}
         </div>
       );
     }
@@ -256,7 +282,7 @@ export function FieldRenderer({
       const rows = field.rows ?? [];
       const columns = field.columns ?? [];
       return (
-        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={wrapClass}>
           {label}
           <div className="field-grid">
             <table>
@@ -298,6 +324,7 @@ export function FieldRenderer({
           {helper}
           {renderFlagBlock()}
           {err}
+          {warn}
         </div>
       );
     }

@@ -37,11 +37,12 @@ const stepFilingSetup: Step = {
   ],
 };
 
-// Step 2 — Debtor Information
-const stepDebtor: Step = {
-  id: 'debtor',
-  title: 'Debtor Information',
-  description: 'Tell us basic identity and contact information.',
+// Step 2a — Debtor Identity (name, other names, SSN last 4, DOB)
+const stepDebtorIdentity: Step = {
+  id: 'debtor_identity',
+  title: 'Your identity',
+  description: 'We need your legal name and a few details to match court and credit records.',
+  reassurance: 'If you\'re unsure, enter your best estimate. Your attorney will confirm details with you.',
   showIf: always,
   fields: [
     {
@@ -49,25 +50,66 @@ const stepDebtor: Step = {
       type: 'text',
       label: 'Full legal name (exactly as shown on your ID)',
       required: true,
-      helper: 'Use your current legal name — not nicknames.',
+      helper: 'Use your current legal name — not nicknames. Example: Jane Marie Smith.',
     },
     {
       id: 'debtor_other_names',
       type: 'text',
       label: 'Other names you used in the last 6 years',
-      helper: 'Include maiden names, prior married names, or legal name changes.',
+      helper: 'Include maiden names, prior married names, or legal name changes. Leave blank if none.',
     },
     {
       id: 'debtor_ssn_last4',
       type: 'text',
       label: 'Social Security Number — last 4 digits only',
       required: true,
+      placeholder: '1234',
       helper: 'Only the last 4 digits are needed here for security.',
+      whyWeAsk: 'Used to match credit reports and court forms.',
+      groupStart: true,
     },
-    { id: 'debtor_dob', type: 'date', label: 'Date of Birth', required: true },
-    { id: 'debtor_phone', type: 'text', label: 'Phone Number', required: true },
-    { id: 'debtor_email', type: 'email', label: 'Email Address', required: true },
-    { id: 'debtor_address', type: 'textarea', label: 'Current Street Address', required: true },
+    {
+      id: 'debtor_dob',
+      type: 'date',
+      label: 'Date of Birth',
+      required: true,
+      whyWeAsk: 'Required on bankruptcy paperwork.',
+    },
+  ],
+};
+
+// Step 2b — Debtor Contact (phone, email, address, mailing, county, history)
+const stepDebtorContact: Step = {
+  id: 'debtor_contact',
+  title: 'Contact & address',
+  description: 'How we can reach you and where you live (required for court filings).',
+  reassurance: 'If you\'re unsure, enter your best estimate. Your attorney will confirm details with you.',
+  showIf: always,
+  fields: [
+    {
+      id: 'debtor_phone',
+      type: 'text',
+      label: 'Phone Number',
+      required: true,
+      placeholder: '(555) 555-5555',
+      helper: 'Best number to reach you. We\'ll use it only for your case.',
+    },
+    {
+      id: 'debtor_email',
+      type: 'email',
+      label: 'Email Address',
+      required: true,
+      placeholder: 'name@email.com',
+      helper: 'We\'ll send important updates and documents here.',
+    },
+    {
+      id: 'debtor_address',
+      type: 'textarea',
+      label: 'Current Street Address',
+      required: true,
+      helper: 'Street, apartment/unit if any, city, state, and ZIP.',
+      groupStart: true,
+    },
     {
       id: 'mailing_different',
       type: 'radio',
@@ -85,19 +127,32 @@ const stepDebtor: Step = {
       required: false,
       showIf: (a) => a['mailing_different'] === 'Yes',
     },
-    { id: 'county', type: 'text', label: 'County of Residence', required: true },
+    {
+      id: 'county',
+      type: 'text',
+      label: 'County of Residence',
+      required: true,
+      helper: 'The county where you live (e.g. Cook County, Los Angeles County).',
+      groupStart: true,
+    },
     {
       id: 'addresses_6_years',
       type: 'textarea',
       label: 'All addresses where you lived in the last 6 years',
       helper: 'List cities and states if you don\'t remember full street addresses.',
     },
-    { id: 'business_names', type: 'textarea', label: 'Business names you have used in the last 6 years' },
+    {
+      id: 'business_names',
+      type: 'textarea',
+      label: 'Business names you have used in the last 6 years',
+      helper: 'Leave blank if none. Include side businesses or DBA names.',
+    },
     {
       id: 'prior_bankruptcy',
       type: 'radio',
       label: 'Have you filed bankruptcy before?',
       required: true,
+      groupStart: true,
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -127,10 +182,30 @@ const stepSpouse: Step = {
       type: 'text',
       label: 'Spouse Social Security Number — Last 4 Digits Only',
       required: true,
+      placeholder: '1234',
+      whyWeAsk: 'Used to match credit reports and court forms.',
     },
-    { id: 'spouse_dob', type: 'date', label: 'Spouse Date of Birth', required: true },
-    { id: 'spouse_phone', type: 'text', label: 'Spouse Phone Number', required: true },
-    { id: 'spouse_email', type: 'email', label: 'Spouse Email Address', required: true },
+    {
+      id: 'spouse_dob',
+      type: 'date',
+      label: 'Spouse Date of Birth',
+      required: true,
+      whyWeAsk: 'Required on bankruptcy paperwork.',
+    },
+    {
+      id: 'spouse_phone',
+      type: 'text',
+      label: 'Spouse Phone Number',
+      required: true,
+      placeholder: '(555) 555-5555',
+    },
+    {
+      id: 'spouse_email',
+      type: 'email',
+      label: 'Spouse Email Address',
+      required: true,
+      placeholder: 'name@email.com',
+    },
   ],
 };
 
@@ -1107,7 +1182,8 @@ const stepFinalReview: Step = {
 /** All steps in order; visibility is computed via showIf when filtering by answers */
 export const ALL_STEPS: Step[] = [
   stepFilingSetup,
-  stepDebtor,
+  stepDebtorIdentity,
+  stepDebtorContact,
   stepSpouse,
   stepUrgency,
   stepRealEstate,

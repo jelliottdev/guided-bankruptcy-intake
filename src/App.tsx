@@ -6,7 +6,7 @@ import { FieldRenderer } from './ui/FieldRenderer';
 import { Review } from './ui/Review';
 import { AttorneyDashboard } from './ui/AttorneyDashboard';
 import { getVisibleSteps } from './form/steps';
-import { getErrorsForStep } from './form/validate';
+import { getErrorsForStep, getWarningsForStep } from './form/validate';
 
 function lastSavedText(lastSavedAt: number | null): string {
   if (lastSavedAt == null) return 'Saved';
@@ -44,6 +44,14 @@ function AppContent() {
         ? Object.fromEntries(currentStepErrors.map((e) => [e.fieldId, e.message]))
         : {},
     [currentStepErrors, showErrorsForCurrentStep]
+  );
+  const currentStepWarnings = useMemo(
+    () => (currentStep ? getWarningsForStep(answers, currentStepIndex, flags) : []),
+    [answers, currentStepIndex, currentStep, flags]
+  );
+  const warningsByFieldId = useMemo(
+    () => Object.fromEntries(currentStepWarnings.map((w) => [w.fieldId, w.message])),
+    [currentStepWarnings]
   );
 
   const saveStatusText = saving ? 'Saving…' : lastSavedText(lastSavedAt);
@@ -176,6 +184,7 @@ function AppContent() {
       <StepShell
         title={currentStep.title}
         description={currentStep.description}
+        reassurance={currentStep.reassurance}
         uploadInstructions={currentStep.uploadInstructions}
         currentStepIndex={currentStepIndex}
         totalSteps={totalSteps}
@@ -200,6 +209,7 @@ function AppContent() {
               answers={answers}
               flags={flags}
               error={errorsByFieldId[field.id]}
+              warning={warningsByFieldId[field.id]}
               focusFieldId={focusFieldId}
               onFocusDone={() => setFocusFieldId(null)}
               onSetAnswer={setAnswer}

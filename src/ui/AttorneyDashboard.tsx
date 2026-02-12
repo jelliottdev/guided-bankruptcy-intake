@@ -364,6 +364,15 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
   const ACTION_ITEMS_VISIBLE = 6;
   const visibleActionItems = actionItemsExpanded ? actionItems : actionItems.slice(0, ACTION_ITEMS_VISIBLE);
   const hasMoreActions = actionItems.length > ACTION_ITEMS_VISIBLE;
+  const visibleActionGrouped = useMemo(() => {
+    const map = new Map<string, typeof visibleActionItems>();
+    visibleActionItems.forEach((item) => {
+      const list = map.get(item.stepTitle) ?? [];
+      list.push(item);
+      map.set(item.stepTitle, list);
+    });
+    return Array.from(map.entries());
+  }, [visibleActionItems]);
 
   function itemKey(item: (typeof actionItems)[0]): string {
     return `${item.stepIndex}-${item.fieldId ?? 'unknown'}`;
@@ -378,13 +387,10 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
         <div className="attorney-header-right">
           <span className="attorney-meta">{lastSavedText(lastSavedAt)}</span>
-          <span className="attorney-meta-sep">•</span>
-          <button type="button" className="btn-header" onClick={copyExportBundle} title="Copy full export">
-            Copy JSON
-          </button>
-          <span className="attorney-meta-sep">•</span>
-          <button type="button" className="btn-header" onClick={onReset}>Reset Demo</button>
-          <span className="attorney-meta-sep">•</span>
+          <span className="header-action-group">
+            <button type="button" className="btn-header btn-header-group" onClick={copyExportBundle} title="Copy full export">Copy</button>
+            <button type="button" className="btn-header btn-header-group" onClick={onReset}>Reset</button>
+          </span>
           <button type="button" className="btn-header modeToggle on" onClick={() => setViewMode('client')} aria-label="Toggle Client View">
             <span className="pill"><span className="knob" /></span>
             Client View
@@ -421,19 +427,24 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </div>
 
-      <div id="attention-required" className="attorney-card attention-required-card">
+      <section id="attention-required" className="dashboard-section attorney-card attention-required-card">
         <h3 className="card-title">Attention Required</h3>
         {attentionRows.length === 0 ? (
           <div className="attention-empty">None</div>
         ) : (
           <ul className="attention-rows">
             {attentionRows.map((row) => (
-              <li key={row.id} className="attention-row">
+              <li key={row.id} className={`attention-row ${row.type === 'URGENT' ? 'attention-row-urgent' : ''}`}>
                 <span className={`badge badge-${row.type.toLowerCase()}`}>{row.type}</span>
-                <span className="attention-label">
-                  {row.type === 'FLAG' && `${row.label} — client note provided`}
-                  {row.type === 'URGENT' && (row.date ? `${row.label} — ${row.date}` : row.label)}
-                  {row.type === 'MISSING' && `${row.label} — missing`}
+                <span className="attention-label-block">
+                  {row.type === 'FLAG' && <><span className="attention-label">{row.label}</span><span className="attention-meta">Client note provided</span></>}
+                  {row.type === 'URGENT' && (
+                    <>
+                      <span className="attention-label">{row.label}</span>
+                      {row.date && <span className="attention-meta">Date: {row.date}</span>}
+                    </>
+                  )}
+                  {row.type === 'MISSING' && <span className="attention-label">{row.label} — missing</span>}
                 </span>
                 <span className="attention-actions">
                   {row.type === 'FLAG' && (
@@ -468,10 +479,10 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
             </ul>
           </details>
         )}
-      </div>
+      </section>
 
       <div className="attorney-snapshot-grid">
-        <div className="attorney-card snapshot-card">
+        <div className="attorney-card card-secondary snapshot-card">
           <h3 className="card-title">Assets Snapshot</h3>
           <dl className="snapshot-dl">
             <dt>Properties</dt><dd>{assetsSnapshot.properties}</dd>
@@ -480,7 +491,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
             <dt>Valuables</dt><dd>{assetsSnapshot.valuables ? 'Yes' : 'No'}</dd>
           </dl>
         </div>
-        <div className="attorney-card snapshot-card">
+        <div className="attorney-card card-secondary snapshot-card">
           <h3 className="card-title">Debts Snapshot</h3>
           <dl className="snapshot-dl">
             <dt>Priority</dt><dd>{debtsSnapshot.priority ? 'Yes' : 'No'}</dd>
@@ -489,7 +500,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
             {debtsSnapshot.unsecuredText && <><dt>Largest unsecured</dt><dd>{debtsSnapshot.unsecuredText}</dd></>}
           </dl>
         </div>
-        <div className="attorney-card snapshot-card">
+        <div className="attorney-card card-secondary snapshot-card">
           <h3 className="card-title">Income Snapshot</h3>
           <dl className="snapshot-dl">
             <dt>Employed</dt><dd>{incomeSnapshot.debtorEmployed ? 'Yes' : 'No'}</dd>
@@ -500,7 +511,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </div>
 
-      <div id="documents" className="attorney-card documents-card">
+      <div id="documents" className="dashboard-section attorney-card documents-card">
         <h3 className="card-title">Document Status</h3>
         <div className="doc-table-wrap">
           <table className="doc-table">
@@ -528,42 +539,49 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </div>
 
-      <div id="action-items" className="attorney-card action-items-card">
+      <section id="action-items" className="dashboard-section attorney-card action-items-card">
         <h3 className="card-title">Action Items ({actionItems.length})</h3>
         {actionItems.length === 0 ? (
           <div className="action-items-empty">None</div>
         ) : (
           <>
-            <ul className="action-rows">
-              {visibleActionItems.map((item) => {
-                const key = itemKey(item);
-                const review = actionReview[key];
-                return (
-                  <li key={key} className="action-row">
-                    <span className="action-label">{item.shortLabel}</span>
-                    <span className="action-buttons">
-                      <button type="button" className="btn-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
-                      {review === 'reviewed' ? (
-                        <button type="button" className="btn-state reviewed" onClick={() => setItemReview(key, null)}>✓ Reviewed</button>
-                      ) : review === 'follow-up' ? (
-                        <button type="button" className="btn-state follow-up" onClick={() => setItemReview(key, null)}>Follow-up</button>
-                      ) : (
-                        <>
-                          <button type="button" className="btn-state" onClick={() => setItemReview(key, 'reviewed')}>✓ Reviewed</button>
-                          <button type="button" className="btn-state" onClick={() => setItemReview(key, 'follow-up')}>Follow-up</button>
-                        </>
-                      )}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+            {visibleActionGrouped.map(([category, items]) => (
+              <div key={category} className="action-category">
+                <div className="action-category-header">{category.toUpperCase()}</div>
+                <ul className="action-rows">
+                  {items.map((item) => {
+                    const key = itemKey(item);
+                    const review = actionReview[key];
+                    return (
+                      <li key={key} className="action-row">
+                        <span className="action-label">{item.shortLabel}</span>
+                        <span className="action-buttons">
+                          <button type="button" className="btn-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>Open</button>
+                          <span className="action-row-secondary">
+                            {review === 'reviewed' ? (
+                              <button type="button" className="btn-state reviewed" onClick={() => setItemReview(key, null)}>✓ Reviewed</button>
+                            ) : review === 'follow-up' ? (
+                              <button type="button" className="btn-state follow-up" onClick={() => setItemReview(key, null)}>Follow-up</button>
+                            ) : (
+                              <>
+                                <button type="button" className="btn-state" onClick={() => setItemReview(key, 'reviewed')}>✓ Reviewed</button>
+                                <button type="button" className="btn-state" onClick={() => setItemReview(key, 'follow-up')}>Follow-up</button>
+                              </>
+                            )}
+                          </span>
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
             {hasMoreActions && !actionItemsExpanded && (
-              <button type="button" className="show-more-btn" onClick={() => setActionItemsExpanded(true)}>Show more ▼</button>
+              <button type="button" className="show-more-btn" onClick={() => setActionItemsExpanded(true)}>Show {actionItems.length - ACTION_ITEMS_VISIBLE} more</button>
             )}
           </>
         )}
-      </div>
+      </section>
 
       <div className="attorney-card raw-section">
         <button
