@@ -26,6 +26,18 @@ function dateFormat(value: unknown): boolean {
   return !Number.isNaN(d.getTime());
 }
 
+/** Allow numbers, commas, $, optional decimals/minus (money-ish). */
+const NUMERIC_LIKE = /^[\d,$.\s-]*$/;
+
+function isNumericLikeField(fieldId: string): boolean {
+  return (
+    /balance|value|amount|income|ytd|year|two_years/.test(fieldId) ||
+    fieldId === 'income_current_ytd' ||
+    fieldId === 'income_last_year' ||
+    fieldId === 'income_two_years_ago'
+  );
+}
+
 export function validateAll(answers: Answers): ValidationError[] {
   const errors: ValidationError[] = [];
   const steps = getVisibleSteps(answers);
@@ -74,6 +86,19 @@ export function validateAll(answers: Answers): ValidationError[] {
               message: 'Enter a valid date',
             });
           }
+        } else if (
+          typeof value === 'string' &&
+          value.trim().length > 0 &&
+          isNumericLikeField(field.id) &&
+          !NUMERIC_LIKE.test(value.trim())
+        ) {
+          errors.push({
+            stepIndex,
+            stepId: step.id,
+            fieldId: field.id,
+            message: 'Consider entering a number (e.g. 0, 1,234, $500)',
+            severity: 'warning',
+          });
         }
       }
     });
@@ -131,10 +156,10 @@ export function validateAll(answers: Answers): ValidationError[] {
 }
 
 export function isFullyValid(answers: Answers): boolean {
-  return validateAll(answers).length === 0;
+  return validateAll(answers).filter((e) => e.severity !== 'warning').length === 0;
 }
 
-/** Errors for a single step (for disabling Next and showing inline errors). */
+/** Errors for a single step (for disabling Next and showing inline errors). Only blocking errors (not warnings). */
 export function getErrorsForStep(answers: Answers, stepIndex: number): ValidationError[] {
-  return validateAll(answers).filter((e) => e.stepIndex === stepIndex);
+  return validateAll(answers).filter((e) => e.stepIndex === stepIndex && e.severity !== 'warning');
 }

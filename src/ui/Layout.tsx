@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useIntake } from '../state/IntakeProvider';
 import { maskEmail, maskPhone } from '../utils/mask';
 
 function formatBuildVersion(iso: string): string {
@@ -20,6 +21,9 @@ interface LayoutProps {
 }
 
 export function Layout({ children, email, phone, onReset }: LayoutProps) {
+  const { state, setViewMode } = useIntake();
+  const isAttorney = state.viewMode === 'attorney';
+
   const identityLine =
     email != null && phone != null
       ? `${maskEmail(email)} | ${maskPhone(phone)}`
@@ -27,10 +31,24 @@ export function Layout({ children, email, phone, onReset }: LayoutProps) {
 
   return (
     <div className="card">
-      <header>
-        <h1>Bankruptcy Intake Questionnaire (Guided)</h1>
+      <header className="app-header">
+        <div className="header-row">
+          <h1>Bankruptcy Intake Questionnaire (Guided)</h1>
+          <button
+            type="button"
+            className={`modeToggle ${isAttorney ? 'on' : 'off'}`}
+            onClick={() => setViewMode(isAttorney ? 'client' : 'attorney')}
+            aria-pressed={isAttorney}
+            aria-label={isAttorney ? 'Switch to client view' : 'Switch to attorney view'}
+          >
+            <span className="pill">
+              <span className="knob" />
+            </span>
+            <span className="modeLabel">{isAttorney ? 'Attorney View' : 'Client View'}</span>
+          </button>
+        </div>
         <p className="header-subtext">
-          Answer what applies. You can save and return anytime. Estimates are OK.
+            Please answer what applies to you. You can save and return anytime. Estimates are OK if you don&apos;t know exact numbers. Your attorney will review everything with you.
         </p>
         <p className="identity-line">{identityLine}</p>
       </header>

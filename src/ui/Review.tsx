@@ -47,9 +47,10 @@ export function Review({
   submitted,
 }: ReviewProps) {
   const { state, setAnswer } = useIntake();
-  const { answers } = state;
+  const { answers, uploads, saving } = state;
   const visibleSteps = getVisibleSteps(answers);
-  const errors = validateAll(answers);
+  const allValidation = validateAll(answers);
+  const errors = allValidation.filter((e) => e.severity !== 'warning');
 
   if (submitted) {
     return (
@@ -74,6 +75,8 @@ export function Review({
       isLastStep={true}
       onSubmit={onSubmit}
       saveStatusText={saveStatusText}
+      stepBanner={errors.length > 0 ? 'Complete the items below before submitting.' : undefined}
+      saving={saving}
     >
       <h3>Summary by section</h3>
       {visibleSteps
@@ -84,8 +87,16 @@ export function Review({
             {step.fields
               .filter((f) => !f.showIf || f.showIf(answers))
               .map((f) => {
-                const v = answers[f.id];
                 const label = typeof f.label === 'string' ? f.label.replace(/\*/g, '').trim() : String(f.id);
+                if (f.type === 'file') {
+                  const fileList = uploads[f.id] ?? [];
+                  return (
+                    <p key={f.id}>
+                      {label}: {fileList.length > 0 ? fileList.join(', ') : '—'}
+                    </p>
+                  );
+                }
+                const v = answers[f.id];
                 const isDate = f.type === 'date';
                 return (
                   <p key={f.id}>

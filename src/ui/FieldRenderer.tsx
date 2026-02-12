@@ -31,7 +31,8 @@ export function FieldRenderer({
   useEffect(() => {
     if (shouldFocus && inputRef.current) {
       inputRef.current.focus();
-      onFocusDone?.();
+      const t = setTimeout(() => onFocusDone?.(), 2000);
+      return () => clearTimeout(t);
     }
   }, [shouldFocus, onFocusDone]);
 
@@ -61,7 +62,7 @@ export function FieldRenderer({
     case 'date': {
       const v = (value as string) ?? '';
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <input
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
@@ -78,7 +79,7 @@ export function FieldRenderer({
     }
     case 'textarea':
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <textarea
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLTextAreaElement>) : undefined}
@@ -93,7 +94,7 @@ export function FieldRenderer({
       );
     case 'radio':
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <div className="field-radio" role="radiogroup" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -131,7 +132,7 @@ export function FieldRenderer({
         }
       };
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <div className="field-checkbox" role="group" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -156,7 +157,7 @@ export function FieldRenderer({
     case 'select': {
       const v = (value as string) ?? '';
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <select
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLSelectElement>) : undefined}
@@ -184,7 +185,7 @@ export function FieldRenderer({
       const rows = field.rows ?? [];
       const columns = field.columns ?? [];
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <div className="field-grid">
             <table>
@@ -197,21 +198,27 @@ export function FieldRenderer({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, rowIdx) => (
+                {rows.map((row) => (
                   <tr key={row.id}>
                     <td>{row.label}</td>
-                    {columns.map((col, colIdx) => (
-                      <td key={col.id}>
-                        <input
-                          type="radio"
-                          id={rowIdx === 0 && colIdx === 0 ? field.id : undefined}
-                          name={`${field.id}_${row.id}`}
-                          value={col.id}
-                          checked={gridVal[row.id] === col.id}
-                          onChange={() => onChange({ ...gridVal, [row.id]: col.id })}
-                        />
-                      </td>
-                    ))}
+                    {columns.map((col) => {
+                      const cellId = `${field.id}_${row.id}_${col.id}`;
+                      return (
+                        <td key={col.id} data-label={col.label}>
+                          <label htmlFor={cellId} className="field-grid-cell-label">
+                            <input
+                              type="radio"
+                              id={cellId}
+                              name={`${field.id}_${row.id}`}
+                              value={col.id}
+                              checked={gridVal[row.id] === col.id}
+                              onChange={() => onChange({ ...gridVal, [row.id]: col.id })}
+                              aria-label={`${row.label}: ${col.label}`}
+                            />
+                          </label>
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>
@@ -224,8 +231,9 @@ export function FieldRenderer({
     }
     case 'file':
       return (
-        <div className="field-wrap">
+        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
+          <p className="helper field-file-demo">Demo: stores filenames only. No file is uploaded.</p>
           <div className="field-file">
             <input
               type="file"

@@ -26,11 +26,12 @@ const stepFilingSetup: Step = {
     {
       id: 'filing_setup',
       type: 'radio',
-      label: 'Filing Setup',
+      label: 'How are you filing your bankruptcy case?',
       required: true,
+      helper: 'Joint filing means both spouses are included in the same bankruptcy case.',
       options: [
-        { value: 'Filing alone', label: 'Filing alone' },
-        { value: 'Filing with spouse', label: 'Filing with spouse' },
+        { value: 'Filing alone', label: 'Filing by myself' },
+        { value: 'Filing with spouse', label: 'Filing jointly with my spouse' },
       ],
     },
   ],
@@ -43,12 +44,23 @@ const stepDebtor: Step = {
   description: 'Tell us basic identity and contact information.',
   showIf: always,
   fields: [
-    { id: 'debtor_full_name', type: 'text', label: 'Full Legal Name (as it appears on ID)', required: true },
-    { id: 'debtor_other_names', type: 'text', label: 'Other names used in the last 6 years' },
+    {
+      id: 'debtor_full_name',
+      type: 'text',
+      label: 'Full legal name (exactly as shown on your ID)',
+      required: true,
+      helper: 'Use your current legal name — not nicknames.',
+    },
+    {
+      id: 'debtor_other_names',
+      type: 'text',
+      label: 'Other names you used in the last 6 years',
+      helper: 'Include maiden names, prior married names, or legal name changes.',
+    },
     {
       id: 'debtor_ssn_last4',
       type: 'text',
-      label: 'Social Security Number — Last 4 Digits Only',
+      label: 'Social Security Number — last 4 digits only',
       required: true,
       helper: 'Only the last 4 digits are needed here for security.',
     },
@@ -77,14 +89,14 @@ const stepDebtor: Step = {
     {
       id: 'addresses_6_years',
       type: 'textarea',
-      label: 'Addresses where you have lived in the last 6 years (list all)',
-      helper: 'Include moving dates if known.',
+      label: 'All addresses where you lived in the last 6 years',
+      helper: 'List cities and states if you don\'t remember full street addresses.',
     },
     { id: 'business_names', type: 'textarea', label: 'Business names you have used in the last 6 years' },
     {
       id: 'prior_bankruptcy',
       type: 'radio',
-      label: 'Have you filed for bankruptcy before?',
+      label: 'Have you filed bankruptcy before?',
       required: true,
       options: [
         { value: 'Yes', label: 'Yes' },
@@ -95,7 +107,7 @@ const stepDebtor: Step = {
       id: 'prior_bankruptcy_details',
       type: 'textarea',
       label: 'Prior Bankruptcy Details (If Yes)',
-      helper: 'Include chapter, year, case number, and whether discharged.',
+      helper: 'Include chapter type, year filed, and whether you received a discharge (if known).',
       showIf: (a) => a['prior_bankruptcy'] === 'Yes',
     },
   ],
@@ -104,12 +116,12 @@ const stepDebtor: Step = {
 // Step 3 — Spouse (only if joint)
 const stepSpouse: Step = {
   id: 'spouse',
-  title: 'Spouse Information (Only if Joint Filing)',
-  description: 'Spouse identity and contact details for joint filings.',
+  title: 'Spouse Information',
+  description: 'Only complete this section if you are filing jointly with your spouse.',
   showIf: isJointFiling,
   fields: [
-    { id: 'spouse_full_name', type: 'text', label: 'Spouse Full Legal Name (as it appears on ID)', required: true },
-    { id: 'spouse_other_names', type: 'text', label: 'Spouse Other names used in the last 6 years' },
+    { id: 'spouse_full_name', type: 'text', label: 'Spouse full legal name (exactly as shown on ID)', required: true },
+    { id: 'spouse_other_names', type: 'text', label: 'Spouse other names used in the last 6 years' },
     {
       id: 'spouse_ssn_last4',
       type: 'text',
@@ -123,11 +135,11 @@ const stepSpouse: Step = {
 };
 
 // Step 4 — Urgency & Business Flags
-const URGENCY_NONE = 'None of the above';
+const URGENCY_NONE = 'None of these apply';
 const stepUrgency: Step = {
   id: 'urgency',
-  title: 'Urgency & Business Flags',
-  description: 'Tell us about wage garnishment, foreclosure risk, and business or co-signer situations.',
+  title: 'Immediate Collection or Legal Actions',
+  description: 'Tell us if anything urgent is happening. This helps your attorney act quickly.',
   showIf: always,
   fields: [
     {
@@ -135,11 +147,11 @@ const stepUrgency: Step = {
       type: 'checkbox',
       label: 'Which of these apply?',
       options: [
-        { value: 'Wage garnishment is currently active or pending', label: 'Wage garnishment is currently active or pending' },
-        { value: 'Bank account levy is pending', label: 'Bank account levy is pending' },
-        { value: 'Foreclosure on your home is pending (date:)', label: 'Foreclosure on your home is pending (date:)' },
-        { value: 'Risk of vehicle repossession (date:)', label: 'Risk of vehicle repossession (date:)' },
-        { value: 'Utility shutoff notice received (date:)', label: 'Utility shutoff notice received (date:)' },
+        { value: 'Wage garnishment is currently active or pending', label: 'Active wage garnishment' },
+        { value: 'Bank account levy is pending', label: 'Bank account frozen or levy pending' },
+        { value: 'Foreclosure on your home is pending (date:)', label: 'Foreclosure sale scheduled' },
+        { value: 'Risk of vehicle repossession (date:)', label: 'Vehicle repossession risk' },
+        { value: 'Utility shutoff notice received (date:)', label: 'Utility shutoff notice received' },
         { value: URGENCY_NONE, label: URGENCY_NONE, noneOfAbove: true },
       ],
     },
@@ -147,6 +159,7 @@ const stepUrgency: Step = {
       id: 'foreclosure_date',
       type: 'text',
       label: 'Foreclosure date (if known)',
+      helper: 'Enter the date if you know it — estimate if needed.',
       showIf: (a) => {
         const v = a['urgency_flags'];
         return Array.isArray(v) && v.includes('Foreclosure on your home is pending (date:)');
@@ -156,6 +169,7 @@ const stepUrgency: Step = {
       id: 'repossession_date',
       type: 'text',
       label: 'Repossession date (if known)',
+      helper: 'Enter the date if you know it — estimate if needed.',
       showIf: (a) => {
         const v = a['urgency_flags'];
         return Array.isArray(v) && v.includes('Risk of vehicle repossession (date:)');
@@ -165,6 +179,7 @@ const stepUrgency: Step = {
       id: 'shutoff_date',
       type: 'text',
       label: 'Shutoff date (if known)',
+      helper: 'Enter the date if you know it — estimate if needed.',
       showIf: (a) => {
         const v = a['urgency_flags'];
         return Array.isArray(v) && v.includes('Utility shutoff notice received (date:)');
@@ -173,8 +188,9 @@ const stepUrgency: Step = {
     {
       id: 'self_employed',
       type: 'radio',
-      label: 'Are you self-employed or operating a business?',
+      label: 'Are you currently self-employed or running a business?',
       required: true,
+      helper: 'Includes side businesses, contract work, and sole proprietorships.',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -189,8 +205,9 @@ const stepUrgency: Step = {
     {
       id: 'cosigner_debts',
       type: 'radio',
-      label: 'Do you have any debts with a co-signer or co-borrower?',
+      label: 'Do any of your debts have a co-signer or co-borrower?',
       required: true,
+      helper: 'A co-signer is someone else legally responsible for the same debt.',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -211,7 +228,7 @@ function buildRealEstateFields(): Step['fields'] {
     {
       id: 'real_estate_ownership',
       type: 'radio',
-      label: 'Real Estate Ownership',
+      label: 'Do you own real estate or have a legal interest in any property?',
       required: true,
       options: [
         { value: 'Yes, I own real estate', label: 'Yes, I own real estate' },
@@ -221,7 +238,7 @@ function buildRealEstateFields(): Step['fields'] {
     {
       id: 'real_estate_count',
       type: 'select',
-      label: 'If Yes, how many properties do you own? (Maximum 3)',
+      label: 'If Yes, how many properties? (Maximum 3)',
       required: true,
       showIf: hasRealEstate,
       options: [
@@ -258,8 +275,8 @@ function buildRealEstateFields(): Step['fields'] {
       {
         id: `${prefix}value`,
         type: 'text',
-        label: `Property ${n} Estimated Value`,
-        helper: 'What could it sell for today?',
+        label: `Property ${n} — Estimated property value (what it could sell for today)`,
+        helper: 'Use a rough market estimate — not your purchase price.',
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
       },
       {
@@ -277,18 +294,19 @@ function buildRealEstateFields(): Step['fields'] {
         id: `${prefix}mortgage_details`,
         type: 'textarea',
         label: `Property ${n} Mortgage Details`,
+        helper: 'Copy from your latest mortgage statement if available.',
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n && a[`${prefix}mortgage`] === 'Yes',
       },
       {
         id: `${prefix}plan`,
         type: 'radio',
-        label: `Property ${n} Plan`,
+        label: `What do you want to do with this property?`,
         required: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
         options: [
-          { value: 'Keep the property', label: 'Keep the property' },
-          { value: 'Surrender the property (let it go)', label: 'Surrender the property (let it go)' },
-          { value: 'Not Sure', label: 'Not Sure' },
+          { value: 'Keep the property', label: 'Keep and continue paying' },
+          { value: 'Surrender the property (let it go)', label: 'Surrender (give up the property)' },
+          { value: 'Not Sure', label: 'Not sure yet' },
         ],
       },
       {
@@ -322,8 +340,8 @@ function buildRealEstateFields(): Step['fields'] {
 
 const stepRealEstate: Step = {
   id: 'real_estate',
-  title: 'Real Estate Ownership',
-  description: 'List any real property you own and how you want to treat it in the case.',
+  title: 'Real Estate',
+  description: 'Include any property you own or have a legal interest in — even if someone else lives there.',
   showIf: always,
   fields: buildRealEstateFields(),
 };
@@ -334,7 +352,7 @@ function buildBankAccountFields(): Step['fields'] {
     {
       id: 'bank_accounts',
       type: 'radio',
-      label: 'Bank Accounts',
+      label: 'Do you have bank accounts?',
       required: true,
       options: [
         { value: 'Yes, I have bank accounts', label: 'Yes, I have bank accounts' },
@@ -344,7 +362,7 @@ function buildBankAccountFields(): Step['fields'] {
     {
       id: 'bank_account_count',
       type: 'select',
-      label: 'How many accounts do you have? (Maximum 3)',
+      label: 'How many accounts? (Maximum 3)',
       required: true,
       showIf: hasBankAccounts,
       options: [
@@ -374,6 +392,7 @@ function buildBankAccountFields(): Step['fields'] {
         id: `${prefix}balance`,
         type: 'text',
         label: `Account ${n}: Current Balance`,
+        helper: 'Today\'s approximate balance is fine.',
         showIf: (a) => hasBankAccounts(a) && getBankAccountCount(a) >= n,
       }
     );
@@ -391,7 +410,7 @@ function buildBankAccountFields(): Step['fields'] {
 const stepBankAccounts: Step = {
   id: 'bank_accounts',
   title: 'Bank Accounts',
-  description: 'List your bank accounts and upload recent statements if you have them.',
+  description: 'Include checking, savings, credit union, and online bank accounts.',
   showIf: always,
   fields: buildBankAccountFields(),
 };
@@ -405,10 +424,10 @@ const stepSecurityDeposits: Step = {
     {
       id: 'security_deposits',
       type: 'radio',
-      label: 'Security Deposits',
+      label: 'Do you have any security deposits?',
       required: true,
       options: [
-        { value: 'Yes, I have security deposits (e.g., rent, utilities)', label: 'Yes, I have security deposits (e.g., rent, utilities)' },
+        { value: 'Yes, I have security deposits (e.g., rent, utilities)', label: 'Yes, I have security deposits' },
         { value: 'No, I do not have security deposits', label: 'No, I do not have security deposits' },
       ],
     },
@@ -416,7 +435,7 @@ const stepSecurityDeposits: Step = {
       id: 'security_deposit_details',
       type: 'textarea',
       label: 'Security Deposit Details',
-      helper: 'Holder name and amount.',
+      helper: 'Examples: apartment deposit, utility deposit, phone deposit.',
       showIf: hasSecurityDeposits,
     },
   ],
@@ -432,7 +451,8 @@ const HOUSEHOLD_COLUMNS = [
 ];
 const stepHouseholdProperty: Step = {
   id: 'household_property',
-  title: 'Household Property (Estimate total value)',
+  title: 'Household Property',
+  description: 'Estimate what these items would sell for used — not what you paid.',
   showIf: always,
   fields: [
     {
@@ -456,13 +476,13 @@ const stepHouseholdProperty: Step = {
 const VALUABLES_NONE = 'None of the above';
 const stepValuables: Step = {
   id: 'valuables',
-  title: 'Valuables (Non-household items)',
+  title: 'Higher-Value Personal Property',
   showIf: always,
   fields: [
     {
       id: 'valuables',
       type: 'checkbox',
-      label: 'Valuables',
+      label: 'Do you have any of the following?',
       options: [
         { value: 'Jewelry valued over $500 (per item)', label: 'Jewelry valued over $500 (per item)' },
         { value: 'Firearms', label: 'Firearms' },
@@ -475,8 +495,8 @@ const stepValuables: Step = {
     {
       id: 'valuables_details',
       type: 'textarea',
-      label: 'Valuables Details (Max 3 items)',
-      helper: 'For each: description + estimated value (or Not sure).',
+      label: 'Details (for each selected)',
+      helper: 'List items worth more than about $500 each.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'valuables', VALUABLES_NONE),
     },
   ],
@@ -487,12 +507,13 @@ const FINANCIAL_NONE = 'None of the above';
 const stepFinancialAssets: Step = {
   id: 'financial_assets',
   title: 'Financial Assets',
+  description: 'Include accounts or rights that could have monetary value.',
   showIf: always,
   fields: [
     {
       id: 'financial_assets',
       type: 'checkbox',
-      label: 'Financial Assets',
+      label: 'Do you have any of the following?',
       options: [
         { value: 'Retirement accounts (401k, IRA, etc.)', label: 'Retirement accounts (401k, IRA, etc.)' },
         { value: 'Pension or Annuity plans', label: 'Pension or Annuity plans' },
@@ -509,8 +530,8 @@ const stepFinancialAssets: Step = {
     {
       id: 'financial_assets_details',
       type: 'textarea',
-      label: 'Financial Asset Details',
-      helper: 'For each selected: institution, account # (if any), estimated value (or Not sure).',
+      label: 'Details (for each selected)',
+      helper: 'For each selected: institution, account # (if any), estimated value (or Not sure). Tax refund: include expected refunds you have not received yet. Lawsuit: include claims you could file, even if you haven\'t filed yet.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'financial_assets', FINANCIAL_NONE),
     },
   ],
@@ -548,8 +569,8 @@ function buildVehicleFields(): Step['fields'] {
       {
         id: `${prefix}details`,
         type: 'text',
-        label: `Vehicle ${n} Details`,
-        helper: 'Make, Model, Year, Mileage, Estimated Value (or Not sure)',
+        label: `Vehicle ${n} — Make, model, year, mileage`,
+        helper: 'Estimate private-party resale value today.',
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n,
       },
       {
@@ -566,13 +587,14 @@ function buildVehicleFields(): Step['fields'] {
         id: `${prefix}loan_details`,
         type: 'textarea',
         label: `Vehicle ${n} Loan Details`,
-        helper: 'Lender, balance, payment, arrears',
+        helper: 'Copy from your latest loan statement if available.',
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n && a[`${prefix}loan`] === 'Yes',
       },
       {
         id: `${prefix}plan`,
         type: 'radio',
-        label: `Vehicle ${n} Plan`,
+        label: `What do you want to do with Vehicle ${n}?`,
+        helper: 'You can change this decision later with your attorney.',
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n,
         options: [
           { value: 'Keep', label: 'Keep' },
@@ -584,7 +606,7 @@ function buildVehicleFields(): Step['fields'] {
         id: `${prefix}uploads`,
         type: 'file',
         label: `Upload Documents for Vehicle ${n}`,
-        helper: 'Loan statement and title if available',
+        helper: 'Loan statement and title if available.',
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n,
       }
     );
@@ -603,13 +625,14 @@ const stepVehicles: Step = {
 const SECURED_NONE = 'None of the above';
 const stepOtherSecured: Step = {
   id: 'other_secured_debts',
-  title: 'Other Secured Debts (Debts tied to collateral)',
+  title: 'Other Secured Debts',
+  description: 'These are debts tied to specific property that can be taken if unpaid.',
   showIf: always,
   fields: [
     {
       id: 'other_secured_debts',
       type: 'checkbox',
-      label: 'Other Secured Debts',
+      label: 'Do you have any of the following?',
       options: [
         { value: 'Furniture or electronics financing (not part of mortgage)', label: 'Furniture or electronics financing (not part of mortgage)' },
         { value: 'Pawn shop loans', label: 'Pawn shop loans' },
@@ -621,7 +644,7 @@ const stepOtherSecured: Step = {
     {
       id: 'other_secured_details',
       type: 'textarea',
-      label: 'Other Secured Debts Details',
+      label: 'Details',
       helper: 'Creditor, collateral, balance.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'other_secured_debts', SECURED_NONE),
     },
@@ -632,13 +655,14 @@ const stepOtherSecured: Step = {
 const PRIORITY_NONE = 'None of the above';
 const stepPriorityDebts: Step = {
   id: 'priority_debts',
-  title: 'Priority Debts (Special legal status)',
+  title: 'Priority Debts',
+  description: 'These debts receive special treatment in bankruptcy.',
   showIf: always,
   fields: [
     {
       id: 'priority_debts',
       type: 'checkbox',
-      label: 'Priority Debts',
+      label: 'Do you owe any of the following?',
       options: [
         { value: 'Back taxes (Federal, State, or Local)', label: 'Back taxes (Federal, State, or Local)' },
         { value: 'Child support arrears', label: 'Child support arrears' },
@@ -650,7 +674,7 @@ const stepPriorityDebts: Step = {
     {
       id: 'priority_debts_details',
       type: 'textarea',
-      label: 'Priority Debts Details',
+      label: 'Details',
       helper: 'Agency/recipient, type, amount owed.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'priority_debts', PRIORITY_NONE),
     },
@@ -660,19 +684,21 @@ const stepPriorityDebts: Step = {
 // Step 14 — Unsecured Debts
 const stepUnsecured: Step = {
   id: 'unsecured_debts',
-  title: 'Unsecured Debts (Credit cards, medical bills, personal loans)',
+  title: 'Unsecured Debts',
+  description: 'Credit cards, medical bills, personal loans, and similar debts.',
   showIf: always,
   fields: [
     {
       id: 'credit_report_upload',
       type: 'file',
       label: 'Upload Credit Report (Recommended)',
+      helper: 'Uploading a credit report is the fastest and most accurate option.',
     },
     {
       id: 'unsecured_creditors',
       type: 'textarea',
-      label: 'Optional: List your 5 largest unsecured creditors and balances',
-      helper: 'Creditor name + approximate balance.',
+      label: 'Or list your largest unsecured creditors and balances',
+      helper: 'List your largest balances first if you don\'t enter all.',
     },
   ],
 };
@@ -681,13 +707,14 @@ const stepUnsecured: Step = {
 const LEASES_NONE = 'None of the above';
 const stepLeases: Step = {
   id: 'leases_contracts',
-  title: 'Leases & Contracts (Agreements you are currently obligated to)',
+  title: 'Leases & Contracts',
+  description: 'Include agreements where you are still required to make payments.',
   showIf: always,
   fields: [
     {
       id: 'leases_contracts',
       type: 'checkbox',
-      label: 'Leases & Contracts',
+      label: 'Do you have any of the following?',
       options: [
         { value: 'Home lease or rental agreement (if you don\'t own)', label: 'Home lease or rental agreement (if you don\'t own)' },
         { value: 'Vehicle lease', label: 'Vehicle lease' },
@@ -700,7 +727,7 @@ const stepLeases: Step = {
     {
       id: 'leases_contracts_details',
       type: 'textarea',
-      label: 'Leases & Contracts Details',
+      label: 'Details',
       helper: 'Type, company, monthly payment, remaining term.',
       showIf: (a) => hasAnySelectedExceptNone(a, 'leases_contracts', LEASES_NONE),
     },
@@ -717,6 +744,7 @@ function buildEmploymentFields(): Step['fields'] {
       id: 'debtor_pay_frequency',
       type: 'select',
       label: 'Pay frequency',
+      helper: 'Choose how often you are paid.',
       options: [
         { value: 'Weekly', label: 'Weekly' },
         { value: 'Bi-weekly', label: 'Bi-weekly' },
@@ -725,7 +753,7 @@ function buildEmploymentFields(): Step['fields'] {
         { value: 'Other', label: 'Other' },
       ],
     },
-    { id: 'debtor_gross_pay', type: 'text', label: 'Gross pay per check', helper: 'Allow Not sure' },
+    { id: 'debtor_gross_pay', type: 'text', label: 'Gross pay per check', helper: 'Estimates are OK. Enter "Not sure" if needed.' },
   ];
   base.push(
     { id: 'spouse_employer', type: 'text', label: 'Spouse: Employer name', showIf: isJointFiling },
@@ -735,6 +763,7 @@ function buildEmploymentFields(): Step['fields'] {
       id: 'spouse_pay_frequency',
       type: 'select',
       label: 'Spouse: Pay frequency',
+      helper: 'Choose how often you are paid.',
       showIf: isJointFiling,
       options: [
         { value: 'Weekly', label: 'Weekly' },
@@ -750,7 +779,7 @@ function buildEmploymentFields(): Step['fields'] {
     {
       id: 'other_income_types',
       type: 'checkbox',
-      label: 'Other Income Types',
+      label: 'Other income (include any regular money you receive)',
       options: [
         { value: 'Social Security', label: 'Social Security' },
         { value: 'Disability or Worker\'s Comp', label: 'Disability or Worker\'s Comp' },
@@ -765,14 +794,14 @@ function buildEmploymentFields(): Step['fields'] {
     {
       id: 'other_income_details',
       type: 'textarea',
-      label: 'Other Income Details (Source and Monthly Amount)',
+      label: 'Other income details (source and monthly amount)',
       showIf: (a) => hasAnySelectedExceptNone(a, 'other_income_types', 'None of the above'),
     },
     {
       id: 'income_uploads',
       type: 'file',
-      label: 'Income Document Uploads',
-      helper: 'Paystubs (last 6 months) and tax returns (last 2 years).',
+      label: 'Income document uploads',
+      helper: 'Paystubs (last 6 months) and tax returns (last 2 years). PDFs or phone photos are fine.',
     }
   );
   return base;
@@ -780,7 +809,8 @@ function buildEmploymentFields(): Step['fields'] {
 
 const stepEmployment: Step = {
   id: 'employment',
-  title: 'Employment and Income — Debtor',
+  title: 'Employment & Income',
+  description: 'Enter current income information. Use estimates if needed.',
   showIf: always,
   fields: buildEmploymentFields(),
 };
@@ -795,7 +825,8 @@ const EXPENSE_COLUMNS = [
 ];
 const stepMonthlyExpenses: Step = {
   id: 'monthly_expenses',
-  title: 'Monthly Expenses (Estimate ranges)',
+  title: 'Monthly Expenses',
+  description: 'Estimate your typical monthly spending. Round numbers are fine.',
   showIf: always,
   fields: [
     {
@@ -821,12 +852,13 @@ const stepMonthlyExpenses: Step = {
 // Step 18 — Income History
 const stepIncomeHistory: Step = {
   id: 'income_history',
-  title: 'Income History (Gross Income before deductions)',
+  title: 'Income History',
+  description: 'Gross income before deductions.',
   showIf: always,
   fields: [
     { id: 'income_current_ytd', type: 'text', label: 'Total Gross Income — Current Year (Year-to-Date)' },
     { id: 'income_last_year', type: 'text', label: 'Total Gross Income — Last Full Year' },
-    { id: 'income_two_years_ago', type: 'text', label: 'Total Gross Income — Two Years Ago', helper: 'Estimates are ok.' },
+    { id: 'income_two_years_ago', type: 'text', label: 'Total Gross Income — Two Years Ago', helper: 'Use tax returns or estimates if exact numbers are not available.' },
   ],
 };
 
@@ -834,13 +866,13 @@ const stepIncomeHistory: Step = {
 const stepRecentActivity: Step = {
   id: 'recent_activity',
   title: 'Recent Financial Activity',
-  description: 'These questions are required by bankruptcy law. Answering "yes" does not automatically create a problem — your attorney will review.',
+  description: 'These questions are required by bankruptcy law. Answering "yes" does not automatically create a problem. Your attorney will review the details with you.',
   showIf: always,
   fields: [
     {
       id: 'paid_creditor_600',
       type: 'radio',
-      label: 'Paid any single creditor > $600 in last 90 days?',
+      label: 'Paid any one creditor more than $600 in the last 90 days?',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -855,7 +887,7 @@ const stepRecentActivity: Step = {
     {
       id: 'repaid_loans_gifts',
       type: 'radio',
-      label: 'Repaid loans or gifted money/property to friends/family in last year?',
+      label: 'Repaid or gave money or property to friends or family in the last year?',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -870,7 +902,7 @@ const stepRecentActivity: Step = {
     {
       id: 'lawsuits_garnishments',
       type: 'radio',
-      label: 'Involved in lawsuits, garnishments, or levies?',
+      label: 'Any lawsuits or garnishments involving you?',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -885,7 +917,7 @@ const stepRecentActivity: Step = {
     {
       id: 'repossession_foreclosure',
       type: 'radio',
-      label: 'Property repossessed or foreclosed in last year?',
+      label: 'Any property repossessed or foreclosed recently?',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -900,7 +932,7 @@ const stepRecentActivity: Step = {
     {
       id: 'transferred_property',
       type: 'radio',
-      label: 'Transferred or sold property in last 2 years?',
+      label: 'Sold or transferred property in the last 2 years?',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -915,7 +947,7 @@ const stepRecentActivity: Step = {
     {
       id: 'closed_accounts',
       type: 'radio',
-      label: 'Closed accounts/investments/credit lines in last year?',
+      label: 'Closed financial accounts in the last year?',
       options: [
         { value: 'Yes', label: 'Yes' },
         { value: 'No', label: 'No' },
@@ -933,15 +965,16 @@ const stepRecentActivity: Step = {
 // Step 20 — Upload Checklist
 const stepUploadChecklist: Step = {
   id: 'upload_checklist',
-  title: 'Upload Checklist (Final Uploads)',
+  title: 'Upload Checklist',
+  description: 'Upload any documents you have available now. You can add more later.',
   showIf: always,
   fields: [
-    { id: 'upload_paystubs', type: 'file', label: 'Paystubs (6 months)', helper: 'Paystubs (6 months)' },
-    { id: 'upload_bank_statements', type: 'file', label: 'Bank Statements (most recent)', helper: 'Bank Statements (most recent)' },
-    { id: 'upload_tax_returns', type: 'file', label: 'Tax Returns (last 2 years)', helper: 'Tax Returns (last 2 years)' },
-    { id: 'upload_vehicle_docs', type: 'file', label: 'Vehicle Documents (loan statements, titles)', helper: 'Vehicle Documents (loan statements, titles)' },
-    { id: 'upload_mortgage_docs', type: 'file', label: 'Mortgage Documents (statements, deeds)', helper: 'Mortgage Documents (statements, deeds)' },
-    { id: 'upload_credit_report', type: 'file', label: 'Credit Report (recommended)', helper: 'Credit Report (recommended)' },
+    { id: 'upload_paystubs', type: 'file', label: 'Paystubs (6 months)' },
+    { id: 'upload_bank_statements', type: 'file', label: 'Bank Statements (most recent)' },
+    { id: 'upload_tax_returns', type: 'file', label: 'Tax Returns (last 2 years)' },
+    { id: 'upload_vehicle_docs', type: 'file', label: 'Vehicle Documents (loan statements, titles)' },
+    { id: 'upload_mortgage_docs', type: 'file', label: 'Mortgage Documents (statements, deeds)' },
+    { id: 'upload_credit_report', type: 'file', label: 'Credit Report (recommended)' },
   ],
 };
 
@@ -954,12 +987,12 @@ const stepFinalReview: Step = {
     {
       id: 'confidence',
       type: 'radio',
-      label: 'How confident are you that you have completed all sections accurately?',
+      label: 'How confident are you that your answers are complete and accurate?',
       required: true,
       options: [
-        { value: 'Very confident (feel I answered everything accurately)', label: 'Very confident (feel I answered everything accurately)' },
-        { value: 'Mostly confident (a few guesses/estimates)', label: 'Mostly confident (a few guesses/estimates)' },
-        { value: 'Not sure (need significant help from the attorney)', label: 'Not sure (need significant help from the attorney)' },
+        { value: 'Very confident (feel I answered everything accurately)', label: 'Very confident' },
+        { value: 'Mostly confident (a few guesses/estimates)', label: 'Mostly confident' },
+        { value: 'Not sure (need significant help from the attorney)', label: 'Need help reviewing' },
       ],
     },
   ],

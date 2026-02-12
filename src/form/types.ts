@@ -55,6 +55,8 @@ export interface Step {
   showIf: (answers: Answers) => boolean;
 }
 
+export type ViewMode = 'client' | 'attorney';
+
 export interface IntakeState {
   answers: Answers;
   uploads: Uploads;
@@ -62,6 +64,7 @@ export interface IntakeState {
   lastSavedAt: number | null;
   saving: boolean;
   submitted: boolean;
+  viewMode: ViewMode;
 }
 
 export interface ValidationError {
@@ -69,4 +72,6 @@ export interface ValidationError {
   stepId: string;
   fieldId: string;
   message: string;
+  /** When 'warning', does not block Next/submit (e.g. soft numeric hint). */
+  severity?: 'error' | 'warning';
 }

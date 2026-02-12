@@ -14,6 +14,8 @@ interface StepShellProps {
   saveStatusText: string;
   focusFieldId?: string | null;
   nextDisabled?: boolean;
+  stepBanner?: string;
+  saving?: boolean;
 }
 
 export function StepShell({
@@ -28,6 +30,8 @@ export function StepShell({
   onSubmit,
   saveStatusText,
   nextDisabled = false,
+  stepBanner,
+  saving = false,
 }: StepShellProps) {
   return (
     <div className="step-shell">
@@ -35,6 +39,7 @@ export function StepShell({
         <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
         <h2>{title}</h2>
         {description && <p className="header-subtext">{description}</p>}
+        {stepBanner && <p className="step-banner" role="alert">{stepBanner}</p>}
         <div style={{ marginBottom: '24px' }}>{children}</div>
       </div>
       <div className="step-footer">
@@ -48,8 +53,8 @@ export function StepShell({
             Back
           </button>
           {isLastStep ? (
-            <button type="button" className="primary" onClick={onSubmit}>
-              Submit (Demo)
+            <button type="button" className="primary" onClick={onSubmit} disabled={saving}>
+              {saving ? 'Submitting…' : 'Submit (Demo)'}
             </button>
           ) : (
             <button

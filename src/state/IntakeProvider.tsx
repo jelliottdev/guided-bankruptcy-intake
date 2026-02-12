@@ -7,9 +7,9 @@ import {
   type Dispatch,
   type ReactNode,
 } from 'react';
-import { initialIntakeState } from '../form/defaults';
-import type { Answers, FieldValue, IntakeState, Uploads } from '../form/types';
-import { clearStorage, loadFromStorage, saveToStorage } from './autosave';
+import { getInitialAnswers, initialIntakeState, SCHEMA_VERSION } from '../form/defaults';
+import type { Answers, FieldValue, IntakeState, Uploads, ViewMode } from '../form/types';
+import { clearStorage, loadFromStorage, saveToStorage, trimUploadsForStorage } from './autosave';
 
 export type IntakeAction =
   | { type: 'SET_ANSWER'; fieldId: string; value: FieldValue }
@@ -20,7 +20,8 @@ export type IntakeAction =
   | { type: 'HYDRATE'; state: Partial<IntakeState> }
   | { type: 'SET_LAST_SAVED'; lastSavedAt: number | null }
   | { type: 'SET_SAVING'; saving: boolean }
-  | { type: 'SET_SUBMITTED'; submitted: boolean };
+  | { type: 'SET_SUBMITTED'; submitted: boolean }
+  | { type: 'SET_VIEW_MODE'; mode: ViewMode };
 
 function intakeReducer(state: IntakeState, action: IntakeAction): IntakeState {
   switch (action.type) {
@@ -58,6 +59,8 @@ function intakeReducer(state: IntakeState, action: IntakeAction): IntakeState {
       return { ...state, saving: action.saving };
     case 'SET_SUBMITTED':
       return { ...state, submitted: action.submitted };
+    case 'SET_VIEW_MODE':
+      return { ...state, viewMode: action.mode };
     default:
       return state;
   }
@@ -71,6 +74,7 @@ interface IntakeContextValue {
   removeUpload: (fieldId: string, filename: string) => void;
   setStep: (stepIndex: number) => void;
   reset: () => void;
+  setViewMode: (mode: ViewMode) => void;
 }
 
 const IntakeContext = createContext<IntakeContextValue | null>(null);
@@ -95,12 +99,13 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
       dispatch({
         type: 'HYDRATE',
         state: {
-          answers: stored.answers as Answers,
+          answers: { ...getInitialAnswers(), ...(stored.answers as Answers) },
           uploads: (stored.uploads ?? {}) as Uploads,
           currentStepIndex: Math.max(0, stored.currentStepIndex ?? 0),
           lastSavedAt: stored.lastSavedAt ?? null,
           saving: false,
           submitted: false,
+          viewMode: stored.viewMode ?? 'client',
         },
       });
     }
@@ -126,6 +131,10 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'RESET' });
   }, []);
 
+  const setViewMode = useCallback((mode: ViewMode) => {
+    dispatch({ type: 'SET_VIEW_MODE', mode });
+  }, []);
+
   const value: IntakeContextValue = {
     state,
     dispatch,
@@ -134,6 +143,7 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
     removeUpload,
     setStep,
     reset,
+    setViewMode,
   };
 
   return (
@@ -155,11 +165,12 @@ function AutosaveEffect({
     dispatch({ type: 'SET_SAVING', saving: true });
     const t = setTimeout(() => {
       const now = saveToStorage({
-        schemaVersion: 'v1',
+        schemaVersion: SCHEMA_VERSION,
         answers: state.answers,
-        uploads: state.uploads,
+        uploads: trimUploadsForStorage(state.uploads),
         currentStepIndex: state.currentStepIndex,
         lastSavedAt: state.lastSavedAt,
+        viewMode: state.viewMode,
       });
       if (now != null) dispatch({ type: 'SET_LAST_SAVED', lastSavedAt: now });
       dispatch({ type: 'SET_SAVING', saving: false });
@@ -167,7 +178,7 @@ function AutosaveEffect({
     return () => clearTimeout(t);
     // Intentionally omit state.lastSavedAt to avoid re-running on every save
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.answers, state.uploads, state.currentStepIndex, dispatch]);
+  }, [state.answers, state.uploads, state.currentStepIndex, state.viewMode, dispatch]);
 
   return null;
 }

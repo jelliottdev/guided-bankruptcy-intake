@@ -1,9 +1,10 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, type ReactNode } from 'react';
 import { IntakeProvider, useIntake } from './state/IntakeProvider';
 import { Layout } from './ui/Layout';
 import { StepShell } from './ui/StepShell';
 import { FieldRenderer } from './ui/FieldRenderer';
 import { Review } from './ui/Review';
+import { AttorneyDashboard } from './ui/AttorneyDashboard';
 import { getVisibleSteps } from './form/steps';
 import { getErrorsForStep } from './form/validate';
 
@@ -17,8 +18,8 @@ function lastSavedText(lastSavedAt: number | null): string {
 }
 
 function AppContent() {
-  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset } = useIntake();
-  const { answers, uploads, currentStepIndex, lastSavedAt, saving, submitted } = state;
+  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset, setViewMode } = useIntake();
+  const { answers, uploads, currentStepIndex, lastSavedAt, saving, submitted, viewMode } = state;
 
   const [focusFieldId, setFocusFieldId] = useState<string | null>(null);
   /** Steps where user has pressed Next (so we show errors only after attempt, not on first render or after Back). */
@@ -47,7 +48,26 @@ function AppContent() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [currentStepIndex]);
+    const firstFieldId = steps[currentStepIndex]?.fields[0]?.id ?? null;
+    setFocusFieldId(firstFieldId);
+  }, [currentStepIndex, steps]);
+
+  useEffect(() => {
+    const hasData = Object.keys(answers).some((k) => {
+      const v = answers[k];
+      if (v == null) return false;
+      if (typeof v === 'string') return v.trim() !== '';
+      if (Array.isArray(v)) return v.length > 0;
+      return Object.keys(v).length > 0;
+    });
+    const handler = (e: BeforeUnloadEvent) => {
+      if (hasData && !submitted) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [answers, submitted]);
 
   const onBack = useCallback(() => {
     setFocusFieldId(null);
@@ -69,6 +89,21 @@ function AppContent() {
     [setStep]
   );
 
+  const onGoToWizard = useCallback(
+    (stepIndex: number, fieldId?: string) => {
+      setViewMode('client');
+      setStep(stepIndex);
+      setFocusFieldId(fieldId ?? null);
+    },
+    [setViewMode, setStep]
+  );
+
+  const handleReset = useCallback(() => {
+    reset();
+    setAttemptedSteps(new Set());
+    setFocusFieldId(null);
+  }, [reset]);
+
   const handleSubmit = useCallback(() => {
     dispatch({ type: 'SET_SUBMITTED', submitted: true });
   }, [dispatch]);
@@ -82,48 +117,40 @@ function AppContent() {
     };
   }, []);
 
+  const stepBanner =
+    showErrorsForCurrentStep && currentStepErrors.length > 0
+      ? 'This section has missing required items.'
+      : undefined;
+
+  let wizardContent: ReactNode;
   if (!currentStep) {
-    return (
-      <Layout email={urlParams.email} phone={urlParams.phone} onReset={reset}>
-        <p>No steps to show.</p>
-      </Layout>
+    wizardContent = <p>No steps to show.</p>;
+  } else if (isFinalReviewStep && !submitted) {
+    wizardContent = (
+      <Review
+        currentStepIndex={currentStepIndex}
+        totalSteps={totalSteps}
+        onBack={onBack}
+        onSubmit={handleSubmit}
+        saveStatusText={saveStatusText}
+        jumpToStep={jumpToStep}
+        submitted={false}
+      />
     );
-  }
-
-  if (isFinalReviewStep && !submitted) {
-    return (
-      <Layout email={urlParams.email} phone={urlParams.phone} onReset={reset}>
-        <Review
-          currentStepIndex={currentStepIndex}
-          totalSteps={totalSteps}
-          onBack={onBack}
-          onSubmit={handleSubmit}
-          saveStatusText={saveStatusText}
-          jumpToStep={jumpToStep}
-          submitted={false}
-        />
-      </Layout>
+  } else if (submitted) {
+    wizardContent = (
+      <Review
+        currentStepIndex={currentStepIndex}
+        totalSteps={totalSteps}
+        onBack={onBack}
+        onSubmit={handleSubmit}
+        saveStatusText={saveStatusText}
+        jumpToStep={jumpToStep}
+        submitted={true}
+      />
     );
-  }
-
-  if (submitted) {
-    return (
-      <Layout email={urlParams.email} phone={urlParams.phone} onReset={reset}>
-        <Review
-          currentStepIndex={currentStepIndex}
-          totalSteps={totalSteps}
-          onBack={onBack}
-          onSubmit={handleSubmit}
-          saveStatusText={saveStatusText}
-          jumpToStep={jumpToStep}
-          submitted={true}
-        />
-      </Layout>
-    );
-  }
-
-  return (
-    <Layout email={urlParams.email} phone={urlParams.phone} onReset={reset}>
+  } else {
+    wizardContent = (
       <StepShell
         title={currentStep.title}
         description={currentStep.description}
@@ -134,6 +161,8 @@ function AppContent() {
         isLastStep={false}
         saveStatusText={saveStatusText}
         nextDisabled={nextDisabled}
+        stepBanner={stepBanner}
+        saving={saving}
       >
         <form onSubmit={(e) => e.preventDefault()} style={{ marginBottom: 0 }}>
           {currentStep.fields.map((field) => (
@@ -153,7 +182,27 @@ function AppContent() {
           ))}
         </form>
       </StepShell>
-    </Layout>
+    );
+  }
+
+  return (
+    <div className={`app-root ${viewMode === 'attorney' ? 'attorney-mode' : ''}`}>
+      <div className="app-screens">
+        <div className={`screen screen-client ${viewMode === 'client' ? 'active' : 'inactive'}`}>
+          <Layout email={urlParams.email} phone={urlParams.phone} onReset={handleReset}>
+            {wizardContent}
+          </Layout>
+        </div>
+        <div className={`screen screen-attorney ${viewMode === 'attorney' ? 'active' : 'inactive'}`}>
+          <AttorneyDashboard
+            email={urlParams.email}
+            phone={urlParams.phone}
+            onGoToWizard={onGoToWizard}
+            onReset={handleReset}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
