@@ -117,6 +117,15 @@ function AppContent() {
     };
   }, []);
 
+  useEffect(() => {
+    if (viewMode === 'attorney') {
+      document.body.classList.add('attorney-mode');
+    } else {
+      document.body.classList.remove('attorney-mode');
+    }
+    return () => document.body.classList.remove('attorney-mode');
+  }, [viewMode]);
+
   const stepBanner =
     showErrorsForCurrentStep && currentStepErrors.length > 0
       ? 'This section has missing required items.'

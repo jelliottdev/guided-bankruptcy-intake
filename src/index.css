@@ -15,6 +15,34 @@ body {
   min-height: 100vh;
 }
 
+/* Full-bleed dark when Attorney View: no white border, dark scrollbar */
+body.attorney-mode {
+  background: #0b0f14;
+  scrollbar-color: #374151 #1f2937;
+}
+
+body.attorney-mode::-webkit-scrollbar {
+  width: 12px;
+}
+
+body.attorney-mode::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+body.attorney-mode::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 6px;
+}
+
+body.attorney-mode::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+body.attorney-mode #root {
+  padding: 0;
+  min-height: 100vh;
+}
+
 #root {
   min-height: 100vh;
   padding: 1rem;
@@ -555,6 +583,7 @@ select:focus {
 
 .app-root.attorney-mode {
   background: #0b0f14;
+  min-height: 100vh;
 }
 
 .app-screens {
@@ -606,6 +635,23 @@ select:focus {
   padding: 24px 32px 48px;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.attorney-dashboard::-webkit-scrollbar {
+  width: 12px;
+}
+
+.attorney-dashboard::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.attorney-dashboard::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 6px;
+}
+
+.attorney-dashboard::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
 }
 
 .attorney-header {
@@ -929,14 +975,13 @@ select:focus {
   right: 0;
 }
 
-/* Field highlight when jumping from Attorney View */
+/* Field highlight when jumping from Attorney View (blue, not yellow) */
 .field-wrap.field-highlight {
-  outline: 2px solid #eab308;
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
-  animation: field-highlight-pulse 0.5s ease;
 }
 
 @keyframes field-highlight-pulse {
-  0% { outline-color: #eab308; }
-  100% { outline-color: #eab308; }
+  0% { outline-color: #2563eb; }
+  100% { outline-color: #2563eb; }
 }
