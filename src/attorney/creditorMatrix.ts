@@ -66,10 +66,15 @@ export function buildCreditorMatrix(answers: Answers): CreditorRow[] {
   return rows;
 }
 
-/** Export as plain text worksheet */
+/** Export as plain text worksheet from intake */
 export function exportCreditorWorksheet(answers: Answers): string {
   const rows = buildCreditorMatrix(answers);
-  const lines = ['Creditor Worksheet — Auto-generated from intake', '', 'Creditor | Type | Balance/Notes', '---'];
+  return exportCreditorWorksheetFromRows(rows);
+}
+
+/** Export worksheet from any list of creditor rows (e.g. intake + attorney overlay) */
+export function exportCreditorWorksheetFromRows(rows: CreditorRow[]): string {
+  const lines = ['Creditor Worksheet', '', 'Creditor | Type | Balance/Notes', '---'];
   rows.forEach((r) => {
     lines.push(`${r.name} | ${r.type} | ${r.balanceOrNote ?? ''}`);
   });

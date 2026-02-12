@@ -1019,9 +1019,9 @@ function buildEmploymentFields(): Step['fields'] {
     {
       id: 'income_uploads',
       type: 'file',
-      label: 'Upload Paystubs — Last 6 Months',
+      label: 'Upload Paystubs — Last 60 Days',
       uploadForTag: 'Income',
-      helper: 'Upload your paystubs covering the last 6 months. If paid electronically, download the paystub PDFs from your payroll portal. Please upload the official statement document — not screenshots or summaries.',
+      helper: 'Upload your last 60 days of paystubs (all employers). PDF or image. If paid electronically, download from your payroll portal.',
       examples: 'Examples: ADP, Paychex, Workday paystub PDFs.',
       doNotUpload: 'Do not upload: offer letters, timesheets, or bank deposits.',
       dateRangeRequested: 'Last 6 months',
@@ -1232,9 +1232,9 @@ const stepUploadChecklist: Step = {
     {
       id: 'upload_paystubs',
       type: 'file',
-      label: 'Upload Paystubs — Last 6 Months',
+      label: 'Upload Paystubs — Last 60 Days',
       uploadForTag: 'Income',
-      helper: 'Upload your paystubs covering the last 6 months. If paid electronically, download the paystub PDFs from your payroll portal. Please upload the official statement document — not screenshots or summaries.',
+      helper: 'Upload your last 60 days of paystubs (all employers). PDF or image. If paid electronically, download from your payroll portal.',
       examples: 'Examples: ADP, Paychex, Workday paystub PDFs.',
       doNotUpload: 'Do not upload: offer letters, timesheets, or bank deposits.',
       dateRangeRequested: 'Last 6 months',

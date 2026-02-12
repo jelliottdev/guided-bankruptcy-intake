@@ -164,7 +164,7 @@ export function FieldRenderer({
         onChange(next);
       };
       return (
-        <div className={wrapClass}>
+        <div id={`field-${field.id}`} className={wrapClass}>
           {labelRow}
           <input
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
@@ -186,7 +186,7 @@ export function FieldRenderer({
     }
     case 'textarea':
       return (
-        <div className={wrapClass}>
+        <div id={`field-${field.id}`} className={wrapClass}>
           {labelRow}
           <textarea
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLTextAreaElement>) : undefined}
@@ -204,7 +204,7 @@ export function FieldRenderer({
       );
     case 'radio':
       return (
-        <div className={wrapClass}>
+        <div id={`field-${field.id}`} className={wrapClass}>
           {labelRow}
           <div className="field-radio" role="radiogroup" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -244,7 +244,7 @@ export function FieldRenderer({
         }
       };
       return (
-        <div className={wrapClass}>
+        <div id={`field-${field.id}`} className={wrapClass}>
           {labelRow}
           <div className="field-checkbox" role="group" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -271,7 +271,7 @@ export function FieldRenderer({
     case 'select': {
       const v = (value as string) ?? '';
       return (
-        <div className={wrapClass}>
+        <div id={`field-${field.id}`} className={wrapClass}>
           {labelRow}
           <select
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLSelectElement>) : undefined}
@@ -301,7 +301,7 @@ export function FieldRenderer({
       const rows = field.rows ?? [];
       const columns = field.columns ?? [];
       return (
-        <div className={wrapClass}>
+        <div id={`field-${field.id}`} className={wrapClass}>
           {labelRow}
           <div className="field-grid">
             <table>
@@ -352,12 +352,12 @@ export function FieldRenderer({
       const dontHaveChecked = answers[dontHaveKey] === 'Yes';
       const showDontHave = field.dontHaveYetCheckbox !== false;
       return (
-        <div className={`field-wrap field-wrap-file${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
+        <div id={`field-${field.id}`} className={`field-wrap field-wrap-file${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {labelRow}
           {field.uploadForTag && (
             <p className="upload-for-tag" aria-hidden>Upload for: {field.uploadForTag}</p>
           )}
-          {helper && <p className="helper">{field.helper}</p>}
+          {helper && <p className="helper field-help">{field.helper}</p>}
           {field.examples && <p className="upload-examples">{field.examples}</p>}
           {field.doNotUpload && <p className="upload-do-not">{field.doNotUpload}</p>}
           {field.dateRangeRequested && (

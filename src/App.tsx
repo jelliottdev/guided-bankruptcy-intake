@@ -109,6 +109,11 @@ function AppContent() {
       setViewMode('client');
       setStep(stepIndex);
       setFocusFieldId(fieldId ?? null);
+      if (fieldId) {
+        setTimeout(() => {
+          document.getElementById(`field-${fieldId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
     },
     [setViewMode, setStep]
   );

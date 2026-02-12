@@ -84,22 +84,41 @@ export function buildSummaryInput(
   };
 }
 
-/** Generate exactly 2 concise sentences (rules-based). */
-export function generateTwoSentenceSummary(input: SummaryInput): string {
-  const filing = input.filing === 'Joint' ? 'Joint filer' : 'Single filer';
-  const emp = input.income.employed ? 'Employed' : 'Unemployed or not reported';
+/** Pick one of N options. Uses (seed * 31 + slot) so each generation gets a different pattern. */
+function pick<T>(options: T[], seed: number, slot: number): T {
+  const n = options.length;
+  const index = Math.abs((seed * 31 + slot) % n);
+  return options[index];
+}
+
+/** Generate exactly 2 concise sentences (rules-based). Optional seed for variation on regenerate. */
+export function generateTwoSentenceSummary(input: SummaryInput, variationSeed?: number): string {
+  const seed = variationSeed ?? 0;
+  const filing = input.filing === 'Joint'
+    ? pick(['Joint filer', 'Filing jointly'], seed, 0)
+    : pick(['Single filer', 'Individual filer'], seed, 1);
+  const emp = input.income.employed
+    ? pick(['Employed', 'Employment reported'], seed, 2)
+    : pick(['Unemployed or not reported', 'Not employed / not reported'], seed, 3);
   const assetParts: string[] = [];
   if (input.assets.properties > 0) assetParts.push(`${input.assets.properties} home${input.assets.properties > 1 ? 's' : ''}`);
   if (input.assets.vehicles > 0) assetParts.push(`${input.assets.vehicles} vehicle${input.assets.vehicles > 1 ? 's' : ''}`);
   if (input.assets.bankAccounts > 0) assetParts.push(`${input.assets.bankAccounts} bank account${input.assets.bankAccounts > 1 ? 's' : ''}`);
-  const assetStr = assetParts.length > 0 ? assetParts.join(', ') : 'no real estate or vehicles';
-  const debtStr = [input.debts.priority && 'priority', input.debts.secured && 'secured', input.debts.cosigned && 'co-signed']
-    .filter(Boolean).length > 0 ? 'Has priority, secured, and/or co-signed debts.' : 'Unsecured debts reported.';
+  const assetStr = assetParts.length > 0
+    ? pick([assetParts.join(', '), `Assets: ${assetParts.join(', ')}`], seed, 4)
+    : pick(['no real estate or vehicles', 'no real estate or vehicles reported'], seed, 5);
+  const hasDebtMix = [input.debts.priority && 'priority', input.debts.secured && 'secured', input.debts.cosigned && 'co-signed'].filter(Boolean).length > 0;
+  const debtStr = hasDebtMix
+    ? pick(['Has priority, secured, and/or co-signed debts.', 'Priority, secured, or co-signed debt noted.'], seed, 6)
+    : pick(['Unsecured debts reported.', 'Primarily unsecured debts.'], seed, 7);
   const urgencyStr = input.urgency.length > 0 ? ` Urgency: ${input.urgency.slice(0, 2).join('; ')}.` : '';
   const missingDocs = input.docs.filter((d) => d.status === 'Missing' || d.status === 'Partial').map((d) => d.type.toLowerCase());
-  const missingStr = missingDocs.length > 0 ? ` Missing: ${missingDocs.join(', ')}.` : '';
+  const missingStr = missingDocs.length > 0
+    ? pick([` Missing: ${missingDocs.join(', ')}.`, ` Docs missing: ${missingDocs.join(', ')}.`], seed, 8)
+    : '';
+  const fallback = pick(['Income and expense data provided.', 'Income/expense info in intake.'], seed, 9);
 
   const sentence1 = `${filing}. ${emp}. Owns ${assetStr}.`;
-  const sentence2 = `${debtStr}${urgencyStr}${missingStr}`.trim() || 'Income and expense data provided.';
+  const sentence2 = `${debtStr}${urgencyStr}${missingStr}`.trim() || fallback;
   return `${sentence1} ${sentence2}`;
 }

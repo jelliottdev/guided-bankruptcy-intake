@@ -64,3 +64,36 @@ export function hasAnySelectedExceptNone(answers: Answers, fieldId: string, none
 export function getMailingDifferent(answers: Answers): boolean {
   return answers['mailing_different'] === 'Yes';
 }
+
+/** Case status derived from meta — single source of truth for label and color */
+export function getCaseStatus(meta: {
+  missingRequired: number;
+  missingDocs: number;
+  urgencyFlags: number;
+}): { label: string; color: string } {
+  if (meta.urgencyFlags > 0) {
+    return { label: 'Urgent', color: 'var(--danger, #dc2626)' };
+  }
+  if (meta.missingRequired > 0 || meta.missingDocs > 0) {
+    return { label: 'Not ready', color: 'var(--danger, #dc2626)' };
+  }
+  return { label: 'Ready to file', color: 'var(--success, #16a34a)' };
+}
+
+/** Next best action: single algorithmic priority for the dashboard */
+export function getNextBestAction(meta: {
+  missingRequired: number;
+  missingDocs: number;
+  flaggedCount: number;
+}): { title: string; action: 'openActionQueue' | 'copyDocRequest' | 'openSummary' | 'openFlags' } {
+  if (meta.missingRequired > 0) {
+    return { title: 'Request missing required answers', action: 'openActionQueue' };
+  }
+  if (meta.missingDocs > 0) {
+    return { title: 'Request missing documents', action: 'copyDocRequest' };
+  }
+  if (meta.flaggedCount > 0) {
+    return { title: 'Review client flags & notes', action: 'openFlags' };
+  }
+  return { title: 'Review intake for strategy', action: 'openSummary' };
+}
