@@ -62,7 +62,7 @@ const URGENCY_LABELS: Record<string, string> = {
 };
 
 /** Short, scannable label for action items (no "is required" / long text). */
-function shortActionLabel(fullLabel: string, isEstimate: boolean): string {
+function shortActionLabel(fullLabel: string, _isEstimate: boolean): string {
   const s = fullLabel
     .replace(/\s+is required\.?$/i, '')
     .replace(/\s*\([^)]*\)/g, '')
@@ -527,7 +527,7 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
                   <div key={sectionTitle} className="action-group">
                     <div className="action-group-title">{sectionTitle}</div>
                     <ul className="action-list">
-                      {items.map((item, i) => {
+                      {items.map((item) => {
                         const key = itemKey(item);
                         const review = actionReview[key];
                         return (
