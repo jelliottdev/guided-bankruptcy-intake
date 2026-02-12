@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { getInitialAnswers, initialIntakeState, SCHEMA_VERSION } from '../form/defaults';
-import type { Answers, FieldValue, IntakeState, Uploads, ViewMode } from '../form/types';
+import type { Answers, FieldValue, Flags, IntakeState, Uploads, ViewMode } from '../form/types';
 import { clearStorage, loadFromStorage, saveToStorage, trimUploadsForStorage } from './autosave';
 
 export type IntakeAction =
@@ -21,7 +21,10 @@ export type IntakeAction =
   | { type: 'SET_LAST_SAVED'; lastSavedAt: number | null }
   | { type: 'SET_SAVING'; saving: boolean }
   | { type: 'SET_SUBMITTED'; submitted: boolean }
-  | { type: 'SET_VIEW_MODE'; mode: ViewMode };
+  | { type: 'SET_VIEW_MODE'; mode: ViewMode }
+  | { type: 'SET_FLAG'; fieldId: string; flagged: boolean }
+  | { type: 'SET_FLAG_NOTE'; fieldId: string; note: string }
+  | { type: 'SET_FLAG_RESOLVED'; fieldId: string; resolved: boolean };
 
 function intakeReducer(state: IntakeState, action: IntakeAction): IntakeState {
   switch (action.type) {
@@ -61,6 +64,27 @@ function intakeReducer(state: IntakeState, action: IntakeAction): IntakeState {
       return { ...state, submitted: action.submitted };
     case 'SET_VIEW_MODE':
       return { ...state, viewMode: action.mode };
+    case 'SET_FLAG': {
+      const entry = state.flags[action.fieldId] ?? { flagged: false, note: '' };
+      const next = { ...state.flags, [action.fieldId]: { ...entry, flagged: action.flagged } };
+      if (!action.flagged) next[action.fieldId] = { ...next[action.fieldId], note: '' };
+      return { ...state, flags: next };
+    }
+    case 'SET_FLAG_NOTE': {
+      const entry = state.flags[action.fieldId] ?? { flagged: true, note: '' };
+      return {
+        ...state,
+        flags: { ...state.flags, [action.fieldId]: { ...entry, note: action.note } },
+      };
+    }
+    case 'SET_FLAG_RESOLVED': {
+      const entry = state.flags[action.fieldId];
+      if (!entry) return state;
+      return {
+        ...state,
+        flags: { ...state.flags, [action.fieldId]: { ...entry, resolved: action.resolved } },
+      };
+    }
     default:
       return state;
   }
@@ -75,6 +99,9 @@ interface IntakeContextValue {
   setStep: (stepIndex: number) => void;
   reset: () => void;
   setViewMode: (mode: ViewMode) => void;
+  setFlag: (fieldId: string, flagged: boolean) => void;
+  setFlagNote: (fieldId: string, note: string) => void;
+  setFlagResolved: (fieldId: string, resolved: boolean) => void;
 }
 
 const IntakeContext = createContext<IntakeContextValue | null>(null);
@@ -101,6 +128,7 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
         state: {
           answers: { ...getInitialAnswers(), ...(stored.answers as Answers) },
           uploads: (stored.uploads ?? {}) as Uploads,
+          flags: (stored.flags ?? {}) as Flags,
           currentStepIndex: Math.max(0, stored.currentStepIndex ?? 0),
           lastSavedAt: stored.lastSavedAt ?? null,
           saving: false,
@@ -135,6 +163,18 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_VIEW_MODE', mode });
   }, []);
 
+  const setFlag = useCallback((fieldId: string, flagged: boolean) => {
+    dispatch({ type: 'SET_FLAG', fieldId, flagged });
+  }, []);
+
+  const setFlagNote = useCallback((fieldId: string, note: string) => {
+    dispatch({ type: 'SET_FLAG_NOTE', fieldId, note });
+  }, []);
+
+  const setFlagResolved = useCallback((fieldId: string, resolved: boolean) => {
+    dispatch({ type: 'SET_FLAG_RESOLVED', fieldId, resolved });
+  }, []);
+
   const value: IntakeContextValue = {
     state,
     dispatch,
@@ -144,6 +184,9 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
     setStep,
     reset,
     setViewMode,
+    setFlag,
+    setFlagNote,
+    setFlagResolved,
   };
 
   return (
@@ -168,6 +211,7 @@ function AutosaveEffect({
         schemaVersion: SCHEMA_VERSION,
         answers: state.answers,
         uploads: trimUploadsForStorage(state.uploads),
+        flags: state.flags,
         currentStepIndex: state.currentStepIndex,
         lastSavedAt: state.lastSavedAt,
         viewMode: state.viewMode,
@@ -178,7 +222,7 @@ function AutosaveEffect({
     return () => clearTimeout(t);
     // Intentionally omit state.lastSavedAt to avoid re-running on every save
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.answers, state.uploads, state.currentStepIndex, state.viewMode, dispatch]);
+  }, [state.answers, state.uploads, state.flags, state.currentStepIndex, state.viewMode, dispatch]);
 
   return null;
 }

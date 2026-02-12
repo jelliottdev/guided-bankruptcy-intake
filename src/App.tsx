@@ -18,12 +18,14 @@ function lastSavedText(lastSavedAt: number | null): string {
 }
 
 function AppContent() {
-  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset, setViewMode } = useIntake();
-  const { answers, uploads, currentStepIndex, lastSavedAt, saving, submitted, viewMode } = state;
+  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset, setViewMode, setFlag, setFlagNote } = useIntake();
+  const { answers, uploads, flags, currentStepIndex, lastSavedAt, saving, submitted, viewMode } = state;
 
   const [focusFieldId, setFocusFieldId] = useState<string | null>(null);
   /** Steps where user has pressed Next (so we show errors only after attempt, not on first render or after Back). */
   const [attemptedSteps, setAttemptedSteps] = useState<Set<number>>(() => new Set());
+  /** True when user jumped from Attorney View via "Open" → show sticky Return to Attorney View. */
+  const [returnToAttorneyAvailable, setReturnToAttorneyAvailable] = useState(false);
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
   const totalSteps = steps.length;
@@ -31,8 +33,8 @@ function AppContent() {
   const isFinalReviewStep = currentStep?.id === 'final_review';
 
   const currentStepErrors = useMemo(
-    () => (currentStep ? getErrorsForStep(answers, currentStepIndex) : []),
-    [answers, currentStepIndex, currentStep]
+    () => (currentStep ? getErrorsForStep(answers, currentStepIndex, flags) : []),
+    [answers, currentStepIndex, currentStep, flags]
   );
   const nextDisabled = currentStepErrors.length > 0;
   const showErrorsForCurrentStep = attemptedSteps.has(currentStepIndex);
@@ -91,12 +93,18 @@ function AppContent() {
 
   const onGoToWizard = useCallback(
     (stepIndex: number, fieldId?: string) => {
+      setReturnToAttorneyAvailable(true);
       setViewMode('client');
       setStep(stepIndex);
       setFocusFieldId(fieldId ?? null);
     },
     [setViewMode, setStep]
   );
+
+  const onReturnToAttorney = useCallback(() => {
+    setReturnToAttorneyAvailable(false);
+    setViewMode('attorney');
+  }, [setViewMode]);
 
   const handleReset = useCallback(() => {
     reset();
@@ -119,11 +127,16 @@ function AppContent() {
 
   useEffect(() => {
     if (viewMode === 'attorney') {
+      document.documentElement.classList.add('attorney-mode');
       document.body.classList.add('attorney-mode');
     } else {
+      document.documentElement.classList.remove('attorney-mode');
       document.body.classList.remove('attorney-mode');
     }
-    return () => document.body.classList.remove('attorney-mode');
+    return () => {
+      document.documentElement.classList.remove('attorney-mode');
+      document.body.classList.remove('attorney-mode');
+    };
   }, [viewMode]);
 
   const stepBanner =
@@ -163,6 +176,7 @@ function AppContent() {
       <StepShell
         title={currentStep.title}
         description={currentStep.description}
+        uploadInstructions={currentStep.uploadInstructions}
         currentStepIndex={currentStepIndex}
         totalSteps={totalSteps}
         onBack={onBack}
@@ -184,9 +198,13 @@ function AppContent() {
               onRemoveUpload={removeUpload}
               uploads={field.type === 'file' ? uploads[field.id] : undefined}
               answers={answers}
+              flags={flags}
               error={errorsByFieldId[field.id]}
               focusFieldId={focusFieldId}
               onFocusDone={() => setFocusFieldId(null)}
+              onSetAnswer={setAnswer}
+              onSetFlag={setFlag}
+              onSetFlagNote={setFlagNote}
             />
           ))}
         </form>
@@ -198,6 +216,17 @@ function AppContent() {
     <div className={`app-root ${viewMode === 'attorney' ? 'attorney-mode' : ''}`}>
       <div className="app-screens">
         <div className={`screen screen-client ${viewMode === 'client' ? 'active' : 'inactive'}`}>
+          {returnToAttorneyAvailable && viewMode === 'client' && (
+            <div className="return-to-attorney-sticky">
+              <button
+                type="button"
+                className="return-to-attorney-btn"
+                onClick={onReturnToAttorney}
+              >
+                Return to Attorney View
+              </button>
+            </div>
+          )}
           <Layout email={urlParams.email} phone={urlParams.phone} onReset={handleReset}>
             {wizardContent}
           </Layout>

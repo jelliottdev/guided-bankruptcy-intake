@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
-import type { Field, FieldValue } from '../form/types';
+import { useEffect, useRef, useState } from 'react';
+import type { Field, FieldValue, Flags } from '../form/types';
+import { MIN_FLAG_NOTE_LENGTH } from '../form/validate';
 
 interface FieldRendererProps {
   field: Field;
@@ -10,8 +11,13 @@ interface FieldRendererProps {
   uploads?: string[];
   error?: string;
   answers: Record<string, FieldValue>;
+  flags?: Flags;
   focusFieldId?: string | null;
   onFocusDone?: () => void;
+  /** For file fields: set auxiliary answers (e.g. fieldId_dont_have) */
+  onSetAnswer?: (fieldId: string, value: FieldValue) => void;
+  onSetFlag?: (fieldId: string, flagged: boolean) => void;
+  onSetFlagNote?: (fieldId: string, note: string) => void;
 }
 
 export function FieldRenderer({
@@ -23,11 +29,25 @@ export function FieldRenderer({
   uploads = [],
   error,
   answers,
+  flags,
   focusFieldId,
   onFocusDone,
+  onSetAnswer,
+  onSetFlag,
+  onSetFlagNote,
 }: FieldRendererProps) {
   const shouldFocus = focusFieldId === field.id;
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(null);
+  const flagged = !!(flags?.[field.id]?.flagged);
+  const flagNote = (flags?.[field.id]?.note ?? '').toString();
+  const flagNoteValid = flagNote.trim().length >= MIN_FLAG_NOTE_LENGTH;
+  const [noteSavedFlash, setNoteSavedFlash] = useState(false);
+  useEffect(() => {
+    if (!noteSavedFlash) return;
+    const t = setTimeout(() => setNoteSavedFlash(false), 2000);
+    return () => clearTimeout(t);
+  }, [noteSavedFlash]);
+
   useEffect(() => {
     if (shouldFocus && inputRef.current) {
       inputRef.current.focus();
@@ -37,6 +57,52 @@ export function FieldRenderer({
   }, [shouldFocus, onFocusDone]);
 
   if (field.showIf && !field.showIf(answers)) return null;
+
+  const renderFlagBlock = () => {
+    if (!field.required || !onSetFlag) return null;
+    return (
+      <>
+        <button
+          type="button"
+          className="link-button field-cant-answer"
+          onClick={() => onSetFlag(field.id, !flagged)}
+          aria-pressed={flagged}
+        >
+          Can&apos;t answer right now
+        </button>
+        {flagged && (
+          <div className="field-flag-note-box">
+            <label htmlFor={`${field.id}-flag-note`}>Note to your attorney (required)</label>
+            <textarea
+              id={`${field.id}-flag-note`}
+              placeholder="Example: I don't have my SSN card right now. I will call the office tomorrow."
+              value={flagNote}
+              onChange={(e) => onSetFlagNote?.(field.id, e.target.value)}
+              aria-describedby={`${field.id}-flag-helper`}
+            />
+            <p id={`${field.id}-flag-helper`} className="helper">
+              Briefly explain why you can&apos;t answer yet or what you will provide later.
+            </p>
+            <div className="field-flag-actions">
+              <button
+                type="button"
+                className="field-flag-save-btn"
+                disabled={!flagNoteValid}
+                onClick={() => flagNoteValid && setNoteSavedFlash(true)}
+              >
+                Save note for attorney
+              </button>
+              {noteSavedFlash && <span className="field-flag-saved">Saved</span>}
+              {flagNoteValid && !noteSavedFlash && (
+                <span className="field-flag-will-see">Your attorney will see this note.</span>
+              )}
+            </div>
+            <p className="field-flag-reassurance">This won&apos;t stop your intake — it just alerts your attorney.</p>
+          </div>
+        )}
+      </>
+    );
+  };
 
   // Single source of truth: labels are plain text; required marker comes only from the renderer (one place).
   // Strip ALL asterisk-like chars (ASCII * and Unicode variants) so we never double up.
@@ -62,7 +128,7 @@ export function FieldRenderer({
     case 'date': {
       const v = (value as string) ?? '';
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <input
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLInputElement>) : undefined}
@@ -73,13 +139,14 @@ export function FieldRenderer({
             aria-invalid={!!error}
           />
           {helper}
+          {renderFlagBlock()}
           {err}
         </div>
       );
     }
     case 'textarea':
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <textarea
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLTextAreaElement>) : undefined}
@@ -89,12 +156,13 @@ export function FieldRenderer({
             aria-invalid={!!error}
           />
           {helper}
+          {renderFlagBlock()}
           {err}
         </div>
       );
     case 'radio':
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <div className="field-radio" role="radiogroup" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -114,6 +182,7 @@ export function FieldRenderer({
             ))}
           </div>
           {helper}
+          {renderFlagBlock()}
           {err}
         </div>
       );
@@ -132,7 +201,7 @@ export function FieldRenderer({
         }
       };
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <div className="field-checkbox" role="group" aria-labelledby={`${field.id}-label`}>
             {field.options?.map((opt, idx) => (
@@ -150,6 +219,7 @@ export function FieldRenderer({
             ))}
           </div>
           {helper}
+          {renderFlagBlock()}
           {err}
         </div>
       );
@@ -157,7 +227,7 @@ export function FieldRenderer({
     case 'select': {
       const v = (value as string) ?? '';
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <select
             ref={shouldFocus ? (inputRef as React.RefObject<HTMLSelectElement>) : undefined}
@@ -174,6 +244,7 @@ export function FieldRenderer({
             ))}
           </select>
           {helper}
+          {renderFlagBlock()}
           {err}
         </div>
       );
@@ -185,7 +256,7 @@ export function FieldRenderer({
       const rows = field.rows ?? [];
       const columns = field.columns ?? [];
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
           <div className="field-grid">
             <table>
@@ -225,14 +296,34 @@ export function FieldRenderer({
             </table>
           </div>
           {helper}
+          {renderFlagBlock()}
           {err}
         </div>
       );
     }
-    case 'file':
+    case 'file': {
+      const dontHaveKey = `${field.id}_dont_have`;
+      const dontHaveChecked = answers[dontHaveKey] === 'Yes';
+      const showDontHave = field.dontHaveYetCheckbox !== false;
       return (
-        <div className={`field-wrap${shouldFocus ? ' field-highlight' : ''}`}>
+        <div className={`field-wrap field-wrap-file${flagged ? ' field-flagged' : ''}${shouldFocus ? ' field-highlight' : ''}`}>
           {label}
+          {field.uploadForTag && (
+            <p className="upload-for-tag" aria-hidden>Upload for: {field.uploadForTag}</p>
+          )}
+          {helper && <p className="helper">{field.helper}</p>}
+          {field.examples && <p className="upload-examples">{field.examples}</p>}
+          {field.doNotUpload && <p className="upload-do-not">{field.doNotUpload}</p>}
+          {field.dateRangeRequested && (
+            <p className="upload-date-range">Date range requested: {field.dateRangeRequested}</p>
+          )}
+          {field.requestedDocsList && field.requestedDocsList.length > 0 && (
+            <ul className="upload-requested-list">
+              {field.requestedDocsList.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          )}
           <p className="helper field-file-demo">Demo: stores filenames only. No file is uploaded.</p>
           <div className="field-file">
             <input
@@ -249,29 +340,45 @@ export function FieldRenderer({
               }}
             />
             {uploads.length > 0 && (
-              <ul className="upload-list">
-                {uploads.map((name) => (
-                  <li key={name}>
-                    <span>{name}</span>
-                    {onRemoveUpload && (
-                      <button
-                        type="button"
-                        className="upload-remove"
-                        onClick={() => onRemoveUpload(field.id, name)}
-                        aria-label={`Remove ${name}`}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <div className="upload-selected-block">
+                <p className="upload-selected-label">Selected files:</p>
+                <ul className="upload-list">
+                  {uploads.map((name) => (
+                    <li key={name}>
+                      <span>• {name}</span>
+                      {onRemoveUpload && (
+                        <button
+                          type="button"
+                          className="upload-remove"
+                          onClick={() => onRemoveUpload(field.id, name)}
+                          aria-label={`Remove ${name}`}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
-          {helper}
+          {field.uploadAppliesTo && <p className="upload-applies-to">{field.uploadAppliesTo}</p>}
+          {showDontHave && (
+            <label className="upload-dont-have">
+              <input
+                type="checkbox"
+                checked={dontHaveChecked}
+                onChange={(e) => onSetAnswer?.(dontHaveKey, e.target.checked ? 'Yes' : '')}
+                aria-describedby={field.id}
+              />
+              I don&apos;t have this yet — will provide later
+            </label>
+          )}
+          {renderFlagBlock()}
           {err}
         </div>
       );
+    }
     default:
       return null;
   }

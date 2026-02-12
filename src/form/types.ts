@@ -40,26 +40,51 @@ export interface Field {
   columns?: GridColumn[];
   /** Optional: show this field only when predicate is true */
   showIf?: (answers: Answers) => boolean;
+  /** File upload UX: tag shown above upload box (e.g. "Upload for: Bank Accounts") */
+  uploadForTag?: string;
+  /** File upload: example file types/sources line */
+  examples?: string;
+  /** File upload: "Do not upload" hint */
+  doNotUpload?: string;
+  /** File upload: date range reminder (e.g. "Last 6 months") */
+  dateRangeRequested?: string;
+  /** File upload: bullet list of requested doc types */
+  requestedDocsList?: string[];
+  /** File upload: show "I don't have this yet" checkbox (default true) */
+  dontHaveYetCheckbox?: boolean;
+  /** File upload: small caption under upload box (e.g. "Applies to: Checking, Savings") */
+  uploadAppliesTo?: string;
+}
+
+export interface Step {
+  id: string;
+  title: string;
+  description?: string;
+  /** Shown at top of step when present (e.g. global document upload instructions) */
+  uploadInstructions?: string;
+  fields: Field[];
+  showIf: (answers: Answers) => boolean;
 }
 
 export type Answers = Record<string, FieldValue>;
 
 export type Uploads = Record<string, string[]>;
 
-export interface Step {
-  id: string;
-  title: string;
-  description?: string;
-  fields: Field[];
-  /** Step is included in wizard only when showIf returns true */
-  showIf: (answers: Answers) => boolean;
+/** Per-field "can't answer right now" + note; resolved = moved to audit trail. */
+export interface FlagEntry {
+  flagged: boolean;
+  note: string;
+  resolved?: boolean;
 }
+
+export type Flags = Record<string, FlagEntry>;
 
 export type ViewMode = 'client' | 'attorney';
 
 export interface IntakeState {
   answers: Answers;
   uploads: Uploads;
+  flags: Flags;
   currentStepIndex: number;
   lastSavedAt: number | null;
   saving: boolean;

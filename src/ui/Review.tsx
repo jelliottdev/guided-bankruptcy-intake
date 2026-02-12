@@ -47,9 +47,9 @@ export function Review({
   submitted,
 }: ReviewProps) {
   const { state, setAnswer } = useIntake();
-  const { answers, uploads, saving } = state;
+  const { answers, uploads, flags, saving } = state;
   const visibleSteps = getVisibleSteps(answers);
-  const allValidation = validateAll(answers);
+  const allValidation = validateAll(answers, flags);
   const errors = allValidation.filter((e) => e.severity !== 'warning');
 
   if (submitted) {

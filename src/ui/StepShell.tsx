@@ -4,6 +4,8 @@ import { Progress } from './Progress';
 interface StepShellProps {
   title: string;
   description?: string;
+  /** Shown at top of step when present (e.g. global document upload instructions) */
+  uploadInstructions?: string;
   children: ReactNode;
   currentStepIndex: number;
   totalSteps: number;
@@ -21,6 +23,7 @@ interface StepShellProps {
 export function StepShell({
   title,
   description,
+  uploadInstructions,
   children,
   currentStepIndex,
   totalSteps,
@@ -39,6 +42,13 @@ export function StepShell({
         <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
         <h2>{title}</h2>
         {description && <p className="header-subtext">{description}</p>}
+        {uploadInstructions && (
+          <div className="upload-instructions-block" role="region" aria-label="Document upload instructions">
+            {uploadInstructions.split('\n').map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+          </div>
+        )}
         {stepBanner && <p className="step-banner" role="alert">{stepBanner}</p>}
         <div style={{ marginBottom: '24px' }}>{children}</div>
       </div>

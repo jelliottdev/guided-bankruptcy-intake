@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 import { getVisibleSteps } from '../form/steps';
 import type { FieldValue } from '../form/types';
 import { validateAll } from '../form/validate';
@@ -14,6 +14,17 @@ import {
 } from '../utils/logic';
 import { useIntake } from '../state/IntakeProvider';
 import { maskEmail, maskPhone } from '../utils/mask';
+
+function formatDateForDisplay(value: unknown): string {
+  if (value == null || (typeof value === 'string' && !value.trim())) return '(date unknown)';
+  const s = typeof value === 'string' ? value.trim() : String(value);
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return '(date unknown)';
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const y = d.getFullYear();
+  return `${m}/${day}/${y}`;
+}
 
 const DOCUMENT_IDS = [
   { id: 'upload_paystubs', label: 'Paystubs' },
@@ -50,6 +61,42 @@ const URGENCY_LABELS: Record<string, string> = {
   'Utility shutoff notice received (date:)': 'Utility shutoff notice received',
 };
 
+/** Short, scannable label for action items (no "is required" / long text). */
+function shortActionLabel(fullLabel: string, isEstimate: boolean): string {
+  const s = fullLabel
+    .replace(/\s+is required\.?$/i, '')
+    .replace(/\s*\([^)]*\)/g, '')
+    .trim();
+  const words = s.split(/\s+/);
+  if (words.length <= 4) return s;
+  return words.slice(0, 4).join(' ');
+}
+
+const ACTION_REVIEW_KEY = 'gbi:action-review';
+
+function loadActionReview(): Record<string, 'reviewed' | 'follow-up'> {
+  try {
+    const raw = localStorage.getItem(ACTION_REVIEW_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, string>;
+    const out: Record<string, 'reviewed' | 'follow-up'> = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      if (v === 'reviewed' || v === 'follow-up') out[k] = v;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function saveActionReview(map: Record<string, 'reviewed' | 'follow-up'>) {
+  try {
+    localStorage.setItem(ACTION_REVIEW_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore */
+  }
+}
+
 export interface AttorneyDashboardProps {
   email?: string | null;
   phone?: string | null;
@@ -58,18 +105,62 @@ export interface AttorneyDashboardProps {
 }
 
 export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: AttorneyDashboardProps) {
-  const { state, setViewMode } = useIntake();
-  const { answers, uploads, lastSavedAt } = state;
+  const { state, setViewMode, setFlagResolved } = useIntake();
+  const { answers, uploads, flags, lastSavedAt } = state;
   const [rawOpen, setRawOpen] = useState(false);
   const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
+  const [copyToast, setCopyToast] = useState<'Copied' | 'Copy failed' | null>(null);
+  const [actionItemsExpanded, setActionItemsExpanded] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const identityLine =
-    email != null && phone != null
-      ? `${maskEmail(email)} | ${maskPhone(phone)}`
-      : 'Demo Case';
+  const identityLine = useMemo(() => {
+    const parts: string[] = [];
+    if (email != null && String(email).trim()) parts.push(maskEmail(email));
+    if (phone != null && String(phone).trim()) parts.push(maskPhone(phone));
+    return parts.length > 0 ? parts.join(' | ') : 'Demo Case';
+  }, [email, phone]);
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
-  const errors = useMemo(() => validateAll(answers).filter((e) => e.severity !== 'warning'), [answers]);
+  const errors = useMemo(() => validateAll(answers, flags).filter((e) => e.severity !== 'warning'), [answers, flags]);
+
+  const MIN_FLAG_NOTE = 10;
+  const flaggedItems = useMemo(() => {
+    const list: { fieldId: string; stepIndex: number; stepTitle: string; label: string; note: string }[] = [];
+    Object.entries(flags).forEach(([fieldId, entry]) => {
+      if (!entry.flagged || (entry.note ?? '').trim().length < MIN_FLAG_NOTE || entry.resolved) return;
+      const stepIdx = steps.findIndex((s) => s.fields.some((f) => f.id === fieldId));
+      if (stepIdx < 0) return;
+      const step = steps[stepIdx];
+      const field = step.fields.find((f) => f.id === fieldId);
+      list.push({
+        fieldId,
+        stepIndex: stepIdx,
+        stepTitle: step.title,
+        label: field?.label ?? fieldId,
+        note: (entry.note ?? '').trim(),
+      });
+    });
+    return list.sort((a, b) => a.stepIndex !== b.stepIndex ? a.stepIndex - b.stepIndex : a.fieldId.localeCompare(b.fieldId));
+  }, [flags, steps]);
+
+  const resolvedFlagItems = useMemo(() => {
+    const list: { fieldId: string; stepIndex: number; stepTitle: string; label: string; note: string }[] = [];
+    Object.entries(flags).forEach(([fieldId, entry]) => {
+      if (!entry.flagged || !entry.resolved) return;
+      const stepIdx = steps.findIndex((s) => s.fields.some((f) => f.id === fieldId));
+      if (stepIdx < 0) return;
+      const step = steps[stepIdx];
+      const field = step.fields.find((f) => f.id === fieldId);
+      list.push({
+        fieldId,
+        stepIndex: stepIdx,
+        stepTitle: step.title,
+        label: field?.label ?? fieldId,
+        note: (entry.note ?? '').trim(),
+      });
+    });
+    return list.sort((a, b) => a.stepTitle.localeCompare(b.stepTitle) || a.fieldId.localeCompare(b.fieldId));
+  }, [flags, steps]);
 
   const kpis = useMemo(() => {
     let totalRequired = 0;
@@ -84,8 +175,9 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
     }
     const completionPct = totalRequired > 0 ? Math.round((filledRequired / totalRequired) * 100) : 0;
     const missingCount = errors.length;
-    const urgencyList = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]) : [];
-    const urgencyCount = urgencyList.filter((v) => v && !v.includes('None of')).length;
+    const rawUrgency = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]) : [];
+    const displayUrgencyList = rawUrgency.filter((v) => v && !v.includes('None of'));
+    const urgencyCount = displayUrgencyList.length;
     const docTotal = DOCUMENT_IDS.length;
     const docReceived = DOCUMENT_IDS.filter((d) => (uploads[d.id]?.length ?? 0) > 0).length;
     const docPct = docTotal > 0 ? Math.round((docReceived / docTotal) * 100) : 0;
@@ -94,7 +186,7 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
       completionText: `${filledRequired} / ${totalRequired}`,
       missingCount,
       urgencyCount,
-      urgencyList,
+      displayUrgencyList,
       docReceived,
       docTotal,
       docPct,
@@ -102,9 +194,19 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
   }, [answers, errors.length, steps, uploads]);
 
   const actionItems = useMemo(() => {
-    const items: { label: string; stepIndex: number; fieldId?: string }[] = [];
+    const items: { shortLabel: string; stepIndex: number; stepTitle: string; fieldId?: string; isEstimate: boolean }[] = [];
     errors.forEach((e) => {
-      items.push({ label: `Missing: ${e.message}`, stepIndex: e.stepIndex, fieldId: e.fieldId });
+      const step = steps[e.stepIndex];
+      const field = step?.fields.find((f) => f.id === e.fieldId);
+      const fullLabel = field?.label ?? e.message.replace(/\s+is required\.?$/i, '').trim();
+      const short = shortActionLabel(fullLabel, false);
+      items.push({
+        shortLabel: `${short} — missing`,
+        stepIndex: e.stepIndex,
+        stepTitle: step?.title ?? 'Other',
+        fieldId: e.fieldId,
+        isEstimate: false,
+      });
     });
     const notSureFields = [
       { id: 'property_1_value', label: 'Property 1 value' },
@@ -120,14 +222,33 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
       const v = answers[id];
       const stepIdx = steps.findIndex((st) => st.fields.some((f) => f.id === id));
       if (stepIdx < 0) return;
+      const step = steps[stepIdx];
       const empty = isEmpty(v);
       const notSure = typeof v === 'string' && v.trim().toLowerCase().includes('not sure');
       if (empty || notSure) {
-        items.push({ label: `Needs estimate: ${label}`, stepIndex: stepIdx, fieldId: id });
+        items.push({
+          shortLabel: `${shortActionLabel(label, true)} — needs estimate`,
+          stepIndex: stepIdx,
+          stepTitle: step?.title ?? 'Other',
+          fieldId: id,
+          isEstimate: true,
+        });
       }
     });
+    items.sort((a, b) => a.stepIndex !== b.stepIndex ? a.stepIndex - b.stepIndex : (a.fieldId ?? '').localeCompare(b.fieldId ?? ''));
     return items;
   }, [answers, errors, steps]);
+
+  const [actionReview, setActionReview] = useState<Record<string, 'reviewed' | 'follow-up'>>(loadActionReview);
+  const setItemReview = useCallback((key: string, value: 'reviewed' | 'follow-up' | null) => {
+    setActionReview((prev) => {
+      const next = { ...prev };
+      if (value == null) delete next[key];
+      else next[key] = value;
+      saveActionReview(next);
+      return next;
+    });
+  }, []);
 
   const urgencyWithDates = useMemo(() => {
     const list = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]) : [];
@@ -135,10 +256,16 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
     list.forEach((val) => {
       if (!val || val.includes('None of')) return;
       const label = URGENCY_LABELS[val] ?? val;
-      if (val.includes('Foreclosure')) result.push({ label, date: answers['foreclosure_date'] as string });
-      else if (val.includes('vehicle repossession')) result.push({ label, date: answers['repossession_date'] as string });
-      else if (val.includes('Utility')) result.push({ label, date: answers['shutoff_date'] as string });
-      else result.push({ label });
+      if (val.includes('Foreclosure')) {
+        const raw = answers['foreclosure_date'];
+        result.push({ label, date: raw != null && String(raw).trim() ? formatDateForDisplay(raw) : '(date unknown)' });
+      } else if (val.includes('vehicle repossession')) {
+        const raw = answers['repossession_date'];
+        result.push({ label, date: raw != null && String(raw).trim() ? formatDateForDisplay(raw) : '(date unknown)' });
+      } else if (val.includes('Utility')) {
+        const raw = answers['shutoff_date'];
+        result.push({ label, date: raw != null && String(raw).trim() ? formatDateForDisplay(raw) : '(date unknown)' });
+      } else result.push({ label });
     });
     return result;
   }, [answers]);
@@ -169,13 +296,79 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
     return { debtorEmployed, spouseEmployed, otherList, incomeDocsUploaded };
   }, [answers, uploads]);
 
-  const copyJson = useCallback(() => {
-    const payload = { answers, uploads, exportedAt: new Date().toISOString() };
-    navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+  const showToast = useCallback((message: 'Copied' | 'Copy failed') => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setCopyToast(message);
+    toastTimerRef.current = setTimeout(() => {
+      setCopyToast(null);
+      toastTimerRef.current = null;
+    }, 2000);
+  }, []);
+
+  const copyExportBundle = useCallback(() => {
+    try {
+      const payload = { answers, uploads, exportedAt: new Date().toISOString() };
+      navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+      showToast('Copied');
+    } catch {
+      showToast('Copy failed');
+    }
+  }, [answers, uploads, showToast]);
+
+  const copyRawJson = useCallback(() => {
+    try {
+      const text = JSON.stringify({ answers, uploads }, null, 2);
+      navigator.clipboard.writeText(text);
+      showToast('Copied');
+    } catch {
+      showToast('Copy failed');
+    }
+  }, [answers, uploads, showToast]);
+
+  const scrollToSection = useCallback((id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
+  const caseSummary = useMemo(() => {
+    const filing = answers['filing_setup'] === 'Filing with spouse' ? 'Joint filing' : 'Single filer';
+    const props = hasRealEstate(answers) ? getRealEstateCount(answers) : 0;
+    const vehicles = hasVehicles(answers) ? getVehicleCount(answers) : 0;
+    const banks = hasBankAccounts(answers) ? getBankAccountCount(answers) : 0;
+    const assets = props || vehicles || banks ? `${props} property, ${vehicles} vehicle, ${banks} bank` : 'No assets reported yet';
+    const urgencyList = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]).filter((v) => v && !v.includes('None of')) : [];
+    const urgency = urgencyList.length > 0 ? urgencyList.map((v) => URGENCY_LABELS[v] ?? v).join(', ') : 'No urgency flags';
+    const docCount = DOCUMENT_IDS.filter((d) => (uploads[d.id]?.length ?? 0) > 0).length;
+    const docs = docCount > 0 ? `${docCount} doc categories uploaded` : 'No documents uploaded';
+    return `${filing} · ${assets} · ${urgency} · ${docs}`;
   }, [answers, uploads]);
+
+  const nextActionsPreview = actionItems.slice(0, 3).map((a) => a.shortLabel).join(', ');
+  const nextActionsEllipsis = actionItems.length > 3;
+  const ACTION_VISIBLE = 8;
+  const visibleActionItems = actionItemsExpanded ? actionItems : actionItems.slice(0, ACTION_VISIBLE);
+  const hasMoreActions = actionItems.length > ACTION_VISIBLE;
+  const visibleGrouped = useMemo(() => {
+    const map = new Map<string, typeof visibleActionItems>();
+    visibleActionItems.forEach((item) => {
+      const list = map.get(item.stepTitle) ?? [];
+      list.push(item);
+      map.set(item.stepTitle, list);
+    });
+    return Array.from(map.entries());
+  }, [visibleActionItems]);
+
+  function itemKey(item: (typeof actionItems)[0]): string {
+    return `${item.stepIndex}-${item.fieldId ?? 'unknown'}`;
+  }
 
   return (
     <div className="attorney-dashboard">
+      {urgencyWithDates.length > 0 && (
+        <div className="attorney-urgency-banner" role="alert">
+          Urgent: {urgencyWithDates[0].label}
+          {urgencyWithDates[0].date && ` (${urgencyWithDates[0].date})`}
+        </div>
+      )}
       <header className="attorney-header">
         <div className="attorney-header-top">
           <div>
@@ -184,9 +377,10 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
           </div>
           <div className="attorney-header-actions">
             <span className="attorney-last-saved">Last saved: {lastSavedText(lastSavedAt)}</span>
-            <button type="button" className="btn btn-secondary" onClick={copyJson}>
+            <button type="button" className="btn btn-secondary" onClick={copyExportBundle} title="Copy full export (answers + uploads + timestamp)">
               Copy JSON
             </button>
+            {copyToast && <span className={`attorney-toast ${copyToast === 'Copy failed' ? 'attorney-toast-error' : ''}`}>{copyToast}</span>}
             <button type="button" className="btn btn-secondary" onClick={onReset}>
               Reset Demo
             </button>
@@ -203,6 +397,12 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
           </div>
         </div>
         <p className="attorney-identity">{identityLine}</p>
+        {actionItems.length > 0 && (
+          <p className="attorney-next-actions">
+            Next: {nextActionsPreview}{nextActionsEllipsis ? '…' : ''}
+          </p>
+        )}
+        <p className="attorney-case-summary">{caseSummary}</p>
       </header>
 
       <div className="attorney-kpi-row">
@@ -210,55 +410,195 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
           <div className="kpi-title">Completion</div>
           <div className="kpi-value">{kpis.completionPct}%</div>
           <div className="kpi-sub">{kpis.completionText} required completed</div>
+          <div className="kpi-sub-note">visible required fields</div>
         </div>
-        <div className={`kpi-card kpi-missing ${kpis.missingCount > 0 ? 'red' : ''}`}>
+        <div
+          className={`kpi-card kpi-card-action kpi-missing kpi-clickable ${kpis.missingCount > 0 ? 'has-action' : ''}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => scrollToSection('action-items')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('action-items'); } }}
+          aria-label="Jump to missing required items"
+        >
+          {kpis.missingCount > 0 && <span className="kpi-badge" aria-hidden>Action needed</span>}
           <div className="kpi-title">Missing Required</div>
           <div className="kpi-value">{kpis.missingCount}</div>
-          <div className="kpi-sub">Click to review</div>
+          <div className="kpi-sub">{kpis.missingCount > 0 ? 'Click to review' : 'None'}</div>
         </div>
-        <div className={`kpi-card kpi-urgency ${kpis.urgencyCount > 0 ? 'red' : ''}`}>
+        <div
+          className={`kpi-card kpi-card-action kpi-flags kpi-clickable ${flaggedItems.length > 0 ? 'has-action' : ''}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => scrollToSection('client-flags')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('client-flags'); } }}
+          aria-label="Jump to client flags and notes"
+        >
+          {flaggedItems.length > 0 && <span className="kpi-badge" aria-hidden>Action needed</span>}
+          <div className="kpi-title">Client Flags</div>
+          <div className="kpi-value">{flaggedItems.length}</div>
+          <div className="kpi-sub">{flaggedItems.length > 0 ? 'Click to review' : 'None'}</div>
+        </div>
+        <div
+          className={`kpi-card kpi-card-action kpi-urgency kpi-clickable ${kpis.urgencyCount > 0 ? 'has-action' : ''}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => scrollToSection('urgent-signals')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('urgent-signals'); } }}
+          aria-label="Jump to urgent risk signals"
+        >
+          {kpis.urgencyCount > 0 && <span className="kpi-badge" aria-hidden>Action needed</span>}
           <div className="kpi-title">Urgency Flags</div>
           <div className="kpi-value">{kpis.urgencyCount}</div>
           <div className="kpi-sub">
-            {kpis.urgencyList.length > 0 && !kpis.urgencyList[0].includes('None of')
-              ? kpis.urgencyList.map((v) => URGENCY_LABELS[v] ?? v).slice(0, 2).join(', ')
+            {kpis.displayUrgencyList.length > 0
+              ? kpis.displayUrgencyList.map((v) => URGENCY_LABELS[v] ?? v).slice(0, 2).join(', ')
               : 'None'}
           </div>
         </div>
-        <div className="kpi-card kpi-docs">
+        <div
+          className="kpi-card kpi-docs kpi-clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => scrollToSection('documents')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); scrollToSection('documents'); } }}
+          aria-label="Jump to documents"
+        >
           <div className="kpi-title">Documents</div>
           <div className="kpi-value">{kpis.docReceived} / {kpis.docTotal}</div>
           <div className="kpi-sub">Required uploads received</div>
         </div>
       </div>
 
+      <div id="client-flags" className="attorney-card attorney-client-flags">
+        <h3>Client Flags &amp; Notes</h3>
+        {flaggedItems.length === 0 && resolvedFlagItems.length === 0 ? (
+          <p className="muted">No client flags. Required fields that the client could not answer yet will appear here with their note.</p>
+        ) : (
+          <>
+            {flaggedItems.length > 0 && (
+              <ul className="client-flags-list">
+                {flaggedItems.map((item) => (
+                  <li key={item.fieldId} className="client-flag-item">
+                    <div className="client-flag-label">{item.label} (Required)</div>
+                    <div className="client-flag-note">Client note: &ldquo;{item.note}&rdquo;</div>
+                    <div className="client-flag-actions">
+                      <button type="button" className="btn-action-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>
+                        Go to field
+                      </button>
+                      <button type="button" className="btn-action-state" onClick={() => setFlagResolved(item.fieldId, true)}>
+                        Mark resolved
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {resolvedFlagItems.length > 0 && (
+              <details className="client-flags-resolved">
+                <summary>Resolved ({resolvedFlagItems.length})</summary>
+                <ul className="client-flags-list">
+                  {resolvedFlagItems.map((item) => (
+                    <li key={item.fieldId} className="client-flag-item resolved">
+                      <div className="client-flag-label">{item.label}</div>
+                      <div className="client-flag-note">Client note: &ldquo;{item.note}&rdquo;</div>
+                      <div className="client-flag-actions">
+                        <button type="button" className="btn-action-open" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>
+                          Go to field
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </>
+        )}
+      </div>
+
       <div className="attorney-row-2">
-        <div className="attorney-card attorney-action-items">
+        <div id="action-items" className="attorney-card attorney-action-items">
           <h3>Action Items</h3>
           {actionItems.length === 0 ? (
             <p className="muted">No missing required or estimate items.</p>
           ) : (
-            <ul className="action-list">
-              {actionItems.map((item, i) => (
-                <li key={i}>
-                  {item.label}
-                  {' '}
-                  <button
-                    type="button"
-                    className="link-button"
-                    onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}
-                  >
-                    Go to field
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <>
+              <div className="action-list-grouped">
+                {visibleGrouped.map(([sectionTitle, items]) => (
+                  <div key={sectionTitle} className="action-group">
+                    <div className="action-group-title">{sectionTitle}</div>
+                    <ul className="action-list">
+                      {items.map((item, i) => {
+                        const key = itemKey(item);
+                        const review = actionReview[key];
+                        return (
+                          <li key={key}>
+                            <span className="action-label">{item.shortLabel}</span>
+                            <span className="action-actions">
+                              <button
+                                type="button"
+                                className="btn-action-open"
+                                onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}
+                              >
+                                Open
+                              </button>
+                              {review === 'reviewed' ? (
+                                <button
+                                  type="button"
+                                  className="btn-action-state reviewed"
+                                  onClick={() => setItemReview(key, null)}
+                                  title="Clear reviewed"
+                                >
+                                  ✓ Reviewed
+                                </button>
+                              ) : review === 'follow-up' ? (
+                                <button
+                                  type="button"
+                                  className="btn-action-state follow-up"
+                                  onClick={() => setItemReview(key, null)}
+                                  title="Clear follow-up"
+                                >
+                                  Needs follow-up
+                                </button>
+                              ) : (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn-action-state"
+                                    onClick={() => setItemReview(key, 'reviewed')}
+                                    title="Mark reviewed"
+                                  >
+                                    ✓ Reviewed
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-action-state"
+                                    onClick={() => setItemReview(key, 'follow-up')}
+                                    title="Mark needs follow-up"
+                                  >
+                                    Needs follow-up
+                                  </button>
+                                </>
+                              )}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              {hasMoreActions && !actionItemsExpanded && (
+                <button type="button" className="link-button show-more" onClick={() => setActionItemsExpanded(true)}>
+                  Show more ({actionItems.length - ACTION_VISIBLE} more)
+                </button>
+              )}
+            </>
           )}
         </div>
-        <div className="attorney-card attorney-urgency-card">
+        <div id="urgent-signals" className={`attorney-card attorney-urgency-card ${urgencyWithDates.length === 0 ? 'urgency-empty' : ''}`}>
           <h3>Urgent Risk Signals</h3>
           {urgencyWithDates.length === 0 ? (
-            <p className="muted">No urgent issues reported.</p>
+            <p className="urgency-empty-badge">No urgent issues reported</p>
           ) : (
             <ul className="urgency-list">
               {urgencyWithDates.map((u, i) => (
@@ -304,12 +644,17 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
         </div>
       </div>
 
-      <div className="attorney-card documents-section">
+      <div id="documents" className="attorney-card documents-section">
         <h3>Documents</h3>
         <div className="doc-table">
           {DOCUMENT_IDS.map((d) => {
             const files = uploads[d.id] ?? [];
-            const status = files.length > 0 ? 'Received' : 'Missing';
+            const status =
+              files.length > 0
+                ? 'Received'
+                : answers[`${d.id}_dont_have`] === 'Yes'
+                  ? 'Pending (client marked)'
+                  : 'Missing';
             const isExpanded = expandedDoc === d.id;
             return (
               <div key={d.id} className="doc-row">
@@ -318,10 +663,15 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
                   onClick={() => setExpandedDoc(isExpanded ? null : d.id)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === 'Enter' && setExpandedDoc(isExpanded ? null : d.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setExpandedDoc(isExpanded ? null : d.id);
+                    }
+                  }}
                 >
                   <span className="doc-category">{d.label}</span>
-                  <span className={`doc-status ${status === 'Missing' ? 'missing' : ''}`}>{status}</span>
+                  <span className={`doc-status ${status === 'Missing' ? 'missing' : ''} ${status === 'Pending (client marked)' ? 'pending' : ''}`}>{status}</span>
                   <span className="doc-count">{files.length} file(s)</span>
                 </div>
                 {isExpanded && files.length > 0 && (
@@ -348,7 +698,7 @@ export function AttorneyDashboard({ email, phone, onGoToWizard, onReset }: Attor
         </button>
         {rawOpen && (
           <div className="raw-content">
-            <button type="button" className="btn btn-secondary btn-copy-raw" onClick={copyJson}>
+            <button type="button" className="btn btn-secondary btn-copy-raw" onClick={copyRawJson} title="Copy raw JSON only">
               Copy
             </button>
             <pre className="raw-json">

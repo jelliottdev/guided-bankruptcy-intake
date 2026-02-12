@@ -1,6 +1,14 @@
-import type { Answers, ValidationError } from './types';
+import type { Answers, Flags, ValidationError } from './types';
 import { getVisibleSteps } from './steps';
 import { getMailingDifferent, isJointFiling } from '../utils/logic';
+
+const MIN_FLAG_NOTE_LENGTH = 10;
+
+function isSatisfiedByFlag(flags: Flags | undefined, fieldId: string): boolean {
+  if (!flags || !flags[fieldId]) return false;
+  const entry = flags[fieldId];
+  return !!entry.flagged && (entry.note ?? '').trim().length >= MIN_FLAG_NOTE_LENGTH;
+}
 
 function isEmpty(value: unknown): boolean {
   if (value == null) return true;
@@ -38,7 +46,7 @@ function isNumericLikeField(fieldId: string): boolean {
   );
 }
 
-export function validateAll(answers: Answers): ValidationError[] {
+export function validateAll(answers: Answers, flags?: Flags): ValidationError[] {
   const errors: ValidationError[] = [];
   const steps = getVisibleSteps(answers);
 
@@ -49,12 +57,23 @@ export function validateAll(answers: Answers): ValidationError[] {
       const required = field.required ?? false;
 
       if (required && isEmpty(value)) {
-        errors.push({
-          stepIndex,
-          stepId: step.id,
-          fieldId: field.id,
-          message: `${field.label} is required`,
-        });
+        if (isSatisfiedByFlag(flags, field.id)) return;
+        const entry = flags?.[field.id];
+        if (entry?.flagged) {
+          errors.push({
+            stepIndex,
+            stepId: step.id,
+            fieldId: field.id,
+            message: 'Note to your attorney must be at least 10 characters.',
+          });
+        } else {
+          errors.push({
+            stepIndex,
+            stepId: step.id,
+            fieldId: field.id,
+            message: `${field.label} is required`,
+          });
+        }
         return;
       }
 
@@ -106,7 +125,7 @@ export function validateAll(answers: Answers): ValidationError[] {
 
   // Conditional required: mailing address if different
   if (getMailingDifferent(answers)) {
-    if (isEmpty(answers['mailing_address'])) {
+    if (isEmpty(answers['mailing_address']) && !isSatisfiedByFlag(flags, 'mailing_address')) {
       const stepIndex = steps.findIndex((s) => s.fields.some((f) => f.id === 'mailing_address'));
       if (stepIndex >= 0) {
         errors.push({
@@ -131,7 +150,7 @@ export function validateAll(answers: Answers): ValidationError[] {
     const spouseStepIndex = steps.findIndex((s) => s.id === 'spouse');
     if (spouseStepIndex >= 0) {
       spouseRequired.forEach((fieldId) => {
-        if (isEmpty(answers[fieldId])) {
+        if (isEmpty(answers[fieldId]) && !isSatisfiedByFlag(flags, fieldId)) {
           errors.push({
             stepIndex: spouseStepIndex,
             stepId: steps[spouseStepIndex].id,
@@ -155,11 +174,13 @@ export function validateAll(answers: Answers): ValidationError[] {
   return errors;
 }
 
-export function isFullyValid(answers: Answers): boolean {
-  return validateAll(answers).filter((e) => e.severity !== 'warning').length === 0;
+export function isFullyValid(answers: Answers, flags?: Flags): boolean {
+  return validateAll(answers, flags).filter((e) => e.severity !== 'warning').length === 0;
 }
 
 /** Errors for a single step (for disabling Next and showing inline errors). Only blocking errors (not warnings). */
-export function getErrorsForStep(answers: Answers, stepIndex: number): ValidationError[] {
-  return validateAll(answers).filter((e) => e.stepIndex === stepIndex && e.severity !== 'warning');
+export function getErrorsForStep(answers: Answers, stepIndex: number, flags?: Flags): ValidationError[] {
+  return validateAll(answers, flags).filter((e) => e.stepIndex === stepIndex && e.severity !== 'warning');
 }
+
+export { MIN_FLAG_NOTE_LENGTH };

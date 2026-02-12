@@ -20,6 +20,7 @@ export function getInitialAnswers(): Answers {
 export const initialIntakeState: IntakeState = {
   answers: getInitialAnswers(),
   uploads: {},
+  flags: {},
   currentStepIndex: 0,
   lastSavedAt: null,
   saving: false,

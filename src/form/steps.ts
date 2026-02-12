@@ -329,8 +329,12 @@ function buildRealEstateFields(): Step['fields'] {
       {
         id: `${prefix}uploads`,
         type: 'file',
-        label: `Upload Documents for Property ${n}`,
-        helper: 'Deed and most recent mortgage statement. PDFs or phone photos are fine.',
+        label: 'Upload Property Documents — This Property Only',
+        uploadForTag: `Property ${n}`,
+        helper: 'Upload documents for this specific property only. Please upload the official statement document — not screenshots or summaries.',
+        requestedDocsList: ['Most recent mortgage statement', 'Deed (if available)', 'Property tax bill (optional)'],
+        doNotUpload: 'Do not upload documents for other properties here.',
+        dontHaveYetCheckbox: true,
         showIf: (a) => hasRealEstate(a) && getRealEstateCount(a) >= n,
       }
     );
@@ -400,8 +404,14 @@ function buildBankAccountFields(): Step['fields'] {
   base.push({
     id: 'bank_statements_upload',
     type: 'file',
-    label: 'Upload Bank Statements',
-    helper: 'Most recent statements for all listed accounts (2–6 months if available).',
+    label: 'Upload Bank Statements (for each account listed)',
+    uploadForTag: 'Bank Accounts',
+    helper: 'Upload the most recent statements for each bank or credit union account. Preferred: last 2–6 months. Include all pages. Please upload the official statement document — not screenshots or summaries.',
+    examples: 'Examples: Monthly statement PDFs, bank-generated statement downloads.',
+    doNotUpload: 'Do not upload: transaction screenshots, balance widgets, or partial page captures.',
+    dateRangeRequested: 'Last 2–6 months',
+    uploadAppliesTo: 'Applies to: Checking, Savings, Credit Union, Online banks',
+    dontHaveYetCheckbox: true,
     showIf: hasBankAccounts,
   });
   return base;
@@ -605,8 +615,12 @@ function buildVehicleFields(): Step['fields'] {
       {
         id: `${prefix}uploads`,
         type: 'file',
-        label: `Upload Documents for Vehicle ${n}`,
-        helper: 'Loan statement and title if available.',
+        label: 'Upload Vehicle Documents — This Vehicle Only',
+        uploadForTag: `Vehicle ${n}`,
+        helper: 'Upload documents for this vehicle only. Please upload the official statement document — not screenshots or summaries.',
+        requestedDocsList: ['Most recent auto loan statement', 'Title (if you have it)', 'Lease agreement (if leased)'],
+        doNotUpload: 'Do not upload insurance cards or registration unless requested.',
+        dontHaveYetCheckbox: true,
         showIf: (a) => hasVehicles(a) && getVehicleCount(a) >= n,
       }
     );
@@ -646,6 +660,16 @@ const stepOtherSecured: Step = {
       type: 'textarea',
       label: 'Details',
       helper: 'Creditor, collateral, balance.',
+      showIf: (a) => hasAnySelectedExceptNone(a, 'other_secured_debts', SECURED_NONE),
+    },
+    {
+      id: 'other_secured_uploads',
+      type: 'file',
+      label: 'Upload Statements for These Secured Debts',
+      uploadForTag: 'Other Secured Debts',
+      helper: 'Upload the latest statement for each secured debt listed here. Examples: pawn loan ticket, furniture financing statement, tax lien notice.',
+      doNotUpload: 'Do not upload unrelated documents.',
+      dontHaveYetCheckbox: true,
       showIf: (a) => hasAnySelectedExceptNone(a, 'other_secured_debts', SECURED_NONE),
     },
   ],
@@ -692,7 +716,11 @@ const stepUnsecured: Step = {
       id: 'credit_report_upload',
       type: 'file',
       label: 'Upload Credit Report (Recommended)',
-      helper: 'Uploading a credit report is the fastest and most accurate option.',
+      uploadForTag: 'Unsecured Debts',
+      helper: 'Upload a recent credit report to automatically capture most unsecured debts. Please upload the official statement document — not screenshots or summaries.',
+      examples: 'Examples: Experian, Equifax, TransUnion, AnnualCreditReport.com PDF.',
+      doNotUpload: 'Do not upload credit score screenshots.',
+      dontHaveYetCheckbox: true,
     },
     {
       id: 'unsecured_creditors',
@@ -729,6 +757,15 @@ const stepLeases: Step = {
       type: 'textarea',
       label: 'Details',
       helper: 'Type, company, monthly payment, remaining term.',
+      showIf: (a) => hasAnySelectedExceptNone(a, 'leases_contracts', LEASES_NONE),
+    },
+    {
+      id: 'leases_contracts_uploads',
+      type: 'file',
+      label: 'Upload Lease or Contract Documents',
+      uploadForTag: 'Leases & Contracts',
+      helper: 'Upload the signed agreement or most recent billing statement. Please upload the official document — not screenshots or summaries.',
+      dontHaveYetCheckbox: true,
       showIf: (a) => hasAnySelectedExceptNone(a, 'leases_contracts', LEASES_NONE),
     },
   ],
@@ -800,8 +837,13 @@ function buildEmploymentFields(): Step['fields'] {
     {
       id: 'income_uploads',
       type: 'file',
-      label: 'Income document uploads',
-      helper: 'Paystubs (last 6 months) and tax returns (last 2 years). PDFs or phone photos are fine.',
+      label: 'Upload Paystubs — Last 6 Months',
+      uploadForTag: 'Income',
+      helper: 'Upload your paystubs covering the last 6 months. If paid electronically, download the paystub PDFs from your payroll portal. Please upload the official statement document — not screenshots or summaries.',
+      examples: 'Examples: ADP, Paychex, Workday paystub PDFs.',
+      doNotUpload: 'Do not upload: offer letters, timesheets, or bank deposits.',
+      dateRangeRequested: 'Last 6 months',
+      dontHaveYetCheckbox: true,
     }
   );
   return base;
@@ -962,19 +1004,83 @@ const stepRecentActivity: Step = {
   ],
 };
 
-// Step 20 — Upload Checklist
+// Step 20 — Upload Checklist (with global upload instructions)
+const UPLOAD_INSTRUCTIONS = `Document Upload Instructions
+Each section below has its own upload area. Please upload documents in the correct section.
+Phone photos and PDFs are OK. If you don't have a document yet, you can skip and add it later.
+Do not upload unrelated documents (ads, screenshots, or old statements outside the requested dates).`;
+
 const stepUploadChecklist: Step = {
   id: 'upload_checklist',
   title: 'Upload Checklist',
   description: 'Upload any documents you have available now. You can add more later.',
+  uploadInstructions: UPLOAD_INSTRUCTIONS,
   showIf: always,
   fields: [
-    { id: 'upload_paystubs', type: 'file', label: 'Paystubs (6 months)' },
-    { id: 'upload_bank_statements', type: 'file', label: 'Bank Statements (most recent)' },
-    { id: 'upload_tax_returns', type: 'file', label: 'Tax Returns (last 2 years)' },
-    { id: 'upload_vehicle_docs', type: 'file', label: 'Vehicle Documents (loan statements, titles)' },
-    { id: 'upload_mortgage_docs', type: 'file', label: 'Mortgage Documents (statements, deeds)' },
-    { id: 'upload_credit_report', type: 'file', label: 'Credit Report (recommended)' },
+    {
+      id: 'upload_paystubs',
+      type: 'file',
+      label: 'Upload Paystubs — Last 6 Months',
+      uploadForTag: 'Income',
+      helper: 'Upload your paystubs covering the last 6 months. If paid electronically, download the paystub PDFs from your payroll portal. Please upload the official statement document — not screenshots or summaries.',
+      examples: 'Examples: ADP, Paychex, Workday paystub PDFs.',
+      doNotUpload: 'Do not upload: offer letters, timesheets, or bank deposits.',
+      dateRangeRequested: 'Last 6 months',
+      dontHaveYetCheckbox: true,
+    },
+    {
+      id: 'upload_bank_statements',
+      type: 'file',
+      label: 'Upload Bank Statements (for each account listed)',
+      uploadForTag: 'Bank Accounts',
+      helper: 'Upload the most recent statements for each bank or credit union account. Preferred: last 2–6 months. Include all pages. Please upload the official statement document — not screenshots or summaries.',
+      examples: 'Examples: Monthly statement PDFs, bank-generated statement downloads.',
+      doNotUpload: 'Do not upload: transaction screenshots, balance widgets, or partial page captures.',
+      dateRangeRequested: 'Last 2–6 months',
+      uploadAppliesTo: 'Applies to: Checking, Savings, Credit Union, Online banks',
+      dontHaveYetCheckbox: true,
+    },
+    {
+      id: 'upload_tax_returns',
+      type: 'file',
+      label: 'Upload Tax Returns — Last 2 Years',
+      uploadForTag: 'Tax Returns',
+      helper: 'Upload your complete federal tax returns for the last 2 years. Include all schedules if available. Please upload the official document — not screenshots or summaries.',
+      examples: 'Examples: Form 1040 with schedules.',
+      doNotUpload: 'Do not upload: W-2s alone (unless returns are unavailable).',
+      dateRangeRequested: 'Last 2 years',
+      dontHaveYetCheckbox: true,
+    },
+    {
+      id: 'upload_vehicle_docs',
+      type: 'file',
+      label: 'Upload Vehicle Documents — This Vehicle Only',
+      uploadForTag: 'Vehicles',
+      helper: 'Upload documents for each vehicle. Please upload the official statement document — not screenshots or summaries.',
+      requestedDocsList: ['Most recent auto loan statement', 'Title (if you have it)', 'Lease agreement (if leased)'],
+      doNotUpload: 'Do not upload insurance cards or registration unless requested.',
+      dontHaveYetCheckbox: true,
+    },
+    {
+      id: 'upload_mortgage_docs',
+      type: 'file',
+      label: 'Upload Property Documents — This Property Only',
+      uploadForTag: 'Real Estate',
+      helper: 'Upload documents for each property. Please upload the official statement document — not screenshots or summaries.',
+      requestedDocsList: ['Most recent mortgage statement', 'Deed (if available)', 'Property tax bill (optional)'],
+      doNotUpload: 'Do not upload documents for other properties in the wrong section.',
+      dontHaveYetCheckbox: true,
+    },
+    {
+      id: 'upload_credit_report',
+      type: 'file',
+      label: 'Upload Credit Report (Recommended)',
+      uploadForTag: 'Credit Report',
+      helper: 'Upload a recent credit report to automatically capture most unsecured debts. Please upload the official statement document — not screenshots or summaries.',
+      examples: 'Examples: Experian, Equifax, TransUnion, AnnualCreditReport.com PDF.',
+      doNotUpload: 'Do not upload credit score screenshots.',
+      dontHaveYetCheckbox: true,
+    },
   ],
 };
 

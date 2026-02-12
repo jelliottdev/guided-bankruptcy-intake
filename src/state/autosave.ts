@@ -7,6 +7,7 @@ export interface StoredPayload {
   schemaVersion: string;
   answers: IntakeState['answers'];
   uploads: IntakeState['uploads'];
+  flags?: IntakeState['flags'];
   currentStepIndex: number;
   lastSavedAt: number | null;
   viewMode?: IntakeState['viewMode'];
@@ -50,6 +51,7 @@ export function loadFromStorage(): StoredPayload | null {
     return {
       ...data,
       uploads: normalizeLoadedUploads(data.uploads),
+      flags: data.flags && typeof data.flags === 'object' ? data.flags : {},
       viewMode: data.viewMode ?? 'client',
     };
   } catch {
