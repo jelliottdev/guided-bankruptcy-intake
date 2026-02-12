@@ -35,15 +35,14 @@ export function FieldRenderer({
 
   if (field.showIf && !field.showIf(answers)) return null;
 
-  // Single source of truth: strip ALL asterisks from label, then add exactly one " *" when required (avoids double asterisk from any source/cache).
+  // Single source of truth: labels are plain text; required marker comes only from the renderer (one place).
   const rawLabel = String(field.label).trim();
   const displayLabel = rawLabel.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
-  const requiredSuffix = field.required ? ' *' : '';
 
   const label = (
     <label id={`${field.id}-label`} htmlFor={field.id}>
       {displayLabel}
-      {requiredSuffix}
+      {field.required && <span className="req" aria-hidden="true"> *</span>}
     </label>
   );
 

@@ -40,6 +40,12 @@ label {
   margin-bottom: 0.5rem;
 }
 
+.req {
+  color: #c62828;
+  margin-left: 0.15em;
+  font-weight: 600;
+}
+
 .helper {
   font-size: 0.875rem;
   color: #666;
