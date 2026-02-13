@@ -18,9 +18,10 @@ interface LayoutProps {
   email?: string | null;
   phone?: string | null;
   onReset: () => void;
+  onLoadDemo?: () => void;
 }
 
-export function Layout({ children, email, phone, onReset }: LayoutProps) {
+export function Layout({ children, email, phone, onReset, onLoadDemo }: LayoutProps) {
   const { state, setViewMode } = useIntake();
   const isAttorney = state.viewMode === 'attorney';
 
@@ -44,7 +45,7 @@ export function Layout({ children, email, phone, onReset }: LayoutProps) {
             <span className="pill">
               <span className="knob" />
             </span>
-            <span className="modeLabel">{isAttorney ? 'Attorney View' : 'Client View'}</span>
+            <span className="modeLabel">{isAttorney ? 'Client View' : 'Attorney View'}</span>
           </button>
         </div>
         <p className="header-subtext">
@@ -54,9 +55,19 @@ export function Layout({ children, email, phone, onReset }: LayoutProps) {
       </header>
       <main style={{ flex: 1, minHeight: 0 }}>{children}</main>
       <footer className="app-footer">
-        <button type="button" className="reset-demo" onClick={onReset}>
-          Reset demo
-        </button>
+        <span className="footer-demo-label">Demo:</span>
+        <span className="footer-demo-actions">
+          <button
+            type="button"
+            className="load-demo-data"
+            onClick={() => onLoadDemo?.()}
+          >
+            Load demo data
+          </button>
+          <button type="button" className="reset-demo" onClick={onReset}>
+            Reset demo
+          </button>
+        </span>
         <span className="build-version" title={__BUILD_TIME__}>
           {formatBuildVersion(__BUILD_TIME__)}
         </span>

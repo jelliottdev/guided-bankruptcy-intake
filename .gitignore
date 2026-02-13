@@ -1,13 +1,12 @@
 # Dependencies
 node_modules/
 
-# Build output (never push — local deployment only)
+# Build output
 dist/
 dist-ssr/
 build/
 local-deploy/
-assets/*.js
-assets/*.css
+assets/
 *.local
 
 # Editor

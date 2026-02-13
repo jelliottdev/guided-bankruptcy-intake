@@ -52,11 +52,9 @@ export function FieldRenderer({
   }, [noteSavedFlash]);
 
   useEffect(() => {
-    if (shouldFocus && inputRef.current) {
-      inputRef.current.focus();
-      const t = setTimeout(() => onFocusDone?.(), 2000);
-      return () => clearTimeout(t);
-    }
+    if (!shouldFocus) return;
+    const t = setTimeout(() => onFocusDone?.(), 900);
+    return () => clearTimeout(t);
   }, [shouldFocus, onFocusDone]);
 
   if (field.showIf && !field.showIf(answers)) return null;
@@ -123,11 +121,14 @@ export function FieldRenderer({
     .trim();
 
   const whyWeAskIcon = field.whyWeAsk ? (
-    <span className="field-why-we-ask-icon" title={field.whyWeAsk} aria-label="Why we ask this">
+    <span
+      className="field-why-we-ask-icon"
+      title={`Why we ask: ${field.whyWeAsk}`}
+      aria-label={`Why we ask: ${field.whyWeAsk}`}
+    >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-        <path d="M12 17h.01" />
+        <path d="M12 16v-4M12 8h.01" />
       </svg>
     </span>
   ) : null;
@@ -370,21 +371,27 @@ export function FieldRenderer({
               ))}
             </ul>
           )}
-          <p className="helper field-file-demo">Demo: stores filenames only. No file is uploaded.</p>
           <div className="field-file">
-            <input
-              type="file"
-              id={field.id}
-              multiple
-              onChange={(e) => {
-                const files = e.target.files;
-                if (files && onUpload) {
-                  const names = Array.from(files).map((f) => f.name);
-                  onUpload(field.id, names);
-                }
-                e.target.value = '';
-              }}
-            />
+            <label htmlFor={field.id} className="field-file-zone">
+              <input
+                type="file"
+                id={field.id}
+                multiple
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files && onUpload) {
+                    const names = Array.from(files).map((f) => f.name);
+                    onUpload(field.id, names);
+                  }
+                  e.target.value = '';
+                }}
+              />
+              <span className="field-file-zone-text">
+                {uploads.length > 0
+                  ? `${uploads.length} file${uploads.length !== 1 ? 's' : ''} chosen`
+                  : 'Choose files'}
+              </span>
+            </label>
             {uploads.length > 0 && (
               <div className="upload-selected-block">
                 <p className="upload-selected-label">Selected files:</p>

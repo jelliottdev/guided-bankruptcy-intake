@@ -19,6 +19,8 @@ import {
   isJointFiling,
 } from '../utils/logic';
 import { useIntake } from '../state/IntakeProvider';
+import { generateBBPacketPDF } from '../export/bbPacketExport';
+import { PDFViewer } from './PDFViewer';
 import { computeCaseReadiness } from '../attorney/readiness';
 import {
   getStrategySignals,
@@ -32,6 +34,18 @@ import {
 import { getPrimaryBlockers } from '../attorney/readiness';
 import { buildCreditorMatrix, exportCreditorWorksheetFromRows, type CreditorRow } from '../attorney/creditorMatrix';
 import { computeClientReliability } from '../attorney/clientReliability';
+import { computeRiskAssessment } from '../attorney/riskAssessment';
+import {
+  DOCUMENT_IDS as SHARED_DOCUMENT_IDS,
+  loadAttorneyFinancial,
+  saveAttorneyFinancial,
+  type AttorneyFinancialEntry,
+  getSeededAttorneyFinancial,
+} from './dashboard/dashboardShared';
+import { MeansTest } from './dashboard/Financial/MeansTest';
+import { FinancialCharts } from './dashboard/Financial/FinancialCharts';
+import { ExemptionAnalysis } from './dashboard/CaseInsights/ExemptionAnalysis';
+import { RiskAssessment } from './dashboard/CaseInsights/RiskAssessment';
 import {
   buildSummaryInput,
   generateTwoSentenceSummary,
@@ -48,14 +62,7 @@ function formatDateForDisplay(value: unknown): string {
   return `${m}/${day}/${y}`;
 }
 
-const DOCUMENT_IDS = [
-  { id: 'upload_paystubs', label: 'Paystubs' },
-  { id: 'upload_bank_statements', label: 'Bank statements' },
-  { id: 'upload_tax_returns', label: 'Tax returns' },
-  { id: 'upload_vehicle_docs', label: 'Vehicle docs' },
-  { id: 'upload_mortgage_docs', label: 'Mortgage docs' },
-  { id: 'upload_credit_report', label: 'Credit report' },
-] as const;
+const DOCUMENT_IDS = SHARED_DOCUMENT_IDS;
 
 function isEmpty(value: FieldValue | undefined): boolean {
   if (value == null) return true;
@@ -161,43 +168,6 @@ function reliabilityNextStep(r: { missingRequired: number; docsMissing: number; 
 }
 
 /** Attorney manual financial overlay (stored separately from client intake) */
-export type AttorneyFinancialEntry = {
-  monthlyIncome?: number;
-  monthlyExpenses?: number;
-  unsecuredDebt?: number;
-  securedDebt?: number;
-  priorityDebt?: number;
-  assetTotal?: number;
-};
-
-const ATTORNEY_FINANCIAL_KEY = 'gbi:attorney-financial';
-
-function loadAttorneyFinancial(): AttorneyFinancialEntry {
-  try {
-    const raw = localStorage.getItem(ATTORNEY_FINANCIAL_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as Record<string, unknown>;
-    const out: AttorneyFinancialEntry = {};
-    if (typeof parsed.monthlyIncome === 'number' && Number.isFinite(parsed.monthlyIncome)) out.monthlyIncome = parsed.monthlyIncome;
-    if (typeof parsed.monthlyExpenses === 'number' && Number.isFinite(parsed.monthlyExpenses)) out.monthlyExpenses = parsed.monthlyExpenses;
-    if (typeof parsed.unsecuredDebt === 'number' && Number.isFinite(parsed.unsecuredDebt)) out.unsecuredDebt = parsed.unsecuredDebt;
-    if (typeof parsed.securedDebt === 'number' && Number.isFinite(parsed.securedDebt)) out.securedDebt = parsed.securedDebt;
-    if (typeof parsed.priorityDebt === 'number' && Number.isFinite(parsed.priorityDebt)) out.priorityDebt = parsed.priorityDebt;
-    if (typeof parsed.assetTotal === 'number' && Number.isFinite(parsed.assetTotal)) out.assetTotal = parsed.assetTotal;
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-function saveAttorneyFinancial(entry: AttorneyFinancialEntry) {
-  try {
-    localStorage.setItem(ATTORNEY_FINANCIAL_KEY, JSON.stringify(entry));
-  } catch {
-    /* ignore */
-  }
-}
-
 /** Attorney-added creditor row (overlay on intake matrix) */
 export type AttorneyCreditorEntry = {
   id: string;
@@ -278,20 +248,35 @@ function DocRow({
 }) {
   const [open, setOpen] = useState(false);
   const missing = doc.files.length === 0;
+  const detailsId = `doc-details-${doc.key}`;
   const requestText =
     `Please upload: ${doc.label}\n` +
     `Needed: ${doc.need}\n` +
     (doc.examples.length ? `Examples:\n${doc.examples.map((e) => `• ${e}`).join('\n')}\n` : '');
   return (
     <div className="doc-row">
-      <div className="doc-row-head" onClick={() => setOpen((v) => !v)} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setOpen((v) => !v)}>
+      <div
+        className="doc-row-head"
+        onClick={() => setOpen((v) => !v)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        aria-controls={detailsId}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setOpen((v) => !v);
+          }
+        }}
+      >
         <div className="doc-category">{doc.label}</div>
         <div className={`doc-status ${missing ? 'missing' : ''}`}>{missing ? 'Missing' : 'Received'}</div>
-        <div className="doc-count">{doc.files.length} file(s)</div>
+        <div className="doc-count">{missing ? 'No files' : `${doc.files.length} file(s)`}</div>
         <button type="button" className="btn btn-secondary btn-doc-copy" onClick={(e) => { e.stopPropagation(); onCopyRequest(requestText); }}>Copy request</button>
+        <span className={`doc-row-chevron ${open ? 'open' : ''}`} aria-hidden="true">▾</span>
       </div>
       {open ? (
-        <div className="doc-details">
+        <div className="doc-details" id={detailsId}>
           <div className="doc-need"><strong>Needed:</strong> {doc.need}</div>
           {doc.examples.length ? <ul className="doc-examples">{doc.examples.map((ex, i) => <li key={i}>{ex}</li>)}</ul> : null}
           {doc.files.length ? (
@@ -313,10 +298,17 @@ export interface AttorneyDashboardProps {
 }
 
 export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, onReset }: AttorneyDashboardProps) {
-  const { state, setViewMode, setFlagResolved } = useIntake();
+  const { state, setViewMode, setFlagResolved, loadSeededDemo } = useIntake();
   const { answers, uploads, flags, lastSavedAt } = state;
   const [showDebug, setShowDebug] = useState(false);
-  const [copyToast, setCopyToast] = useState<'Copied' | 'Copy failed' | null>(null);
+  const [copyToast, setCopyToast] = useState<string | null>(null);
+  const [pdfViewerUrl, setPdfViewerUrl] = useState<string | null>(null);
+  const [pdfViewerLoading, setPdfViewerLoading] = useState(false);
+  const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+  const actionsMenuRef = useRef<HTMLDivElement | null>(null);
+  const [blockersExpanded, setBlockersExpanded] = useState(false);
+  const [detailsOptionsOpen, setDetailsOptionsOpen] = useState(false);
+  const detailsOptionsRef = useRef<HTMLDivElement | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionQueueOpen, setActionQueueOpen] = useState<Record<'critical' | 'important' | 'follow-up', boolean>>(() => ({
     critical: true,
@@ -331,7 +323,56 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
   const [creditorFormOpen, setCreditorFormOpen] = useState(false);
   const [creditorEditingId, setCreditorEditingId] = useState<string | null>(null);
   const [creditorDraft, setCreditorDraft] = useState<{ name: string; type: CreditorRow['type']; balanceOrNote: string }>({ name: '', type: 'Unsecured', balanceOrNote: '' });
+  const [meansTestState, setMeansTestState] = useState(() => {
+    const s = state.answers['state'];
+    return typeof s === 'string' ? s.trim() : '';
+  });
+  const [exemptionSet, setExemptionSet] = useState('federal');
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (meansTestState) return;
+    const s = answers['state'];
+    if (typeof s === 'string' && s.trim()) setMeansTestState(s.trim());
+  }, [answers, meansTestState]);
+
+  useEffect(() => {
+    if (!actionsMenuOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const el = actionsMenuRef.current;
+      if (!el) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
+      setActionsMenuOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActionsMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [actionsMenuOpen]);
+
+  useEffect(() => {
+    if (!detailsOptionsOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const el = detailsOptionsRef.current;
+      if (!el) return;
+      if (e.target instanceof Node && el.contains(e.target)) return;
+      setDetailsOptionsOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDetailsOptionsOpen(false);
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [detailsOptionsOpen]);
 
   const saveFinancialEntry = useCallback(() => {
     setAttorneyFinancial(financialEntryDraft);
@@ -361,9 +402,19 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
   const scrollToFlags = useCallback(() => {
     document.getElementById('client-flags')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, []);
+  const scrollToBlockers = useCallback(() => {
+    document.querySelector('.blockers-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+  const scrollToAnalysis = useCallback(() => {
+    document.querySelector('.dashboard-analysis')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
   const errors = useMemo(() => validateAll(answers, flags).filter((e) => e.severity !== 'warning'), [answers, flags]);
+  const goToField = useCallback((fieldId: string) => {
+    const stepIdx = steps.findIndex((s) => s.fields.some((f) => f.id === fieldId));
+    if (stepIdx >= 0) onGoToWizard(stepIdx, fieldId);
+  }, [steps, onGoToWizard]);
 
   const MIN_FLAG_NOTE = 10;
   const flaggedItems = useMemo(() => {
@@ -401,8 +452,12 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     const rawUrgency = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]) : [];
     const displayUrgencyList = rawUrgency.filter((v) => v && !v.includes('None of'));
     const urgencyCount = displayUrgencyList.length;
-    const docTotal = DOCUMENT_IDS.length;
-    const docReceived = DOCUMENT_IDS.filter((d) => (uploads[d.id]?.length ?? 0) > 0).length;
+    const applicableDocs = DOCUMENT_IDS.filter((d) => {
+      if (d.id === 'upload_business_docs') return answers['self_employed'] === 'Yes';
+      return true;
+    });
+    const docTotal = applicableDocs.length;
+    const docReceived = applicableDocs.filter((d) => (uploads[d.id]?.length ?? 0) > 0).length;
     const docPct = docTotal > 0 ? Math.round((docReceived / docTotal) * 100) : 0;
     return {
       completionPct,
@@ -428,6 +483,14 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
   const documentSufficiency = useMemo(
     () => getDocumentSufficiency(answers, uploads),
     [answers, uploads]
+  );
+  const docMissingCount = useMemo(
+    () => documentSufficiency.filter((d) => d.status === 'Missing' || d.status === 'Partial').length,
+    [documentSufficiency]
+  );
+  const riskAssessmentResult = useMemo(
+    () => computeRiskAssessment(answers, kpis.missingCount, docMissingCount, kpis.urgencyCount, meansTestState || undefined),
+    [answers, kpis.missingCount, docMissingCount, kpis.urgencyCount, meansTestState]
   );
   const missingFieldLabels = useMemo(
     () => errors.map((e) => {
@@ -590,13 +653,15 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         isEstimate: false,
       });
     });
+    const propertyCount = Math.max(0, Number.parseInt(String(answers['real_estate_count'] ?? '0'), 10) || 0);
+    const vehicleCount = Math.max(0, Number.parseInt(String(answers['vehicle_count'] ?? '0'), 10) || 0);
     const notSureFields = [
-      { id: 'property_1_value', label: 'Property 1 value' },
-      { id: 'property_2_value', label: 'Property 2 value' },
-      { id: 'property_3_value', label: 'Property 3 value' },
-      { id: 'vehicle_1_details', label: 'Vehicle 1 value' },
-      { id: 'vehicle_2_details', label: 'Vehicle 2 value' },
-      { id: 'vehicle_3_details', label: 'Vehicle 3 value' },
+      ...(propertyCount >= 1 ? [{ id: 'property_1_value', label: 'Property 1 value' }] : []),
+      ...(propertyCount >= 2 ? [{ id: 'property_2_value', label: 'Property 2 value' }] : []),
+      ...(propertyCount >= 3 ? [{ id: 'property_3_value', label: 'Property 3 value' }] : []),
+      ...(vehicleCount >= 1 ? [{ id: 'vehicle_1_value', label: 'Vehicle 1 value' }] : []),
+      ...(vehicleCount >= 2 ? [{ id: 'vehicle_2_value', label: 'Vehicle 2 value' }] : []),
+      ...(vehicleCount >= 3 ? [{ id: 'vehicle_3_value', label: 'Vehicle 3 value' }] : []),
       { id: 'income_current_ytd', label: 'Income (current YTD)' },
       { id: 'income_last_year', label: 'Income (last year)' },
     ];
@@ -605,6 +670,8 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       const stepIdx = steps.findIndex((st) => st.fields.some((f) => f.id === id));
       if (stepIdx < 0) return;
       const step = steps[stepIdx];
+      const field = step.fields.find((f) => f.id === id);
+      if (field?.showIf && !field.showIf(answers)) return;
       const empty = isEmpty(v);
       const notSure = typeof v === 'string' && v.trim().toLowerCase().includes('not sure');
       if (empty || notSure) {
@@ -627,15 +694,29 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     list.forEach((val) => {
       if (!val || val.includes('None of')) return;
       const label = URGENCY_LABELS[val] ?? val;
+      const shouldShowDate = (raw: unknown): string | undefined => {
+        const d = new Date(typeof raw === 'string' ? raw : String(raw));
+        if (Number.isNaN(d.getTime())) return undefined;
+        const now = new Date();
+        // Urgency dates should be near-term; hide obviously wrong ancient dates.
+        if (d.getFullYear() < 2000) return undefined;
+        const diffDays = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+        if (diffDays < -365) return undefined;
+        return formatDateForDisplay(d.toISOString());
+      };
+
       if (val.includes('Foreclosure')) {
         const raw = answers['foreclosure_date'];
-        result.push({ label, date: raw != null && String(raw).trim() ? formatDateForDisplay(raw) : '(date unknown)' });
+        const date = raw != null && String(raw).trim() ? shouldShowDate(raw) : undefined;
+        result.push({ label, date });
       } else if (val.includes('vehicle repossession')) {
         const raw = answers['repossession_date'];
-        result.push({ label, date: raw != null && String(raw).trim() ? formatDateForDisplay(raw) : '(date unknown)' });
+        const date = raw != null && String(raw).trim() ? shouldShowDate(raw) : undefined;
+        result.push({ label, date });
       } else if (val.includes('Utility')) {
         const raw = answers['shutoff_date'];
-        result.push({ label, date: raw != null && String(raw).trim() ? formatDateForDisplay(raw) : '(date unknown)' });
+        const date = raw != null && String(raw).trim() ? shouldShowDate(raw) : undefined;
+        result.push({ label, date });
       } else result.push({ label });
     });
     return result;
@@ -915,9 +996,9 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     ? actionQueueFollowUp.filter((a) => a.label.toLowerCase().includes(query))
     : actionQueueFollowUp;
 
-  function actionItemId(item: (typeof actionQueue)[0], i: number, prefix: string): string {
+  const actionItemId = useCallback((item: (typeof actionQueue)[0], i: number, prefix: string): string => {
     return `${prefix}-${item.stepIndex}-${item.fieldId ?? item.label.slice(0, 25).replace(/\s/g, '_')}-${i}`;
-  }
+  }, []);
 
   /** Items still shown in Blocks filing (not moved to follow-up) */
   const displayCritical = useMemo(
@@ -926,7 +1007,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         .map((item, i) => ({ item, i }))
         .filter(({ item, i }) => actionStatus[actionItemId(item, i, 'critical')] !== 'followup')
         .map(({ item, i }) => ({ item, i })),
-    [filteredCritical, actionStatus]
+    [filteredCritical, actionStatus, actionItemId]
   );
   /** Items still shown in Important (not moved to follow-up) */
   const displayImportant = useMemo(
@@ -935,7 +1016,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         .map((item, i) => ({ item, i }))
         .filter(({ item, i }) => actionStatus[actionItemId(item, i, 'important')] !== 'followup')
         .map(({ item, i }) => ({ item, i })),
-    [filteredImportant, actionStatus]
+    [filteredImportant, actionStatus, actionItemId]
   );
   /** Items moved to Follow-up from Critical (show in Follow-up section with "Move back to Blocks filing") */
   const movedToFollowUpFromCritical = useMemo(
@@ -943,7 +1024,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       filteredCritical
         .map((item, i) => ({ item, i }))
         .filter(({ item, i }) => actionStatus[actionItemId(item, i, 'critical')] === 'followup'),
-    [filteredCritical, actionStatus]
+    [filteredCritical, actionStatus, actionItemId]
   );
   /** Items moved to Follow-up from Important (show in Follow-up section with "Move back to Important") */
   const movedToFollowUpFromImportant = useMemo(
@@ -951,7 +1032,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       filteredImportant
         .map((item, i) => ({ item, i }))
         .filter(({ item, i }) => actionStatus[actionItemId(item, i, 'important')] === 'followup'),
-    [filteredImportant, actionStatus]
+    [filteredImportant, actionStatus, actionItemId]
   );
   /** Follow-up section: moved items first, then original follow-up items */
   const displayFollowUpMoved = useMemo(
@@ -989,6 +1070,46 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
     setActionQueueOpen({ critical: false, important: false, 'follow-up': false });
   }, []);
 
+  const docsMissingCount = kpis.docTotal - kpis.docReceived;
+  const missingOrPartialDocs = useMemo(
+    () => documentSufficiency.filter((d) => d.status === 'Missing' || d.status === 'Partial'),
+    [documentSufficiency]
+  );
+  const topBlockers = useMemo(() => {
+    const a = displayCritical.slice(0, 2).map(({ item }) => item);
+    const b = displayImportant.slice(0, 1).map(({ item }) => item);
+    return [...a, ...b].slice(0, 3);
+  }, [displayCritical, displayImportant]);
+
+  const nextStepPlan = useMemo(() => {
+    const stepsList: string[] = [];
+    if (docsMissingCount > 0) stepsList.push('Copy a ready-to-send doc request message');
+    if (displayCritical.some(({ item }) => item.reason === 'Urgency')) stepsList.push('Open the urgency item in intake and confirm the date/details');
+    if (!hasAnyFinancialEntry) stepsList.push('Add income/expenses/debt numbers to unlock charts and means test signals');
+    if (stepsList.length === 0) stepsList.push('Review insights and confirm strategy before filing');
+    return stepsList.slice(0, 3);
+  }, [docsMissingCount, displayCritical, hasAnyFinancialEntry]);
+
+  const runPlanStep = useCallback((text: string) => {
+    if (text.toLowerCase().includes('doc request')) {
+      copyToClipboard(docRequestMessage);
+      return;
+    }
+    if (text.toLowerCase().includes('urgency')) {
+      // Take them to the blockers detail view and action queue.
+      setBlockersExpanded(true);
+      scrollToActionQueue();
+      return;
+    }
+    if (text.toLowerCase().includes('income/expenses/debt')) {
+      setFinancialEntryDraft({ ...attorneyFinancial });
+      setFinancialEntryOpen(true);
+      document.getElementById('financial-signals')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [copyToClipboard, docRequestMessage, scrollToActionQueue, attorneyFinancial]);
+
   return (
     <div className="attorney-dashboard">
       <header className="attorney-header-bar">
@@ -998,24 +1119,99 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
         <div className="attorney-header-right">
           <span className="attorney-meta">{lastSavedText(lastSavedAt)}</span>
-          <span className="header-action-group">
-            <button type="button" className="btn-header btn-header-group" onClick={copyExportBundle} title="Copy answers + uploads JSON">Copy</button>
-            <button type="button" className="btn-header btn-header-group btn-export-snapshot" onClick={copyCaseSnapshot} title="Copy full case snapshot (answers, uploads, flags) for export or backup">Export Case Snapshot</button>
-            <button type="button" className="btn-header btn-header-group" onClick={onReset}>Reset</button>
-          </span>
-          <button type="button" className="btn-header modeToggle on" onClick={() => setViewMode('client')} aria-label="Toggle Client View">
+          <div className="header-actions" ref={actionsMenuRef}>
+            <button
+              type="button"
+              className="btn btn-secondary btn-actions-menu"
+              aria-haspopup="menu"
+              aria-expanded={actionsMenuOpen}
+              onClick={() => setActionsMenuOpen((v) => !v)}
+            >
+              Actions <span aria-hidden="true">▾</span>
+            </button>
+            {actionsMenuOpen && (
+              <div className="actions-menu" role="menu" aria-label="Actions">
+                <button
+                  type="button"
+                  className="actions-menu-item"
+                  role="menuitem"
+                  disabled={pdfViewerLoading}
+                  onClick={async () => {
+                    setActionsMenuOpen(false);
+                    setPdfViewerLoading(true);
+                    try {
+                      const url = await generateBBPacketPDF(answers);
+                      if (url) setPdfViewerUrl(url);
+                      else setCopyToast('PDF failed');
+                      setTimeout(() => setCopyToast(null), 2500);
+                    } catch (e) {
+                      setCopyToast(e instanceof Error ? e.message : 'PDF failed');
+                      setTimeout(() => setCopyToast(null), 5000);
+                    } finally {
+                      setPdfViewerLoading(false);
+                    }
+                  }}
+                >
+                  Export to BB Packet
+                </button>
+                <button type="button" className="actions-menu-item" role="menuitem" onClick={() => { setActionsMenuOpen(false); copyExportBundle(); }}>
+                  Copy (JSON)
+                </button>
+                <button type="button" className="actions-menu-item" role="menuitem" onClick={() => { setActionsMenuOpen(false); copyCaseSnapshot(); }}>
+                  Export snapshot
+                </button>
+                <div className="actions-menu-sep" role="separator" />
+                <button
+                  type="button"
+                  className="actions-menu-item"
+                  role="menuitem"
+                  onClick={() => {
+                    setActionsMenuOpen(false);
+                    loadSeededDemo();
+                    const seededFin = getSeededAttorneyFinancial();
+                    saveAttorneyFinancial(seededFin);
+                    setAttorneyFinancial(seededFin);
+                    setFinancialEntryDraft(seededFin);
+                    saveAttorneyCreditors([]);
+                    saveActionStatus({});
+                    setMeansTestState('Illinois');
+                    setBlockersExpanded(false);
+                    setCopyToast('Demo loaded');
+                    setTimeout(() => setCopyToast(null), 1500);
+                  }}
+                >
+                  Load demo case
+                </button>
+                <button
+                  type="button"
+                  className="actions-menu-item"
+                  role="menuitem"
+                  onClick={() => {
+                    setActionsMenuOpen(false);
+                    setShowDebug((v) => !v);
+                  }}
+                >
+                  {showDebug ? 'Hide developer data' : 'Show developer data'}
+                </button>
+                <button type="button" className="actions-menu-item danger" role="menuitem" onClick={() => { setActionsMenuOpen(false); onReset(); }}>
+                  Reset
+                </button>
+              </div>
+            )}
+          </div>
+          <button type="button" className="btn-header modeToggle on" onClick={() => setViewMode('client')} aria-label="Switch to Client View">
             <span className="pill"><span className="knob" /></span>
             Client View
           </button>
-          {copyToast && <span className={`attorney-toast ${copyToast === 'Copy failed' ? 'attorney-toast-error' : ''}`}>{copyToast}</span>}
+          {copyToast && <span className={`attorney-toast ${copyToast !== 'Copied' && copyToast !== 'Demo loaded' ? 'attorney-toast-error' : ''}`}>{copyToast}</span>}
         </div>
       </header>
 
       <div className="dashboard-header-grid">
-        <div className="dashboard-card case-status-card" role="status" style={{ borderColor: caseStatus.color }}>
+        <div className={`dashboard-card case-status-card ${caseStatus.className}`} role="status">
           <div className="dashboard-card-title">Case status</div>
-          <div className="case-status-oneline" style={{ color: caseStatus.color }}>
-            {caseStatus.label} — {readiness.score}% · {kpis.missingCount} missing · {kpis.docReceived}/{kpis.docTotal} docs
+          <div className="case-status-oneline">
+            {caseStatus.label}{docsMissingCount > 0 ? ` · ${docsMissingCount} docs missing` : ''}{kpis.missingCount > 0 ? ` · ${kpis.missingCount} required missing` : kpis.missingCount === 0 ? ' · No required fields missing' : ''}
           </div>
           {primaryBlockers.length > 0 && (
             <div className="case-status-blockers-inline">{primaryBlockers.join(', ')}</div>
@@ -1034,9 +1230,14 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
                 {nextBestActionSingle.action === 'openFlags' && `${flaggedItems.length + kpis.urgencyCount} items were flagged by the client.`}
                 {nextBestActionSingle.action === 'openSummary' && 'Review intake and strategy signals.'}
               </div>
+              <div className="next-action-outcome">
+                {nextBestActionSingle.action === 'copyDocRequest' && 'Copies a ready-to-send request to your clipboard.'}
+                {nextBestActionSingle.action === 'openActionQueue' && 'Opens the exact fields that block filing.'}
+                {nextBestActionSingle.action === 'openFlags' && 'Review notes and mark items resolved.'}
+              </div>
               <button
                 type="button"
-                className="btn-next-action-cta"
+                className={`btn ${nextBestActionSingle.action === 'copyDocRequest' || nextBestActionSingle.action === 'openActionQueue' ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={
                   nextBestActionSingle.action === 'openActionQueue' ? scrollToActionQueue :
                   nextBestActionSingle.action === 'copyDocRequest' ? () => copyToClipboard(docRequestMessage) :
@@ -1045,7 +1246,7 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
                 }
               >
                 {nextBestActionSingle.action === 'openActionQueue' ? 'Open Action Queue' :
-                 nextBestActionSingle.action === 'copyDocRequest' ? 'Copy doc request' :
+                 nextBestActionSingle.action === 'copyDocRequest' ? 'Copy request message' :
                  nextBestActionSingle.action === 'openFlags' ? 'Jump to Flags' : 'Open Action Queue'}
               </button>
             </>
@@ -1078,23 +1279,97 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
       <div className="dashboard-health-row">
         <span className="health-tile"><strong>Completion</strong> {kpis.completionPct}%</span>
         <span className="health-tile"><strong>Required missing</strong> {kpis.missingCount}</span>
-        <span className="health-tile"><strong>Docs missing</strong> {kpis.docTotal - kpis.docReceived}</span>
+        <span className={`health-tile ${docsMissingCount > 0 ? 'health-tile-emph' : ''}`}><strong>Docs missing</strong> {docsMissingCount}</span>
         <span className="health-tile"><strong>Flags</strong> {flaggedItems.length + kpis.urgencyCount}</span>
         <span className="health-tile"><strong>Reliability</strong> {clientReliability.score}</span>
       </div>
 
-      <div className="dashboard-filterbar">
-        <input
-          type="search"
-          className="dashboard-search"
-          placeholder="Filter action queue and documents…"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          aria-label="Filter"
-        />
-      </div>
+      <section className="dashboard-panel blockers-panel">
+        <div className="blockers-panel-head">
+          <div>
+            <div className="dashboard-panel-title">Filing blockers</div>
+            <div className="blockers-subtitle">
+              {displayCritical.length > 0 ? `${displayCritical.length} blocks filing` : 'No filing blockers'} · {docsMissingCount} docs missing
+            </div>
+          </div>
+          <div className="blockers-head-actions">
+            <button type="button" className="btn btn-secondary" onClick={() => setBlockersExpanded((v) => !v)}>
+              {blockersExpanded ? 'Hide details' : 'View details (actions, docs, schedules)'}
+            </button>
+          </div>
+        </div>
 
-      <div className="dashboard-split">
+        <div className="blockers-grid">
+          <div className="blockers-col">
+            <div className="blockers-col-title">Top items</div>
+            {topBlockers.length === 0 ? (
+              <div className="blockers-empty">No urgent tasks. Review insights below.</div>
+            ) : (
+              <ul className="blockers-list">
+                {topBlockers.map((item, idx) => (
+                  <li key={`${item.stepIndex}-${item.fieldId ?? 'none'}-${idx}`} className="blocker-item">
+                    <div className="blocker-item-main">
+                      <div className="blocker-item-title">{item.label}</div>
+                      <div className="blocker-item-sub">{item.reason}</div>
+                    </div>
+                    <button type="button" className="btn btn-secondary" onClick={() => onGoToWizard(item.stepIndex, item.fieldId)}>
+                      Open in intake
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="blockers-plan">
+              <div className="blockers-col-title">Quick plan</div>
+              <ol className="blockers-plan-list">
+                {nextStepPlan.map((s, i) => (
+                  <li key={i}>
+                    <button type="button" className="btn btn-link" onClick={() => runPlanStep(s)}>
+                      {s}
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+
+          <div className="blockers-col">
+            <div className="blockers-col-title">Missing documents</div>
+            {missingOrPartialDocs.length === 0 ? (
+              <div className="blockers-empty">All required documents are received or waived.</div>
+            ) : (
+              <ul className="blockers-docs">
+                {missingOrPartialDocs.slice(0, 6).map((d) => (
+                  <li key={d.type} className="blockers-doc-row">
+                    <span className="blockers-doc-name">{d.type}</span>
+                    <span className={`doc-status ${d.status === 'Missing' ? 'missing' : ''}`}>{d.status}</span>
+                    <span className="blockers-doc-need">{d.coverageRule !== '—' ? d.coverageRule : d.message}</span>
+                  </li>
+                ))}
+                {missingOrPartialDocs.length > 6 && (
+                  <li className="blockers-doc-more">+{missingOrPartialDocs.length - 6} more</li>
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {blockersExpanded && (
+        <>
+          <div className="dashboard-filterbar">
+            <div className="details-search-label">Search details</div>
+            <input
+              type="search"
+              className="dashboard-search"
+              placeholder="Search actions and documents…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search"
+            />
+          </div>
+
+          <div className="dashboard-split">
         <section id="action-queue" className="dashboard-panel action-queue-panel">
           <div className="dashboard-panel-title">Action Queue</div>
           {actionQueue.length > 0 && (
@@ -1106,10 +1381,23 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
                   <span>{displayFollowUpMoved.length + displayFollowUpOriginal.length} follow-up</span>
                 )}
               </span>
-              <span className="action-queue-toolbar-actions">
-                <button type="button" className="btn-action-queue-toggle" onClick={() => copyToClipboard(followUpCopyText)} title="Includes suggested questions and items you marked for follow-up">Copy follow-up questions</button>
-                <button type="button" className="btn-action-queue-toggle" onClick={expandAllActionQueue}>Expand all</button>
-                <button type="button" className="btn-action-queue-toggle" onClick={collapseAllActionQueue}>Collapse all</button>
+              <span className="action-queue-toolbar-actions" ref={detailsOptionsRef}>
+                <button type="button" className="btn-action-queue-toggle" onClick={() => setDetailsOptionsOpen((v) => !v)} aria-expanded={detailsOptionsOpen}>
+                  Options ▾
+                </button>
+                {detailsOptionsOpen && (
+                  <div className="details-options-menu" role="menu" aria-label="Action queue options">
+                    <button type="button" className="details-options-item" onClick={() => { setDetailsOptionsOpen(false); copyToClipboard(followUpCopyText); }} role="menuitem">
+                      Copy follow-up questions
+                    </button>
+                    <button type="button" className="details-options-item" onClick={() => { setDetailsOptionsOpen(false); expandAllActionQueue(); }} role="menuitem">
+                      Expand all
+                    </button>
+                    <button type="button" className="details-options-item" onClick={() => { setDetailsOptionsOpen(false); collapseAllActionQueue(); }} role="menuitem">
+                      Collapse all
+                    </button>
+                  </div>
+                )}
               </span>
             </div>
           )}
@@ -1304,9 +1592,11 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
           </div>
         </div>
       </div>
+        </>
+      )}
 
       <div className="dashboard-analysis">
-        <div className="dashboard-card financial-signals-card">
+        <div id="financial-signals" className="dashboard-card financial-signals-card">
           <div className="financial-signals-header">
             <div className="dashboard-card-title">Financial signals</div>
             <button
@@ -1460,8 +1750,46 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
             </div>
           )}
         </div>
+        <MeansTest
+          answers={answers}
+          selectedState={meansTestState}
+          onStateChange={setMeansTestState}
+          onOpenIncome={() => {
+            // Prefer jumping to the first income field that exists in the current steps.
+            const preferred = ['debtor_gross_pay', 'income_current_ytd', 'debtor_employer'];
+            for (const id of preferred) {
+              const stepIdx = steps.findIndex((s) => s.fields.some((f) => f.id === id));
+              if (stepIdx >= 0) {
+                onGoToWizard(stepIdx, id);
+                return;
+              }
+            }
+            scrollToAnalysis();
+          }}
+        />
+        <FinancialCharts
+          attorneyFinancial={attorneyFinancial}
+          scheduleCoverage={scheduleCoverage}
+          onAddNumbers={() => {
+            setFinancialEntryDraft({ ...attorneyFinancial });
+            setFinancialEntryOpen(true);
+            document.getElementById('financial-signals')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        />
         <div className="dashboard-card filing-readiness-card">
           <div className="dashboard-card-title">Filing readiness</div>
+          <div className="filing-readiness-top">
+            <div className="filing-readiness-score">
+              <span className="filing-readiness-score-value">{readiness.score}%</span>
+              <span className="filing-readiness-score-label">{readiness.bandLabel}</span>
+            </div>
+            <button type="button" className="btn btn-secondary" onClick={scrollToBlockers}>
+              View blockers
+            </button>
+          </div>
+          <div className="filing-readiness-bar" aria-label="Readiness score">
+            <div className="filing-readiness-bar-fill" style={{ width: `${readiness.score}%` }} />
+          </div>
           {primaryBlockers.length > 0 && <div className="filing-readiness-blockers"><strong>Blocks filing:</strong> {primaryBlockers.join(', ')}</div>}
           <div className="filing-readiness-schedules">
             {scheduleCoverage.filter((s) => s.status !== 'Ready').length > 0 && (
@@ -1483,12 +1811,47 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         <div className="dashboard-card strategy-signals-inline">
           <div className="dashboard-card-title">Strategy signals</div>
           <ul className="strategy-list-inline">
-            {strategySignals.map((s) => (
-              <li key={s.id}><span className="strategy-label">{s.label}</span>{s.note && <span className="strategy-note"> — {s.note}</span>}</li>
-            ))}
+            {strategySignals.map((s) => {
+              const action =
+                s.id === 'ch7-candidate' ? { label: 'Review means test', onClick: () => scrollToAnalysis() } :
+                s.id === 'non-exempt-vehicles' ? { label: 'Review exemptions', onClick: () => document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) } :
+                s.id === 'priority-debts' ? { label: 'Open priority debts', onClick: () => goToField('priority_debts') } :
+                s.id === 'urgency-filing' ? { label: 'Open blockers', onClick: scrollToBlockers } :
+                null;
+              return (
+                <li key={s.id} className="strategy-item-row">
+                  <div className="strategy-item-main">
+                    <span className="strategy-label">{s.label}</span>
+                    {s.note && <span className="strategy-note"> — {s.note}</span>}
+                  </div>
+                  {action ? (
+                    <button type="button" className="btn btn-secondary strategy-item-action" onClick={action.onClick}>
+                      {action.label}
+                    </button>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
+
+      <div id="insights" className="dashboard-case-insights-row">
+        <ExemptionAnalysis
+          answers={answers}
+          selectedExemptionSet={exemptionSet}
+          onExemptionSetChange={setExemptionSet}
+          onOpenAsset={(fieldId) => goToField(fieldId)}
+        />
+        <RiskAssessment
+          result={riskAssessmentResult}
+          onCopyDocRequest={() => copyToClipboard(docRequestMessage)}
+          onOpenMeansTest={() => scrollToAnalysis()}
+          onOpenExemptions={() => document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          onOpenBlockers={scrollToBlockers}
+          onOpenDetails={() => setBlockersExpanded(true)}
+        />
+      </div>
 
       <div className="dashboard-footer-row">
         <div className="dashboard-card creditor-export-card">
@@ -1590,16 +1953,8 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
         </div>
       </div>
 
-      <div className="attorney-card raw-section">
-        <button
-          type="button"
-          className="raw-toggle"
-          onClick={() => setShowDebug((v) => !v)}
-          aria-expanded={showDebug}
-        >
-          {showDebug ? 'Hide developer/debug data' : 'Show developer/debug data'}
-        </button>
-        {showDebug && (
+      {showDebug && (
+        <div className="attorney-card raw-section">
           <div className="raw-content">
             <button type="button" className="btn btn-secondary btn-copy-raw" onClick={copyRawJson} title="Copy raw JSON only">
               Copy
@@ -1608,8 +1963,24 @@ export function AttorneyDashboard({ email: _email, phone: _phone, onGoToWizard, 
               {JSON.stringify({ answers, uploads }, null, 2)}
             </pre>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* BB Packet PDF overlay */}
+      {(pdfViewerLoading || pdfViewerUrl) && (
+        <div className="pdf-overlay" role="dialog" aria-modal="true" aria-label="BB Packet PDF preview">
+          <div className="pdf-overlay-backdrop" onClick={() => !pdfViewerLoading && setPdfViewerUrl(null)} />
+          <div className="pdf-overlay-panel" onClick={(e) => e.stopPropagation()}>
+            {pdfViewerLoading ? (
+              <div className="pdf-overlay-loading">
+                <p>Generating PDF…</p>
+              </div>
+            ) : (
+              <PDFViewer pdfUrl={pdfViewerUrl} onClose={() => setPdfViewerUrl(null)} />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

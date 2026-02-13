@@ -19,7 +19,7 @@ export function Progress({ currentStepIndex, totalSteps }: ProgressProps) {
   return (
     <div className="progress-block">
       <p className="progress-step-counter">
-        Step {stepNum} of {totalSteps}
+        Section {stepNum} of {totalSteps}
       </p>
       <div className="progress-bar">
         <div className="progress-fill" style={{ width: `${displayPct}%` }} />

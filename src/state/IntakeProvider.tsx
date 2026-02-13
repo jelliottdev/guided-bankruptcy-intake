@@ -8,11 +8,13 @@ import {
   type ReactNode,
 } from 'react';
 import { getInitialAnswers, initialIntakeState, SCHEMA_VERSION } from '../form/defaults';
+import { getSeededAnswers, getSeededUploads } from '../form/seedData';
 import type { Answers, FieldValue, Flags, IntakeState, Uploads, ViewMode } from '../form/types';
 import { clearStorage, loadFromStorage, saveToStorage, trimUploadsForStorage } from './autosave';
 
 export type IntakeAction =
   | { type: 'SET_ANSWER'; fieldId: string; value: FieldValue }
+  | { type: 'SET_ANSWERS_BATCH'; answers: Partial<Answers> }
   | { type: 'ADD_UPLOAD'; fieldId: string; filenames: string[] }
   | { type: 'REMOVE_UPLOAD'; fieldId: string; filename: string }
   | { type: 'SET_STEP'; stepIndex: number }
@@ -33,6 +35,13 @@ function intakeReducer(state: IntakeState, action: IntakeAction): IntakeState {
         ...state,
         answers: { ...state.answers, [action.fieldId]: action.value },
       };
+    case 'SET_ANSWERS_BATCH': {
+      const next: Answers = { ...state.answers };
+      for (const [k, v] of Object.entries(action.answers)) {
+        if (v !== undefined) next[k] = v as FieldValue;
+      }
+      return { ...state, answers: next };
+    }
     case 'ADD_UPLOAD': {
       const existing = state.uploads[action.fieldId] ?? [];
       const combined = [...existing, ...action.filenames];
@@ -94,17 +103,31 @@ interface IntakeContextValue {
   state: IntakeState;
   dispatch: Dispatch<IntakeAction>;
   setAnswer: (fieldId: string, value: FieldValue) => void;
+  /** Set multiple answers at once (e.g. for random seeding). */
+  setAnswersBatch: (answers: Partial<Answers>) => void;
   addUpload: (fieldId: string, filenames: string[]) => void;
   removeUpload: (fieldId: string, filename: string) => void;
   setStep: (stepIndex: number) => void;
   reset: () => void;
+  loadSeededDemo: () => void;
   setViewMode: (mode: ViewMode) => void;
   setFlag: (fieldId: string, flagged: boolean) => void;
   setFlagNote: (fieldId: string, note: string) => void;
   setFlagResolved: (fieldId: string, resolved: boolean) => void;
 }
 
-const IntakeContext = createContext<IntakeContextValue | null>(null);
+/**
+ * Keep context identity stable across Vite Fast Refresh.
+ * Without this, hot-updating the module that defines the context can recreate the Context,
+ * leaving existing Providers/Consumers pointing at different instances and causing
+ * `useIntake must be used within IntakeProvider` even though a Provider is rendered.
+ */
+const INTAKE_CONTEXT_KEY = '__GBI_INTAKE_CONTEXT__';
+const globalStore = globalThis as unknown as Record<string, unknown>;
+const IntakeContext =
+  (globalStore[INTAKE_CONTEXT_KEY] as ReturnType<typeof createContext<IntakeContextValue | null>> | undefined) ??
+  createContext<IntakeContextValue | null>(null);
+if (!globalStore[INTAKE_CONTEXT_KEY]) globalStore[INTAKE_CONTEXT_KEY] = IntakeContext;
 
 export function useIntake(): IntakeContextValue {
   const ctx = useContext(IntakeContext);
@@ -143,6 +166,10 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_ANSWER', fieldId, value });
   }, []);
 
+  const setAnswersBatch = useCallback((answers: Partial<Answers>) => {
+    dispatch({ type: 'SET_ANSWERS_BATCH', answers });
+  }, []);
+
   const addUpload = useCallback((fieldId: string, filenames: string[]) => {
     dispatch({ type: 'ADD_UPLOAD', fieldId, filenames });
   }, []);
@@ -157,6 +184,19 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
 
   const reset = useCallback(() => {
     dispatch({ type: 'RESET' });
+  }, []);
+
+  const loadSeededDemo = useCallback(() => {
+    dispatch({
+      type: 'HYDRATE',
+      state: {
+        answers: getSeededAnswers(),
+        uploads: getSeededUploads(),
+        flags: {},
+        currentStepIndex: 0,
+        submitted: false,
+      },
+    });
   }, []);
 
   const setViewMode = useCallback((mode: ViewMode) => {
@@ -179,10 +219,12 @@ export function IntakeProvider({ children }: { children: ReactNode }) {
     state,
     dispatch,
     setAnswer,
+    setAnswersBatch,
     addUpload,
     removeUpload,
     setStep,
     reset,
+    loadSeededDemo,
     setViewMode,
     setFlag,
     setFlagNote,

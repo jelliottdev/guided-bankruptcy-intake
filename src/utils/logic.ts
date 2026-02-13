@@ -65,19 +65,39 @@ export function getMailingDifferent(answers: Answers): boolean {
   return answers['mailing_different'] === 'Yes';
 }
 
+export function isSelfEmployed(answers: Answers): boolean {
+  return answers['self_employed'] === 'Yes';
+}
+
+const UNSECURED_CREDITOR_COUNT = 'unsecured_creditor_count';
+const CREDIT_REPORT_ONLY = 'credit_report_only';
+
+/** Number of unsecured creditor slots to show (0–15). Returns 0 if "credit report only" or invalid. */
+export function getUnsecuredCreditorCount(answers: Answers): number {
+  const v = answers[UNSECURED_CREDITOR_COUNT];
+  if (v === CREDIT_REPORT_ONLY || v == null || v === '') return 0;
+  const n = Number(v);
+  if (Number.isNaN(n) || n < 0 || n > 15) return 0;
+  return n;
+}
+
+export function hasUnsecuredCreditorList(answers: Answers): boolean {
+  return getUnsecuredCreditorCount(answers) > 0;
+}
+
 /** Case status derived from meta — single source of truth for label and color */
 export function getCaseStatus(meta: {
   missingRequired: number;
   missingDocs: number;
   urgencyFlags: number;
-}): { label: string; color: string } {
+}): { label: string; color: string; className: 'case-status-ready' | 'case-status-gaps' | 'case-status-early' } {
   if (meta.urgencyFlags > 0) {
-    return { label: 'Urgent', color: 'var(--danger, #dc2626)' };
+    return { label: 'Urgent', color: 'var(--danger, #dc2626)', className: 'case-status-early' };
   }
   if (meta.missingRequired > 0 || meta.missingDocs > 0) {
-    return { label: 'Not ready', color: 'var(--danger, #dc2626)' };
+    return { label: 'Not ready', color: 'var(--danger, #dc2626)', className: 'case-status-gaps' };
   }
-  return { label: 'Ready to file', color: 'var(--success, #16a34a)' };
+  return { label: 'Ready to file', color: 'var(--success, #16a34a)', className: 'case-status-ready' };
 }
 
 /** Next best action: single algorithmic priority for the dashboard */

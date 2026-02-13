@@ -49,7 +49,9 @@ export function StepShell({
         {uploadInstructions && (
           <div className="upload-instructions-block" role="region" aria-label="Document upload instructions">
             {uploadInstructions.split('\n').map((line, i) => (
-              <p key={i}>{line}</p>
+              <p key={i} className={line.trimStart().startsWith('Demo:') ? 'upload-instructions-demo' : undefined}>
+                {line}
+              </p>
             ))}
           </div>
         )}

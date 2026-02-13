@@ -25,6 +25,18 @@ function formatDate(value: unknown): string | null {
   return `${m}/${day}/${y}`;
 }
 
+/** Format object as readable key-value list (no raw JSON). */
+function formatObject(value: Record<string, unknown>): string {
+  const entries = Object.entries(value).filter(([, v]) => v != null && String(v).trim() !== '');
+  if (entries.length === 0) return '—';
+  return entries
+    .map(([k, v]) => {
+      const label = k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      return `${label}: ${String(v).trim()}`;
+    })
+    .join('; ');
+}
+
 function formatVal(value: unknown, isDate = false): string {
   if (value == null) return '—';
   if (isDate) {
@@ -33,7 +45,9 @@ function formatVal(value: unknown, isDate = false): string {
   }
   if (typeof value === 'string') return value || '—';
   if (Array.isArray(value)) return value.length ? value.join(', ') : '—';
-  if (typeof value === 'object') return Object.keys(value).length ? JSON.stringify(value) : '—';
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    return formatObject(value as Record<string, unknown>);
+  }
   return String(value);
 }
 
@@ -91,16 +105,18 @@ export function Review({
                 if (f.type === 'file') {
                   const fileList = uploads[f.id] ?? [];
                   return (
-                    <p key={f.id}>
-                      {label}: {fileList.length > 0 ? fileList.join(', ') : '—'}
+                    <p key={f.id} className="review-line">
+                      <span className="review-q">{label}:</span>{' '}
+                      <span className="review-a">{fileList.length > 0 ? fileList.join(', ') : '—'}</span>
                     </p>
                   );
                 }
                 const v = answers[f.id];
                 const isDate = f.type === 'date';
                 return (
-                  <p key={f.id}>
-                    {label}: {formatVal(v, isDate)}
+                  <p key={f.id} className="review-line">
+                    <span className="review-q">{label}:</span>{' '}
+                    <span className="review-a">{formatVal(v, isDate)}</span>
                   </p>
                 );
               })}

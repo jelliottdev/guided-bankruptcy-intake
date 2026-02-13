@@ -148,7 +148,7 @@ export function validateAll(answers: Answers, flags?: Flags): ValidationError[] 
             stepIndex,
             stepId: step.id,
             fieldId: field.id,
-            message: 'Consider entering a number (e.g. 0, 1,234, $500)',
+            message: 'Please enter a number or amount (e.g. 1,234 or $500).',
             severity: 'warning',
           });
         }
@@ -179,6 +179,8 @@ export function validateAll(answers: Answers, flags?: Flags): ValidationError[] 
       'spouse_dob',
       'spouse_phone',
       'spouse_email',
+      'spouse_address',
+      'spouse_county',
     ] as const;
     const spouseStepIndex = steps.findIndex((s) => s.id === 'spouse');
     if (spouseStepIndex >= 0) {
@@ -192,6 +194,16 @@ export function validateAll(answers: Answers, flags?: Flags): ValidationError[] 
           });
         }
       });
+      if (answers['spouse_mailing_different'] === 'Yes') {
+        if (isEmpty(answers['spouse_mailing_address']) && !isSatisfiedByFlag(flags, 'spouse_mailing_address')) {
+          errors.push({
+            stepIndex: spouseStepIndex,
+            stepId: steps[spouseStepIndex].id,
+            fieldId: 'spouse_mailing_address',
+            message: 'Spouse mailing address is required when different from street address',
+          });
+        }
+      }
       const spouseSsn = answers['spouse_ssn_last4'];
       if (!isEmpty(spouseSsn) && !ssnLast4(spouseSsn)) {
         errors.push({

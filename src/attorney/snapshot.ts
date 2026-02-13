@@ -17,6 +17,8 @@ const DOCUMENT_IDS = [
   { id: 'upload_vehicle_docs', label: 'Vehicle docs' },
   { id: 'upload_mortgage_docs', label: 'Mortgage docs' },
   { id: 'upload_credit_report', label: 'Credit report' },
+  { id: 'upload_debt_counseling', label: 'Debt counseling' },
+  { id: 'upload_business_docs', label: 'Business docs' },
 ] as const;
 
 const URGENCY_LABELS: Record<string, string> = {
@@ -224,7 +226,39 @@ export function getDocumentSufficiency(
   answers: Answers,
   uploads: Record<string, string[]>
 ): DocSufficiencyRow[] {
+  const COVERAGE_RULE: Record<string, string> = {
+    upload_paystubs: 'Last 60 days',
+    upload_bank_statements: '2–3 months',
+    upload_tax_returns: 'Last 2 years',
+    upload_vehicle_docs: 'Titles/registration (or lender statement)',
+    upload_mortgage_docs: 'Latest mortgage statement',
+    upload_credit_report: 'Full credit report (all bureaus if available)',
+    upload_debt_counseling: 'Completion certificate',
+    upload_business_docs: 'Business bank statements + P&L (last 3–6 months)',
+  };
+  const NEED_TEXT: Record<string, { missing: string; ok?: string }> = {
+    upload_paystubs: { missing: 'Missing — need last 60 days', ok: 'OK — last 60 days' },
+    upload_bank_statements: { missing: 'Missing — need 2–3 months', ok: 'OK — 2–3 months' },
+    upload_tax_returns: { missing: 'Missing — last 2 years', ok: 'OK — last 2 years' },
+    upload_vehicle_docs: { missing: 'Missing — titles/registration or lender statement' },
+    upload_mortgage_docs: { missing: 'Missing — latest statement' },
+    upload_credit_report: { missing: 'Missing — pull or upload report' },
+    upload_debt_counseling: { missing: 'Missing — completion certificate' },
+    upload_business_docs: { missing: 'Missing — business statements + P&L' },
+  };
+
   return DOCUMENT_IDS.map((d) => {
+    // Conditional docs: treat as not applicable when relevant scenario isn't present.
+    if (d.id === 'upload_business_docs' && answers['self_employed'] !== 'Yes') {
+      return {
+        type: d.label,
+        status: 'Waived',
+        message: 'Not applicable (not self-employed)',
+        lastDetected: null,
+        coverageRule: COVERAGE_RULE[d.id] ?? '—',
+      };
+    }
+
     const files = uploads[d.id] ?? [];
     const waived = answers[`${d.id}_dont_have`] === 'Yes';
     let lastDetected: string | null = null;
@@ -234,20 +268,35 @@ export function getDocumentSufficiency(
       if (match) lastDetected = `${match[1]}-${match[2]}`;
     }
     if (waived) {
-      return { type: d.label, status: 'Waived', message: 'Client will provide later', lastDetected: null, coverageRule: '—' };
+      return {
+        type: d.label,
+        status: 'Waived',
+        message: 'Waived by client',
+        lastDetected: null,
+        coverageRule: COVERAGE_RULE[d.id] ?? '—',
+      };
     }
     if (files.length === 0) {
-      if (d.id === 'upload_paystubs') return { type: d.label, status: 'Missing', message: 'Missing — need last 60 days', lastDetected: null, coverageRule: 'Last 60 days' };
-      if (d.id === 'upload_bank_statements') return { type: d.label, status: 'Missing', message: 'Missing — need 2–3 months', lastDetected: null, coverageRule: '2–3 months' };
-      if (d.id === 'upload_tax_returns') return { type: d.label, status: 'Missing', message: 'Missing — last 2 years', lastDetected: null, coverageRule: 'Last 2 years' };
-      return { type: d.label, status: 'Missing', message: 'Missing', lastDetected: null, coverageRule: '—' };
+      const need = NEED_TEXT[d.id]?.missing ?? 'Missing';
+      return {
+        type: d.label,
+        status: 'Missing',
+        message: need,
+        lastDetected: null,
+        coverageRule: COVERAGE_RULE[d.id] ?? '—',
+      };
     }
     if (d.id === 'upload_bank_statements' && files.length < 2) {
       return { type: d.label, status: 'Partial', message: `Only ${files.length} of 2–3 months`, lastDetected, coverageRule: '2–3 months' };
     }
-    if (d.id === 'upload_paystubs') return { type: d.label, status: 'OK', message: 'OK', lastDetected, coverageRule: 'Last 60 days' };
-    if (d.id === 'upload_tax_returns') return { type: d.label, status: 'OK', message: 'OK', lastDetected, coverageRule: 'Last 2 years' };
-    return { type: d.label, status: 'OK', message: 'OK', lastDetected, coverageRule: '—' };
+    const okMsg = NEED_TEXT[d.id]?.ok ?? 'OK';
+    return {
+      type: d.label,
+      status: 'OK',
+      message: okMsg,
+      lastDetected,
+      coverageRule: COVERAGE_RULE[d.id] ?? '—',
+    };
   });
 }
 
@@ -292,7 +341,10 @@ export function getTimelineReadiness(
   readinessScore: number
 ): { days: string; note: string } {
   const urgencyList = Array.isArray(answers['urgency_flags']) ? (answers['urgency_flags'] as string[]).filter((v) => v && !v.includes('None of')) : [];
-  const docMissing = DOCUMENT_IDS.filter((d) => (uploads[d.id]?.length ?? 0) === 0 && answers[`${d.id}_dont_have`] !== 'Yes').length;
+  const docMissing = DOCUMENT_IDS.filter((d) => {
+    if (d.id === 'upload_business_docs' && answers['self_employed'] !== 'Yes') return false;
+    return (uploads[d.id]?.length ?? 0) === 0 && answers[`${d.id}_dont_have`] !== 'Yes';
+  }).length;
 
   if (missingCount > 5 || readinessScore < 40) {
     return { days: '2–3+ weeks', note: 'Major gaps and missing docs' };

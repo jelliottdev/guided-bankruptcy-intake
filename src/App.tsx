@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
-import { IntakeProvider, useIntake } from './state/IntakeProvider';
+import { useState, useCallback, useMemo, useEffect, type ReactNode } from 'react';
+import { useIntake } from './state/IntakeProvider';
+import { getSeededAttorneyFinancial, saveAttorneyFinancial } from './ui/dashboard/dashboardShared';
 import { Layout } from './ui/Layout';
 import { StepShell } from './ui/StepShell';
 import { FieldRenderer } from './ui/FieldRenderer';
@@ -18,7 +19,7 @@ function lastSavedText(lastSavedAt: number | null): string {
 }
 
 function AppContent() {
-  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset, setViewMode, setFlag, setFlagNote } = useIntake();
+  const { state, dispatch, setAnswer, addUpload, removeUpload, setStep, reset, setViewMode, setFlag, setFlagNote, loadSeededDemo } = useIntake();
   const { answers, uploads, flags, currentStepIndex, lastSavedAt, saving, submitted, viewMode } = state;
 
   const [focusFieldId, setFocusFieldId] = useState<string | null>(null);
@@ -26,6 +27,8 @@ function AppContent() {
   const [attemptedSteps, setAttemptedSteps] = useState<Set<number>>(() => new Set());
   /** True when user jumped from Attorney View via "Open" → show sticky Return to Attorney View. */
   const [returnToAttorneyAvailable, setReturnToAttorneyAvailable] = useState(false);
+  /** Increments on reset so Attorney View overlays (financial, creditors) are cleared and dashboard remounts. */
+  const [resetCount, setResetCount] = useState(0);
 
   const steps = useMemo(() => getVisibleSteps(answers), [answers]);
   const totalSteps = steps.length;
@@ -56,15 +59,9 @@ function AppContent() {
 
   const saveStatusText = saving ? 'Saving…' : lastSavedText(lastSavedAt);
 
-  const prevStepIndexRef = useRef(currentStepIndex);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-    if (prevStepIndexRef.current !== currentStepIndex) {
-      prevStepIndexRef.current = currentStepIndex;
-      const firstFieldId = steps[currentStepIndex]?.fields[0]?.id ?? null;
-      setFocusFieldId(firstFieldId);
-    }
-  }, [currentStepIndex, steps]);
+  }, [currentStepIndex]);
 
   useEffect(() => {
     const hasData = Object.keys(answers).some((k) => {
@@ -127,7 +124,20 @@ function AppContent() {
     reset();
     setAttemptedSteps(new Set());
     setFocusFieldId(null);
+    try {
+      localStorage.removeItem('gbi:attorney-financial');
+      localStorage.removeItem('gbi:attorney-creditor-matrix');
+    } catch {
+      /* ignore */
+    }
+    setResetCount((c) => c + 1);
   }, [reset]);
+
+  const handleLoadDemo = useCallback(() => {
+    loadSeededDemo();
+    saveAttorneyFinancial(getSeededAttorneyFinancial());
+    setResetCount((c) => c + 1);
+  }, [loadSeededDemo]);
 
   const handleSubmit = useCallback(() => {
     dispatch({ type: 'SET_SUBMITTED', submitted: true });
@@ -246,12 +256,13 @@ function AppContent() {
               </button>
             </div>
           )}
-          <Layout email={urlParams.email} phone={urlParams.phone} onReset={handleReset}>
+          <Layout email={urlParams.email} phone={urlParams.phone} onReset={handleReset} onLoadDemo={handleLoadDemo}>
             {wizardContent}
           </Layout>
         </div>
         <div className={`screen screen-attorney ${viewMode === 'attorney' ? 'active' : 'inactive'}`}>
           <AttorneyDashboard
+            key={`dashboard-${resetCount}`}
             email={urlParams.email}
             phone={urlParams.phone}
             onGoToWizard={onGoToWizard}
@@ -264,9 +275,5 @@ function AppContent() {
 }
 
 export default function App() {
-  return (
-    <IntakeProvider>
-      <AppContent />
-    </IntakeProvider>
-  );
+  return <AppContent />;
 }

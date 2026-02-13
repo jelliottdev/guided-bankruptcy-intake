@@ -17,6 +17,8 @@ const DOCUMENT_IDS = [
   'upload_vehicle_docs',
   'upload_mortgage_docs',
   'upload_credit_report',
+  'upload_debt_counseling',
+  'upload_business_docs',
 ] as const;
 
 function isEmpty(value: unknown): boolean {
@@ -50,7 +52,7 @@ export function computeCaseReadiness(
     if (!isEmpty(answers[id])) identityFilled += 1;
   });
   if (isJointFiling(answers)) {
-    ['spouse_full_name', 'spouse_ssn_last4', 'spouse_dob', 'spouse_phone', 'spouse_email'].forEach((id) => {
+    ['spouse_full_name', 'spouse_ssn_last4', 'spouse_dob', 'spouse_phone', 'spouse_email', 'spouse_address', 'spouse_county'].forEach((id) => {
       identityTotal += 1;
       if (!isEmpty(answers[id])) identityFilled += 1;
     });
@@ -60,7 +62,7 @@ export function computeCaseReadiness(
   // Income + expenses (20%)
   let incomeExpTotal = 0;
   let incomeExpFilled = 0;
-  const incomeFields = ['debtor_employer', 'debtor_gross_pay', 'income_current_ytd', 'income_last_year'];
+  const incomeFields = ['marital_status', 'debtor_employer', 'debtor_gross_pay', 'income_current_ytd', 'income_last_year'];
   incomeFields.forEach((id) => {
     incomeExpTotal += 1;
     if (!isEmpty(answers[id])) incomeExpFilled += 1;
@@ -111,8 +113,9 @@ export function computeCaseReadiness(
     if (hasVehicles(answers)) {
       const n = getVehicleCount(answers);
       for (let i = 1; i <= n; i++) {
-        assetsTotal += 1;
+        assetsTotal += 2;
         if (!isEmpty(answers[`vehicle_${i}_details`])) assetsFilled += 1;
+        if (!isEmpty(answers[`vehicle_${i}_value`])) assetsFilled += 1;
       }
     } else {
       assetsTotal += 1;
