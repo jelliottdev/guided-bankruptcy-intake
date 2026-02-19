@@ -417,7 +417,7 @@ export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSale
             console.warn('Attom Sales Data Missing:', data);
         }
         return data.property?.[0] ?? null;
-    } catch (e) {
+    } catch {
         return null;
     }
 }
@@ -521,13 +521,13 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
 
         const results = await Promise.all([...propertyFetches, demoPromise]);
 
-        // Destructure safely
-        avm = results[0] as any;
-        assessment = results[1] as any;
-        sales = results[2] as any;
-        equityData = results[3] as any;
-        mortgageData = results[4] as any;
-        demographicsData = results[5] as any;
+        // Destructure safely with specific type assertions
+        avm = results[0] as AttomAvmDetail | null;
+        assessment = results[1] as AttomAssessmentDetail | null;
+        sales = results[2] as AttomSalesHistory | null;
+        equityData = results[3] as AttomEquityDetail | null;
+        mortgageData = results[4] as AttomMortgageDetail | null;
+        demographicsData = results[5] as AttomDemographicsDetail | null;
     }
 
     // Map to standardized format
