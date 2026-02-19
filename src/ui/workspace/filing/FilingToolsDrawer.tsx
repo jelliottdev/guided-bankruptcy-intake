@@ -611,8 +611,9 @@ export function FilingToolsDrawer({
     onApplyToIntakeField('property_1_address', report.address);
     // onApplyToIntakeField('property_1_city', ...); // We don't have city/state/zip separated in PropertyReport yet.
 
-    if (report.valuation?.value) {
-      onApplyToIntakeField('property_1_value', String(report.valuation.value));
+    const value = report.valuation?.value || report.assessment?.market_value || report.assessment?.total_assessed_value;
+    if (value) {
+      onApplyToIntakeField('property_1_value', String(value));
     }
 
     if (report.mortgage?.amount) {

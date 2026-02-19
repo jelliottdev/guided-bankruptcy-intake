@@ -152,6 +152,47 @@ export interface AttomResponse<T> {
     property: T[];
 }
 
+// --- Assessment Types ---
+export interface AttomAssessmentDetail {
+    assessed: {
+        assdTtlValue: number;
+        assdLandValue: number;
+        assdImprValue: number; // Improvements
+        taxAmt: number;
+        taxYear: number;
+    };
+    market: {
+        mktTtlValue: number;
+        mktLandValue: number;
+        mktImprValue: number;
+    };
+}
+
+// --- Sales History Types ---
+export interface AttomSaleEvent {
+    saleSearchDate: string;
+    saleTransDate: string;
+    saleAmt: number;
+    transactionIdent: string;
+    saleCode?: string;
+    multiApnFlag?: string;
+}
+
+export interface AttomSalesHistory {
+    sale: AttomSaleEvent[];
+}
+
+// --- Foreclosure Types ---
+export interface AttomForeclosureDetail {
+    foreclosure: {
+        documentType?: string;
+        recordingDate?: string;
+        originalLoanAmount?: number;
+        estimatedValue?: number;
+    }[];
+}
+
+
 // Normalized report interface for UI
 export interface PropertyReport {
     address: string;
@@ -172,6 +213,21 @@ export interface PropertyReport {
         confidence_score?: number;
         fsd?: number;
         date?: string;
+    };
+    assessment?: {
+        total_assessed_value: number;
+        tax_amount: number;
+        tax_year: number;
+        market_value: number;
+    };
+    sales_history?: {
+        last_sale_date: string;
+        last_sale_amount: number;
+    }[];
+    foreclosure?: {
+        status: 'Active' | 'None';
+        details?: string;
+        recording_date?: string;
     };
     // Derived/Simulated fields for UI compatibility
     mortgage?: {
@@ -253,6 +309,39 @@ export async function fetchAttomAvm(attomId: number): Promise<AttomAvmDetail | n
     }
 }
 
+export async function fetchAttomAssessment(attomId: number): Promise<AttomAssessmentDetail | null> {
+    if (!API_KEY) return null;
+    const params = new URLSearchParams({ attomid: attomId.toString() });
+    try {
+        const response = await fetch(`${API_BASE_URL}/assessment/detail?${params}`, {
+            headers: { 'apikey': API_KEY, 'Accept': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const data: AttomResponse<AttomAssessmentDetail> = await response.json();
+        return data.property?.[0] ?? null;
+    } catch (e) {
+        console.warn('Failed to fetch Assessment:', e);
+        return null;
+    }
+}
+
+export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSalesHistory | null> {
+    if (!API_KEY) return null;
+    const params = new URLSearchParams({ attomid: attomId.toString() });
+    try {
+        const response = await fetch(`${API_BASE_URL}/saleshistory/detail?${params}`, {
+            headers: { 'apikey': API_KEY, 'Accept': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const data: AttomResponse<AttomSalesHistory> = await response.json();
+        return data.property?.[0] ?? null;
+    } catch (e) {
+        console.warn('Failed to fetch Sales History:', e);
+        return null;
+    }
+}
+
+
 /**
  * Main entry point: Get standardized property report
  */
@@ -263,10 +352,20 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
         throw new Error('Property not found');
     }
 
-    // Fetch AVM if we have a valid ID
+    const attomId = property.identifier.attomId;
+
+    // Fetch related data in parallel if we have a valid ID
     let avm: AttomAvmDetail | null = null;
-    if (property.identifier.attomId) {
-        avm = await fetchAttomAvm(property.identifier.attomId);
+    let assessment: AttomAssessmentDetail | null = null;
+    let sales: AttomSalesHistory | null = null;
+    // let foreclosure: AttomForeclosureDetail | null = null; // Future: add foreclosure endpoint if package available
+
+    if (attomId) {
+        [avm, assessment, sales] = await Promise.all([
+            fetchAttomAvm(attomId),
+            fetchAttomAssessment(attomId),
+            fetchAttomSalesHistory(attomId)
+        ]);
     }
 
     // Map to standardized format
@@ -282,13 +381,10 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
             lot_sqft: property.lot.lotSize2,
             zoning: property.lot.zoningType
         },
-        // Attom basic property detail doesn't include owner name usually (requires 'owner' endpoint), 
-        // but let's see if we can use summary or if we need a separate call. 
-        // For now, we'll placeholder/mock the owner info since the basic detail endpoint is mostly physical.
-        // Actually, Attom 'property/detail' includes some owner info in 'assessment' or 'owner' block depending on package.
-        // The interface above uses the Basic/Detail standard response. simpler to return 'Unknown' if not present.
         owner: {
-            formatted_string: "Owner data requires premium access", // Placeholder
+            // If assessment data has owner name, we could use it here, but interface currently empty for it
+            // using generic fallback for now
+            formatted_string: "Owner data requires premium access",
         }
     };
 
@@ -301,11 +397,29 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
             fsd: avm.avm?.fsd,
             date: avm.avm?.eventDate
         };
-
         // Estimate equity (naive)
         report.equity = {
-            estimated_value: avm.amount.value // - mortgage
+            estimated_value: avm.amount.value
         };
+    }
+
+    if (assessment && assessment.assessed) {
+        report.assessment = {
+            total_assessed_value: assessment.assessed.assdTtlValue,
+            tax_amount: assessment.assessed.taxAmt,
+            tax_year: assessment.assessed.taxYear,
+            market_value: assessment.market?.mktTtlValue
+        };
+    }
+
+    if (sales && sales.sale && sales.sale.length > 0) {
+        // Sort by date desc
+        // Dates are usually ISO or YYYY-MM-DD
+        const sortedSales = [...sales.sale].sort((a, b) => (b.saleTransDate || '').localeCompare(a.saleTransDate || ''));
+        report.sales_history = sortedSales.slice(0, 3).map(s => ({
+            last_sale_date: s.saleTransDate,
+            last_sale_amount: s.saleAmt
+        }));
     }
 
     return report;

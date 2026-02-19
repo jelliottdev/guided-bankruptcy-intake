@@ -89,6 +89,36 @@ export function PropertySnapshotTool({ onSaveToCase }: PropertySnapshotToolProps
                             </Grid>
 
                             <Grid xs={12} md={6}>
+                                <Typography level="title-sm">Tax Assessment</Typography>
+                                <Typography level="h4">{formatCurrency(report.assessment?.total_assessed_value)}</Typography>
+                                {report.assessment ? (
+                                    <>
+                                        <Typography level="body-xs">Tax Year: {report.assessment.tax_year}</Typography>
+                                        <Typography level="body-xs">Tax Amount: {formatCurrency(report.assessment.tax_amount)}</Typography>
+                                        <Typography level="body-xs">Market Value: {formatCurrency(report.assessment.market_value)}</Typography>
+                                    </>
+                                ) : (
+                                    <Typography level="body-xs" textColor="neutral.500">No assessment data</Typography>
+                                )}
+                            </Grid>
+
+                            <Grid xs={12} md={6}>
+                                <Typography level="title-sm">Sales History</Typography>
+                                {report.sales_history && report.sales_history.length > 0 ? (
+                                    <Stack spacing={0.5}>
+                                        {report.sales_history.map((sale, idx) => (
+                                            <Stack key={idx} direction="row" justifyContent="space-between">
+                                                <Typography level="body-xs">{sale.last_sale_date}</Typography>
+                                                <Typography level="body-xs" fontWeight="bold">{formatCurrency(sale.last_sale_amount)}</Typography>
+                                            </Stack>
+                                        ))}
+                                    </Stack>
+                                ) : (
+                                    <Typography level="body-xs" textColor="neutral.500">No sales history</Typography>
+                                )}
+                            </Grid>
+
+                            <Grid xs={12} md={6}>
                                 <Typography level="title-sm">Mortgage Record</Typography>
                                 <Typography level="h4">{formatCurrency(report.mortgage?.amount)}</Typography>
                                 {report.mortgage ? (
@@ -106,6 +136,14 @@ export function PropertySnapshotTool({ onSaveToCase }: PropertySnapshotToolProps
                                 <Typography level="h4" color={(report.equity?.estimated_value ?? 0) > 0 ? 'success' : 'danger'}>
                                     {formatCurrency(report.equity?.estimated_value)}
                                 </Typography>
+                            </Grid>
+
+                            <Grid xs={12} md={6}>
+                                <Typography level="title-sm">Foreclosure Status</Typography>
+                                <Typography level="body-sm" color={report.foreclosure?.status === 'Active' ? 'danger' : 'neutral'}>
+                                    {report.foreclosure?.status || 'None'}
+                                </Typography>
+                                {report.foreclosure?.details && <Typography level="body-xs">{report.foreclosure.details}</Typography>}
                             </Grid>
 
                             <Grid xs={12} md={6}>
@@ -130,7 +168,8 @@ export function PropertySnapshotTool({ onSaveToCase }: PropertySnapshotToolProps
                         </Grid>
                     </Stack>
                 </Card>
-            )}
-        </Stack>
+            )
+            }
+        </Stack >
     );
 }
