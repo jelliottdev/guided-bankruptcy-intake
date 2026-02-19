@@ -292,18 +292,17 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
         }
     };
 
-    if (avm) {
+    if (avm && avm.amount) {
         report.valuation = {
             value: avm.amount.value,
             high: avm.amount.high,
             low: avm.amount.low,
-            confidence_score: avm.avm.confidenceScore,
-            fsd: avm.avm.fsd,
-            date: avm.avm.eventDate
+            confidence_score: avm.avm?.confidenceScore,
+            fsd: avm.avm?.fsd,
+            date: avm.avm?.eventDate
         };
 
         // Estimate equity (naive)
-        // Since we don't have mortgage data from this endpoint
         report.equity = {
             estimated_value: avm.amount.value // - mortgage
         };
