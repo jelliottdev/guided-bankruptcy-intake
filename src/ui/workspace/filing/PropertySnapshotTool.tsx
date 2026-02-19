@@ -146,6 +146,23 @@ export function PropertySnapshotTool({ onSaveToCase }: PropertySnapshotToolProps
                                 {report.foreclosure?.details && <Typography level="body-xs">{report.foreclosure.details}</Typography>}
                             </Grid>
 
+                            {report.demographics && (
+                                <Grid xs={12}>
+                                    <Divider sx={{ my: 1 }} />
+                                    <Typography level="title-sm" sx={{ mb: 1 }}>Demographics (Means Test Data)</Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid xs={6}>
+                                            <Typography level="body-xs">Median Household Income</Typography>
+                                            <Typography level="body-sm">{report.demographics.median_household_income ? formatCurrency(report.demographics.median_household_income) : 'N/A'}</Typography>
+                                        </Grid>
+                                        <Grid xs={6}>
+                                            <Typography level="body-xs">Median Family Income</Typography>
+                                            <Typography level="body-sm">{report.demographics.median_family_income ? formatCurrency(report.demographics.median_family_income) : 'N/A'}</Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            )}
+
                             <Grid xs={12} md={6}>
                                 <Typography level="title-sm">Ownership</Typography>
                                 <Typography level="body-sm">{report.owner?.formatted_string ?? 'Unknown'}</Typography>

@@ -16,7 +16,7 @@ describe('attom API', () => {
             status: { code: 0 },
             property: [{
                 identifier: { attomId: 12345 },
-                address: { oneLine: '123 Main St' },
+                address: { oneLine: '123 Main St', postal1: '12345' },
                 summary: { propclass: 'Residential', yearbuilt: 2000 },
                 building: { size: { universalsize: 2000 }, rooms: { beds: 3, bathstotal: 2 } },
                 lot: { lotsize2: 5000, zoningType: 'R1' }
@@ -57,13 +57,27 @@ describe('attom API', () => {
             }]
         };
 
+        // Mock Demographics response
+        const mockDemographics = {
+            status: { code: 0 },
+            property: [{
+                community: {
+                    demographics: {
+                        median_household_income: 60000,
+                        family_median_income: 70000
+                    }
+                }
+            }]
+        };
+
         vi.mocked(globalThis.fetch)
             .mockResolvedValueOnce({ ok: true, json: async () => mockProperty } as unknown as Response) // fetchProperty
             .mockResolvedValueOnce({ ok: true, json: async () => mockAvm } as unknown as Response) // fetchAvm
             .mockResolvedValueOnce({ ok: true, json: async () => mockAssessment } as unknown as Response) // fetchAssessment
             .mockResolvedValueOnce({ ok: true, json: async () => mockSales } as unknown as Response) // fetchSales
             .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // fetchEquity (empty)
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response); // fetchMortgage (empty)
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // fetchMortgage (empty)
+            .mockResolvedValueOnce({ ok: true, json: async () => mockDemographics } as unknown as Response); // fetchDemographics
 
         const report = await getPropertyReport('123 Main St');
 
@@ -85,8 +99,12 @@ describe('attom API', () => {
         expect(report.assessment?.tax_amount).toBe(5000);
         expect(report.equity).toBeUndefined();
 
+
         expect(report.sales_history).toHaveLength(2);
         expect(report.sales_history?.[0].last_sale_amount).toBe(450000);
+
+        expect(report.demographics?.median_household_income).toBe(60000);
+        expect(report.demographics?.median_family_income).toBe(70000);
     });
 
     it('calculates equity from valuation and mortgage when equity endpoint is missing', async () => {

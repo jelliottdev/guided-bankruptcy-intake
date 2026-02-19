@@ -239,6 +239,15 @@ export interface AttomMortgageDetail {
     }[];
 }
 
+// --- Demographics Types ---
+export interface AttomDemographicsDetail {
+    community: {
+        demographics: {
+            median_household_income: number;
+            family_median_income: number;
+        };
+    };
+}
 
 // Normalized report interface for UI
 export interface PropertyReport {
@@ -288,6 +297,10 @@ export interface PropertyReport {
     owner?: {
         formatted_string: string;
         mailing_address?: string;
+    };
+    demographics?: {
+        median_household_income?: number;
+        median_family_income?: number;
     };
 }
 
@@ -444,6 +457,31 @@ export async function fetchAttomMortgage(attomId: number): Promise<AttomMortgage
 }
 
 
+export async function fetchAttomDemographics(zipInfo: string): Promise<AttomDemographicsDetail | null> {
+    const apiKey = getApiKey();
+    if (!apiKey) return null;
+
+    // Attom's community endpoint often uses 'postalcode' or 'geoIdV4'
+    // Based on user provided docs: neighborhood/community
+    // We'll try postalCode first as it's most standard for "community" stats
+
+    // Extract 5 digit zip if passed full zip+4
+    const zip = zipInfo.substring(0, 5);
+    const params = new URLSearchParams({ postalcode: zip });
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/neighborhood/community?${params}`, {
+            headers: { 'apikey': apiKey, 'Accept': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const data: AttomResponse<AttomDemographicsDetail> = await response.json();
+        return data.property?.[0] ?? null;
+    } catch (e) {
+        console.error('Failed to fetch Demographics:', e);
+        return null;
+    }
+}
+
 /**
  * Main entry point: Get standardized property report
  */
@@ -462,15 +500,34 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
     let sales: AttomSalesHistory | null = null;
     let equityData: AttomEquityDetail | null = null;
     let mortgageData: AttomMortgageDetail | null = null;
+    let demographicsData: AttomDemographicsDetail | null = null;
 
     if (attomId) {
-        [avm, assessment, sales, equityData, mortgageData] = await Promise.all([
+        // Start property specific fetches
+        const propertyFetches = [
             fetchAttomAvm(attomId),
             fetchAttomAssessment(attomId),
             fetchAttomSalesHistory(attomId),
             fetchAttomEquity(attomId),
             fetchAttomMortgage(attomId)
-        ]);
+        ];
+
+        // Add demographics if we have a zip
+        // Note: fetchAttomDemographics is independent of attomId, uses zip
+        let demoPromise: Promise<AttomDemographicsDetail | null> = Promise.resolve(null);
+        if (property.address.postal1) {
+            demoPromise = fetchAttomDemographics(property.address.postal1);
+        }
+
+        const results = await Promise.all([...propertyFetches, demoPromise]);
+
+        // Destructure safely
+        avm = results[0] as any;
+        assessment = results[1] as any;
+        sales = results[2] as any;
+        equityData = results[3] as any;
+        mortgageData = results[4] as any;
+        demographicsData = results[5] as any;
     }
 
     // Map to standardized format
@@ -553,6 +610,13 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
                 estimated_value: report.valuation.value - (recentMortgage.amount.amount || 0)
             };
         }
+    }
+
+    if (demographicsData && demographicsData.community && demographicsData.community.demographics) {
+        report.demographics = {
+            median_household_income: demographicsData.community.demographics.median_household_income,
+            median_family_income: demographicsData.community.demographics.family_median_income
+        };
     }
 
     return report;
