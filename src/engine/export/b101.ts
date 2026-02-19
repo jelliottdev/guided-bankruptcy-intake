@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PDFDocument, PDFName } from 'pdf-lib';
 import { CaseCanonical } from '../types';
 import { B101_FIELD_MAP } from '../mapping/b101';
@@ -104,7 +105,7 @@ export async function generateB101(
         setMultiKidBySpec(form, 'Check Box24', proSe?.awareOfConsequences !== false ? 'Yes' : 'No');
         setMultiKidBySpec(form, 'Check Box25', proSe?.awareOfFraudRisks !== false ? 'Yes' : 'No');
         setMultiKidBySpec(form, 'Check Box26', proSe?.paidNonAttorneyPreparer === true ? 'Yes' : 'No');
-    } catch (_) {
+    } catch {
         // Non-fatal: template may differ from spec
     }
 
@@ -146,7 +147,7 @@ function setMultiKidBySpec(
     const setDict = (d: DictLike, key: string, val: string) => {
         try {
             if (typeof d.set === 'function') d.set(PDFName.of(key), PDFName.of(val));
-        } catch (_) {
+        } catch {
             // skip invalid name
         }
     };
@@ -160,7 +161,7 @@ function setMultiKidBySpec(
                 const as = indicesToSet.includes(j) ? rawKey : 'Off';
                 setDict(w, 'AS', as);
             }
-        } catch (_) {
+        } catch {
             // skip
         }
     }

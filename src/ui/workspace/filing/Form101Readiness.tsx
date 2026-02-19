@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from 'react';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';

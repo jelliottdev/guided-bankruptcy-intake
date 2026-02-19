@@ -28,7 +28,7 @@ export async function fillScheduleAB(
             if (value !== undefined) {
                 field.setText(String(value));
             }
-        } catch (e) {
+        } catch {
             console.warn(`Field ${name} not found in PDF`);
         }
     };
@@ -39,7 +39,7 @@ export async function fillScheduleAB(
             const field = form.getCheckBox(name);
             if (check) field.check();
             else field.uncheck();
-        } catch (e) {
+        } catch {
             console.warn(`Checkbox ${name} not found in PDF`);
         }
     };
@@ -51,7 +51,7 @@ export async function fillScheduleAB(
             const options = field.getOptions();
             const match = options.find((o: string) => o === value || (o && String(o).trim() === value));
             if (match !== undefined) field.select(match);
-        } catch (e) {
+        } catch {
             console.warn(`Dropdown ${name} not found or option not found`);
         }
     };
@@ -258,7 +258,7 @@ export async function fillScheduleAB(
 
     const filledHouseholdLines = new Set<number>();
     scheduleB.householdItems.forEach(item => {
-        let line = categoryMap[item.category as string] ?? 14;
+        const line = categoryMap[item.category as string] ?? 14;
         setText(F(`household.${line}.description`), item.description || '');
         setText(F(`household.${line}.amount`), formatCurrency(item.value));
         filledHouseholdLines.add(line);

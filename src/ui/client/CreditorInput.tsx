@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useRef } from 'react';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';

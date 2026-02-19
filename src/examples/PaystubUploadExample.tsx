@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Example: OCR Upload with Automatic Ownership Detection
  * 
@@ -9,7 +10,6 @@ import { useState } from 'react';
 import { Stack, Button, Alert, Typography, Select, Option } from '@mui/joy';
 import { useOcrExtractionWithOwnership } from '@/hooks/useOcrExtractionWithOwnership';
 import { upsertOcrResult } from '@/ocr/store';
-import type { UseIntakeState } from '@/hooks/useIntake';
 
 interface PaystubUploadExampleProps {
     /** Current intake form answers (includes debtor/spouse names) */

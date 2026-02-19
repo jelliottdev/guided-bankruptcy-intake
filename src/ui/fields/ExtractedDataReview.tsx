@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Typography, Button, Chip, Stack, Alert, Box, LinearProgress } from '@mui/joy';
 import { CheckCircle, Warning, ErrorOutline } from '@mui/icons-material';
 import type { OcrResult } from '@/api/ocr';

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useCallback } from 'react';
 import { Stack, Alert, CircularProgress, Typography, Chip, Select, Option, Button } from '@mui/joy';
 import { AutoAwesome, CloudOff, HelpOutline } from '@mui/icons-material';

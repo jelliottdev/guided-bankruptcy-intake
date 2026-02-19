@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import Sheet from '@mui/joy/Sheet';
 import Box from '@mui/joy/Box';

@@ -1,3 +1,4 @@
+/* eslint-env node */
 /**
  * Raw analysis: extract text from a voluntary petition PDF and parse B101-critical answers.
  * Usage: node scripts/analyze-petition-pdf.mjs "/path/to/Voluntary Petition.pdf"
@@ -93,7 +94,7 @@ async function run() {
   let pdfParse;
   try {
     pdfParse = (await import('pdf-parse')).default;
-  } catch (e) {
+  } catch {
     console.error('Install pdf-parse for raw text extraction: npm install pdf-parse --save-dev');
     process.exit(1);
   }

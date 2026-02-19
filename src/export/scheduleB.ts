@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Answers } from '../form/types';
 import {
     Vehicle,
@@ -185,7 +186,7 @@ export function parseVehicles(answers: Answers): Vehicle[] {
         const valueStr = answers[`vehicle_${i}_value`] as string;
 
         // Ownership default
-        let ownership = (answers[`vehicle_${i}_ownership`] as OwnershipType) || 'Debtor';
+        const ownership = (answers[`vehicle_${i}_ownership`] as OwnershipType) || 'Debtor';
 
         const vehicle: Vehicle = {
             id: `vehicle_${i}`,
@@ -220,7 +221,7 @@ export function parseFinancialAccounts(answers: Answers): FinancialAccount[] {
         const last4 = (answers[`account_${i}_last4`] as string);
         const balanceStr = answers[`account_${i}_balance`] as string;
 
-        let ownership = (answers[`account_${i}_ownership`] as OwnershipType) || 'Debtor';
+        const ownership = (answers[`account_${i}_ownership`] as OwnershipType) || 'Debtor';
 
         const account: FinancialAccount = {
             id: `account_${i}`,

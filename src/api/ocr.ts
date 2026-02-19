@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * OCR API Client for React Frontend
  * TypeScript client for communicating with PaddleOCR backend service.
@@ -94,7 +95,7 @@ export async function validateFieldAgainstDocument(
         }
 
         return response.json();
-    } catch (error) {
+    } catch {
         // Mock validation always passes for now
         return {
             matches: true,

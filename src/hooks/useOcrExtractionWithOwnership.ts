@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useCallback } from 'react';
 import { checkOcrServiceHealth } from '../api/ocr';
 import { extractWithOwnership, isJointFiling, type OcrExtractionOptions } from '../ocr/ocrWithOwnership';

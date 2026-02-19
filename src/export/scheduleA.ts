@@ -1,6 +1,6 @@
 import { Answers } from '../form/types';
 import { RealProperty, RealPropertyType, OwnershipType } from '../form/assetTypes';
-import { parseCurrency, getOwnershipFlags, sumAssets } from './calculations';
+import { parseCurrency, sumAssets } from './calculations';
 
 export interface ScheduleAData {
     properties: RealProperty[];
@@ -29,7 +29,7 @@ export function parseRealProperties(answers: Answers): RealProperty[] {
 
         // Ownership might be undefined if not joint filing, default to Debtor?
         // In strict mode we might want to check filing status, but for now defaulting is safer for data shape.
-        let ownership = (answers[`property_${i}_ownership`] as OwnershipType) || 'Debtor';
+        const ownership = (answers[`property_${i}_ownership`] as OwnershipType) || 'Debtor';
 
         const propType = (answers[`property_${i}_type`] as RealPropertyType) || 'Other';
         const valueStr = answers[`property_${i}_value`] as string;

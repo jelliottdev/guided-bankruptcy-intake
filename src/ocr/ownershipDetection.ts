@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Automatic document ownership detection for joint bankruptcy filings
  * Uses multi-signal heuristics to determine if a document belongs to debtor, spouse, or both

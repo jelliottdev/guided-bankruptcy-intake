@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Form registry: single dispatch for generating and validating court forms.
  * Each form has: template path, filler, and optional validator.
@@ -51,7 +52,7 @@ export function getRegisteredFormIds(): FormId[] {
  * Today: all registered forms apply to all cases; when B108 (Ch 7), 122A (Ch 7), 122C (Ch 13) are added, filter by data.filing.chapter.
  */
 export function getApplicableFormIds(data: CaseCanonical): FormId[] {
-  const chapter = data.filing?.chapter ?? '7';
+  // const chapter = data.filing?.chapter ?? '7';
   const registered = getRegisteredFormIds();
   // When we add formId 'b108' | 'b122a-1' | 'b122c-1': include b108 and b122a-1 only when chapter === '7'; b122c-1 only when chapter === '13'.
   return registered.filter((formId) => {

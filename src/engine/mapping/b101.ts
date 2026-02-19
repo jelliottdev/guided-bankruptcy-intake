@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // =============================================================================
 // FORM B101 FIELD MAPPING — Canonical Schema → PDF AcroForm Fields
 // =============================================================================

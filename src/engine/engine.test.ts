@@ -52,7 +52,7 @@ describe('Filing Engine', () => {
             // Simulation: If answer is No, transform sets status to completed_no_cert (based on current logic dummy)
             // But we want to test missing.
             // Let's force it.
-            // @ts-ignore
+            // @ts-expect-error - testing invalid status
             canonical.creditCounseling.debtor1.status = 'requested_waiver';
 
             const issues = validateCase(canonical);

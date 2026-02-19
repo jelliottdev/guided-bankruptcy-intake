@@ -60,7 +60,7 @@ const AliasName = z.object({
 // Data Provenance — every extracted/edited field carries this
 // ---------------------------------------------------------------------------
 
-const Provenance = z.object({
+export const Provenance = z.object({
   source: z.enum(["intake", "ocr", "attorney", "system", "computed"]),
   sourceDocumentId: z.string().optional(),
   page: z.number().optional(),

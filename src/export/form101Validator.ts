@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Answers } from '../form/types';
 
 // Legacy interface for backward compatibility

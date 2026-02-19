@@ -15,6 +15,8 @@
 //   For text fields (/Tx), pull the value from the canonical path.
 // =============================================================================
 
+import { CaseCanonicalType } from "./canonical-schema";
+
 export type FieldType = "text" | "checkbox" | "dropdown";
 
 export interface FieldMapping {
@@ -32,7 +34,7 @@ export interface FieldMapping {
 
   // For checkboxes: a function that takes the canonical value and returns
   // whether this checkbox should be checked
-  condition?: (value: any) => boolean;
+  condition?: (value: unknown) => boolean;
 
   // For text fields: optional transform before writing
   transform?: "uppercase" | "ssnLast4" | "formatDate" | "einFormat";
@@ -1007,7 +1009,7 @@ export interface CheckboxMapping {
   ordinal: number; // 0-indexed position among unnamed /Btn on this page
   label: string;
   canonicalPath: string;
-  condition: (canonicalData: any) => boolean;
+  condition: (canonicalData: CaseCanonicalType) => boolean;
   question: string;
   statutoryRef?: string;
 }
@@ -1103,7 +1105,7 @@ export interface ReadinessIssue {
  * Returns an array of issues. Empty array = ready to generate.
  */
 export function validateB101Readiness(
-  caseData: any
+  caseData: CaseCanonicalType
 ): ReadinessIssue[] {
   const issues: ReadinessIssue[] = [];
 
@@ -1333,7 +1335,7 @@ export interface FormPack {
   version: string;          // "06/24"
   fieldMappings: FieldMapping[];
   checkboxMappings: CheckboxMapping[];
-  validate: (caseData: any) => ReadinessIssue[];
+  validate: (caseData: CaseCanonicalType) => ReadinessIssue[];
 }
 
 export const B101_PACK: FormPack = {
