@@ -7,7 +7,7 @@
  */
 
 const API_BASE_URL = 'https://api.gateway.attomdata.com/propertyapi/v1.0.0';
-const API_KEY = import.meta.env.VITE_ATTOM_API_KEY || import.meta.env.ATTOM_API_KEY;
+const getApiKey = () => import.meta.env.VITE_ATTOM_API_KEY || import.meta.env.ATTOM_API_KEY;
 
 export interface AttomPropertyDetail {
     identifier: {
@@ -248,7 +248,8 @@ export interface PropertyReport {
  * Fetch property details from Attom API
  */
 export async function fetchAttomProperty(address: string): Promise<AttomPropertyDetail | null> {
-    if (!API_KEY) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
         throw new Error('ATTOM_API_KEY is not configured in environment variables');
     }
 
@@ -257,7 +258,7 @@ export async function fetchAttomProperty(address: string): Promise<AttomProperty
 
     const response = await fetch(`${API_BASE_URL}/property/detail?${params}`, {
         headers: {
-            'apikey': API_KEY,
+            'apikey': apiKey,
             'Accept': 'application/json'
         }
     });
@@ -282,14 +283,15 @@ export async function fetchAttomProperty(address: string): Promise<AttomProperty
  * Fetch AVM (Automated Valuation Model) from Attom API
  */
 export async function fetchAttomAvm(attomId: number): Promise<AttomAvmDetail | null> {
-    if (!API_KEY) return null;
+    const apiKey = getApiKey();
+    if (!apiKey) return null;
 
     const params = new URLSearchParams({ attomid: attomId.toString() });
 
     try {
         const response = await fetch(`${API_BASE_URL}/avm/detail?${params}`, {
             headers: {
-                'apikey': API_KEY,
+                'apikey': apiKey,
                 'Accept': 'application/json'
             }
         });
@@ -310,11 +312,12 @@ export async function fetchAttomAvm(attomId: number): Promise<AttomAvmDetail | n
 }
 
 export async function fetchAttomAssessment(attomId: number): Promise<AttomAssessmentDetail | null> {
-    if (!API_KEY) return null;
+    const apiKey = getApiKey();
+    if (!apiKey) return null;
     const params = new URLSearchParams({ attomid: attomId.toString() });
     try {
         const response = await fetch(`${API_BASE_URL}/assessment/detail?${params}`, {
-            headers: { 'apikey': API_KEY, 'Accept': 'application/json' }
+            headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
         if (!response.ok) return null;
         const data: AttomResponse<AttomAssessmentDetail> = await response.json();
@@ -326,11 +329,12 @@ export async function fetchAttomAssessment(attomId: number): Promise<AttomAssess
 }
 
 export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSalesHistory | null> {
-    if (!API_KEY) return null;
+    const apiKey = getApiKey();
+    if (!apiKey) return null;
     const params = new URLSearchParams({ attomid: attomId.toString() });
     try {
         const response = await fetch(`${API_BASE_URL}/saleshistory/detail?${params}`, {
-            headers: { 'apikey': API_KEY, 'Accept': 'application/json' }
+            headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
         if (!response.ok) return null;
         const data: AttomResponse<AttomSalesHistory> = await response.json();
