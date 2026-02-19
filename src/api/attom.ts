@@ -296,17 +296,24 @@ export async function fetchAttomAvm(attomId: number): Promise<AttomAvmDetail | n
             }
         });
 
-        if (!response.ok) return null;
+        if (!response.ok) {
+            console.error(`Attom AVM Error: ${response.status} ${response.statusText}`);
+            const text = await response.text();
+            console.error('Attom AVM Body:', text);
+            return null;
+        }
 
         const data: AttomResponse<AttomAvmDetail> = await response.json();
+        console.log('Attom AVM Response:', data);
 
         if (data.status.code !== 0 || !data.property || data.property.length === 0) {
+            console.warn('Attom AVM Data Missing:', data);
             return null;
         }
 
         return data.property[0];
     } catch (e) {
-        console.warn('Failed to fetch AVM:', e);
+        console.error('Failed to fetch AVM:', e);
         return null;
     }
 }
@@ -319,11 +326,18 @@ export async function fetchAttomAssessment(attomId: number): Promise<AttomAssess
         const response = await fetch(`${API_BASE_URL}/assessment/detail?${params}`, {
             headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
-        if (!response.ok) return null;
+        if (!response.ok) {
+            console.error(`Attom Assessment Error: ${response.status} ${response.statusText}`);
+            return null;
+        }
         const data: AttomResponse<AttomAssessmentDetail> = await response.json();
+        console.log('Attom Assessment Response:', data);
+        if (!data.property || data.property.length === 0) {
+            console.warn('Attom Assessment Data Missing:', data);
+        }
         return data.property?.[0] ?? null;
     } catch (e) {
-        console.warn('Failed to fetch Assessment:', e);
+        console.error('Failed to fetch Assessment:', e);
         return null;
     }
 }
@@ -336,11 +350,18 @@ export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSale
         const response = await fetch(`${API_BASE_URL}/saleshistory/detail?${params}`, {
             headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
-        if (!response.ok) return null;
+        if (!response.ok) {
+            console.error(`Attom Sales History Error: ${response.status} ${response.statusText}`);
+            return null;
+        }
         const data: AttomResponse<AttomSalesHistory> = await response.json();
+        console.log('Attom Sales History Response:', data);
+        if (!data.property || data.property.length === 0) {
+            console.warn('Attom Sales Data Missing:', data);
+        }
         return data.property?.[0] ?? null;
     } catch (e) {
-        console.warn('Failed to fetch Sales History:', e);
+        console.error('Failed to fetch Sales History:', e);
         return null;
     }
 }
