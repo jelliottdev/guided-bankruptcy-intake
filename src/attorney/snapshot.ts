@@ -156,13 +156,13 @@ export function getScheduleCoverage(
   const bankCount = hasBankAccounts(answers) ? getBankAccountCount(answers) : 0;
   if (assetsReady && hasBankAccounts(answers)) {
     for (let i = 1; i <= bankCount; i++) {
-      if (isEmpty(answers[`account_${i}_name`])) assetsReady = false;
+      if (isEmpty(answers[`account_${i}_institution`])) assetsReady = false;
     }
   }
   if (assetsReady && hasVehicles(answers)) {
     const vehicleCount = getVehicleCount(answers);
     for (let i = 1; i <= vehicleCount; i++) {
-      if (isEmpty(answers[`vehicle_${i}_details`])) assetsReady = false;
+      if (isEmpty(answers[`vehicle_${i}_year`]) && isEmpty(answers[`vehicle_${i}_make`]) && isEmpty(answers[`vehicle_${i}_model`])) assetsReady = false;
     }
   }
   coverage.push({
@@ -203,11 +203,22 @@ export function getScheduleCoverage(
 
   // Schedule J (Expenses)
   const hasExpenses = answers['monthly_expenses'] && typeof answers['monthly_expenses'] === 'object';
-  const expKeys = hasExpenses ? Object.keys(answers['monthly_expenses'] as Record<string, string>).filter((k) => (answers['monthly_expenses'] as Record<string, string>)[k]) : [];
+  const expKeys = hasExpenses
+    ? Object.keys(answers['monthly_expenses'] as Record<string, string>).filter(
+        (k) => (answers['monthly_expenses'] as Record<string, string>)[k]
+      )
+    : [];
+  const hasExpenseTotalEstimate =
+    !isEmpty(answers['monthly_expenses_total_estimate']) || answers['monthly_expenses_not_sure'] === 'Yes';
   coverage.push({
     schedule: 'Schedule J (Expenses)',
-    status: expKeys.length >= 3 ? 'Ready' : 'Missing',
-    detail: expKeys.length >= 3 ? 'Expense categories filled' : 'Few expense values',
+    status: expKeys.length >= 3 || hasExpenseTotalEstimate ? 'Ready' : 'Missing',
+    detail:
+      expKeys.length >= 3
+        ? 'Expense categories filled'
+        : hasExpenseTotalEstimate
+          ? 'Total estimate provided'
+          : 'Few expense values',
   });
 
   return coverage;

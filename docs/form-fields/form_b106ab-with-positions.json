@@ -1,0 +1,4999 @@
+{
+  "source": "form_b106ab.pdf",
+  "inspectedAt": "2026-02-17T17:22:07.943Z",
+  "totalFields": 368,
+  "fields": [
+    {
+      "pdfName": "Debtor 2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 84.12,
+          "y": 693.36,
+          "width": 249.12,
+          "height": 13.43999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "Singlefamily home",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 241.168,
+          "y": 440.04,
+          "width": 10.431999999999988,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "Duplex or multiunit building",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 427.55,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Condominium or cooperative",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 415.31,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Manufactured or mobile home",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 403.07,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Land",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 390.83,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Investment property",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 378.71,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Timeshare",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 366.47,
+          "width": 10.432000000000016,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "Other",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 354.23,
+          "width": 10.432000000000016,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 388.32,
+          "width": 71.16000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 513.6,
+          "y": 388.32,
+          "width": 66.72000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "City",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 369.6,
+          "width": 91.08,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "State",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 163.2,
+          "y": 369.6,
+          "width": 26.302999999999997,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "ZIP Code",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 191.085,
+          "y": 369.6,
+          "width": 37.39499999999998,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 274.92,
+          "y": 353.76,
+          "width": 132.35999999999996,
+          "height": 11.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "County",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 317.52,
+          "width": 159.71999999999997,
+          "height": 14.640000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "the entireties or a life estate if known",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 421.32,
+          "y": 329.76,
+          "width": 163.56,
+          "height": 16.41700000000003
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 424.48,
+          "y": 302.983,
+          "width": 9.495000000000005,
+          "height": 10.177000000000021
+        }
+      ]
+    },
+    {
+      "pdfName": "property identification number",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 360.72,
+          "y": 261.213,
+          "width": 137.76,
+          "height": 13.97199999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "12",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 216.36,
+          "width": 155.76,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Singlefamily home_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 226.19,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Duplex or multiunit building_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 214.07,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Condominium or cooperative_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 201.83,
+          "width": 10.432000000000016,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "Manufactured or mobile home_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 189.59,
+          "width": 10.432000000000016,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "Land_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 177.35,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Investment property_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 165.23,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Timeshare_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 152.99,
+          "width": 10.432000000000016,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "Other_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 140.75,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_5",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 182.28,
+          "width": 155.76,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_6",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 174.84,
+          "width": 71.16000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_7",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 513.6,
+          "y": 174.84,
+          "width": 75.60000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "City_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 156.12,
+          "width": 91.08,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "State_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 163.2,
+          "y": 156.12,
+          "width": 23.93300000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "ZIP Code_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 189.9,
+          "y": 156.12,
+          "width": 34.620000000000005,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_8",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 270.6,
+          "y": 140.28,
+          "width": 132.35999999999996,
+          "height": 11.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "County_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 104.04,
+          "width": 155.76,
+          "height": 14.64
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has an interest in the property Check one",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 421.32,
+          "y": 123.758,
+          "width": 163.56,
+          "height": 13.64200000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 423.48,
+          "y": 94.92,
+          "width": 9.495000000000005,
+          "height": -10.177400000000006
+        }
+      ]
+    },
+    {
+      "pdfName": "property identification number_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 357.585,
+          "y": 45.6302,
+          "width": 137.76000000000005,
+          "height": 12.9071
+        }
+      ]
+    },
+    {
+      "pdfName": "13",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 699.36,
+          "width": 155.76,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "Singlefamily home_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 704.64,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "Duplex or multiunit building_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 692.15,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "Condominium or cooperative_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 679.91,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "Manufactured or mobile home_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 667.67,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "Land_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 655.43,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "Investment property_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 643.31,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "Timeshare_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 631.07,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "Other_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 618.83,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_9",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 665.28,
+          "width": 155.76,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_10",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 657.84,
+          "width": 71.16000000000003,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_11",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 513.6,
+          "y": 657.96,
+          "width": 75.60000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "City_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 639.24,
+          "width": 90.83999999999999,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "State_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 163.2,
+          "y": 639.24,
+          "width": 21.916000000000025,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "ZIP Code_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 187.531,
+          "y": 639.24,
+          "width": 36.989000000000004,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_12",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 270.6,
+          "y": 618.36,
+          "width": 132.35999999999996,
+          "height": 11.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "County_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 587.16,
+          "width": 155.76,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has an interest in the property Check one_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 421.32,
+          "y": 602.903,
+          "width": 163.56,
+          "height": 12.336999999999989
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 423.48,
+          "y": 563.71,
+          "width": 9.839999999999975,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "property identification number_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 356.4,
+          "y": 520.221,
+          "width": 137.76000000000005,
+          "height": 13.379000000000019
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_13",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 513,
+          "y": 488.76,
+          "width": 75.60000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "Other information",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 70.08,
+          "y": 207.3,
+          "width": 137.88,
+          "height": 28.139999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "If you own or have more than one describe here",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 164.76,
+          "width": 54.48000000000002,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "1_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 149.64,
+          "width": 54.48000000000002,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "2_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 134.4,
+          "width": 46.68000000000001,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "Approximate mileage_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.8,
+          "y": 119.28,
+          "width": 46.79999999999998,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "Other information_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 69,
+          "y": 71.0929,
+          "width": 137.88,
+          "height": 27.5471
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property see",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.16,
+          "y": 229.55,
+          "width": 9.840000000000003,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_14",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 232.44,
+          "width": 71.16000000000003,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_15",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 514.56,
+          "y": 232.44,
+          "width": 71.16000000000008,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property see_2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.16,
+          "y": 92.7502,
+          "width": 9.840000000000003,
+          "height": 10.04979999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_16",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 96.12,
+          "width": 71.16000000000003,
+          "height": 14.519999999999996
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_17",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 514.56,
+          "y": 96.12,
+          "width": 71.16000000000008,
+          "height": 14.519999999999996
+        }
+      ]
+    },
+    {
+      "pdfName": "1_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 702.48,
+          "width": 54.48000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "2_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 687.24,
+          "width": 54.48000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "3_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 672.12,
+          "width": 46.68000000000001,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "Approximate mileage_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.8,
+          "y": 656.88,
+          "width": 46.79999999999998,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Other information_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 69,
+          "y": 609.405,
+          "width": 137.88,
+          "height": 29.797000000000025
+        }
+      ]
+    },
+    {
+      "pdfName": "1_4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 593.16,
+          "width": 54.48000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "2_4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 577.92,
+          "width": 54.48000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "3_3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 562.68,
+          "width": 46.68000000000001,
+          "height": 14.6400000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "Approximate mileage_4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.8,
+          "y": 547.56,
+          "width": 46.79999999999998,
+          "height": 14.520000000000095
+        }
+      ]
+    },
+    {
+      "pdfName": "Other information_4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 69,
+          "y": 499.965,
+          "width": 137.88,
+          "height": 28.140000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property see_3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.16,
+          "y": 630.063,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_18",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 633.24,
+          "width": 71.16000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_19",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 514.56,
+          "y": 633.24,
+          "width": 71.16000000000008,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property see_4",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.16,
+          "y": 520.623,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_20",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 523.92,
+          "width": 71.16000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_21",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 514.56,
+          "y": 523.92,
+          "width": 71.16000000000008,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Examples Boats trailers motors personal watercraft fishing vessels snowmobiles motorcycle accessories",
+      "type": "PDFRadioGroup",
+      "rects": [
+        {
+          "x": 45.24,
+          "y": 423.703,
+          "width": 9.719999999999999,
+          "height": 9.45700000000005
+        },
+        {
+          "x": 45.24,
+          "y": 410.463,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "Make",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 99.6,
+          "y": 382.56,
+          "width": 77.88,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Model",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 99.6,
+          "y": 367.32,
+          "width": 77.88,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Year",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 99.6,
+          "y": 352.08,
+          "width": 46.80000000000001,
+          "height": 14.640000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "Other information_5",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 69.36,
+          "y": 283.373,
+          "width": 137.16000000000003,
+          "height": 47.706999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "Make_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 99.6,
+          "y": 248.28,
+          "width": 77.88,
+          "height": 14.640000000000015
+        }
+      ]
+    },
+    {
+      "pdfName": "Model_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 99.6,
+          "y": 233.04,
+          "width": 77.88,
+          "height": 14.640000000000015
+        }
+      ]
+    },
+    {
+      "pdfName": "Year_2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 99.6,
+          "y": 217.92,
+          "width": 46.80000000000001,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "Other information_6",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 69.36,
+          "y": 152.693,
+          "width": 137.16000000000003,
+          "height": 44.226999999999975
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property see_5",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 234.72,
+          "y": 311.023,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_22",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 306.6,
+          "width": 71.16000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_23",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 514.56,
+          "y": 306.6,
+          "width": 71.16000000000008,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Check if this is community property see_6",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 234.72,
+          "y": 175.863,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_24",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 428.88,
+          "y": 180,
+          "width": 71.16000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_25",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 514.56,
+          "y": 180,
+          "width": 71.16000000000008,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_26",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 509.04,
+          "y": 103.32,
+          "width": 75.59999999999997,
+          "height": 14.64
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_107",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 196.8,
+          "y": 41.1004,
+          "width": 295.08,
+          "height": 29.339599999999997
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_108",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.84,
+          "y": 51.96,
+          "width": 85.68,
+          "height": 13.440000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "Company name 1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 198.96,
+          "y": 649.88,
+          "width": 167.4,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Company name 2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 198.96,
+          "y": 634.64,
+          "width": 167.4,
+          "height": 14.399999999999977
+        }
+      ]
+    },
+    {
+      "pdfName": "Company name 3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 198.96,
+          "y": 619.52,
+          "width": 167.4,
+          "height": 13.56000000000006
+        }
+      ]
+    },
+    {
+      "pdfName": "Beneficiary 1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 372.96,
+          "y": 649.88,
+          "width": 108.96000000000004,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Beneficiary 2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 372.96,
+          "y": 634.64,
+          "width": 108.96000000000004,
+          "height": 14.399999999999977
+        }
+      ]
+    },
+    {
+      "pdfName": "Beneficiary 3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 372.96,
+          "y": 619.52,
+          "width": 108.96000000000004,
+          "height": 13.56000000000006
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_109",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 649.88,
+          "width": 80.04000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_110",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 634.64,
+          "width": 80.04000000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_111",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 619.52,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_114",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.84,
+          "y": 546.84,
+          "width": 81.83999999999997,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_117",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.84,
+          "y": 476.88,
+          "width": 85.68,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_120",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.84,
+          "y": 416.4,
+          "width": 81.83999999999997,
+          "height": 14.640000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_123",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.6,
+          "y": 348.36,
+          "width": 81.72000000000003,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_124",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.72,
+          "y": 310.08,
+          "width": 81.72000000000003,
+          "height": 14.640000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_125",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 494.04,
+          "y": 115.2,
+          "width": 93.35999999999996,
+          "height": 14.64
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_126",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 494.04,
+          "y": 56.28,
+          "width": 93.35999999999996,
+          "height": 14.64
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_127",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 494.04,
+          "y": 682.92,
+          "width": 93.35999999999996,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_128",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.8,
+          "y": 626.28,
+          "width": 93.35999999999996,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_129",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.8,
+          "y": 549.48,
+          "width": 93.35999999999996,
+          "height": 13.43999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_130",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 420.72,
+          "y": 551.04,
+          "width": 31.19999999999999,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_131",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 420.72,
+          "y": 537,
+          "width": 31.19999999999999,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_132",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.8,
+          "y": 536.28,
+          "width": 93.35999999999996,
+          "height": 12.600000000000023
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_133",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 420.72,
+          "y": 522.96,
+          "width": 31.19999999999999,
+          "height": 13.43999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_134",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.8,
+          "y": 522.96,
+          "width": 93.35999999999996,
+          "height": 12.719999999999914
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_135",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 439.44,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_137",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 384.24,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_138",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 367.68,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_139",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 351.12,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_140",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 334.56,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_141",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 318,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_142",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 301.44,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_143",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 276.96,
+          "width": 88.91999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_144",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 53.64,
+          "width": 84.47999999999996,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "48 Cropseither growing or harvested",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 127.2,
+          "y": 677.76,
+          "width": 360.96000000000004,
+          "height": 27
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_145",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 680.64,
+          "width": 84.47999999999996,
+          "height": 16.32000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_148",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 623.28,
+          "width": 84.47999999999996,
+          "height": 16.32000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_151",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 560.76,
+          "width": 84.47999999999996,
+          "height": 16.32000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_153",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.44,
+          "y": 504.96,
+          "width": 84.47999999999996,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_154",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 479.52,
+          "width": 84.47999999999996,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_155",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 507,
+          "y": 374.64,
+          "width": 71.15999999999997,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_156",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 507.24,
+          "y": 359.4,
+          "width": 71.15999999999997,
+          "height": 14.640000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_157",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 507.36,
+          "y": 344.16,
+          "width": 71.15999999999997,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_158",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 507.36,
+          "y": 316.32,
+          "width": 71.15999999999997,
+          "height": 13.560000000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_159",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 248.4,
+          "width": 71.16000000000003,
+          "height": 16.32000000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_160",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 296.88,
+          "y": 225.84,
+          "width": 71.16000000000003,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_161",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 296.88,
+          "y": 204.12,
+          "width": 71.16000000000003,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_162",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 296.88,
+          "y": 182.52,
+          "width": 71.16000000000003,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_163",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 296.88,
+          "y": 160.92,
+          "width": 71.16000000000003,
+          "height": 16.32000000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_164",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 296.88,
+          "y": 139.32,
+          "width": 71.16000000000003,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_165",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 296.88,
+          "y": 116.28,
+          "width": 71.16000000000003,
+          "height": 16.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_167",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 55.32,
+          "width": 75.59999999999997,
+          "height": 16.32
+        }
+      ]
+    },
+    {
+      "pdfName": "Debtor 1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 79.68,
+          "y": 713.16,
+          "width": 256.8,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 79.5994,
+          "y": 755.271,
+          "width": 222.43759999999997,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 79.5279,
+          "y": 755.284,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 79.5279,
+          "y": 755.685,
+          "width": 222.43810000000002,
+          "height": 14.6400000000001
+        },
+        {
+          "x": 79.5279,
+          "y": 755.828,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 78.5279,
+          "y": 755.051,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 78.5279,
+          "y": 755.715,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 79.5279,
+          "y": 755.58,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 78.5279,
+          "y": 755.349,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 79.5279,
+          "y": 755.783,
+          "width": 222.43810000000002,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Case number",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 84.24,
+          "y": 650.28,
+          "width": 167.28000000000003,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 431.334,
+          "y": 755.271,
+          "width": 157.20800000000003,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 431.262,
+          "y": 755.284,
+          "width": 157.209,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 431.262,
+          "y": 755.685,
+          "width": 157.209,
+          "height": 14.6400000000001
+        },
+        {
+          "x": 431.262,
+          "y": 755.828,
+          "width": 157.209,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 430.262,
+          "y": 755.051,
+          "width": 157.209,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 430.262,
+          "y": 755.715,
+          "width": 157.209,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 431.262,
+          "y": 755.58,
+          "width": 157.209,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 430.262,
+          "y": 755.349,
+          "width": 157.209,
+          "height": 14.639999999999986
+        },
+        {
+          "x": 431.262,
+          "y": 755.783,
+          "width": 157.209,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "undefined_166",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 297,
+          "y": 93.48,
+          "width": 71.16000000000003,
+          "height": 16.319999999999993
+        },
+        {
+          "x": 502.659,
+          "y": 91.2684,
+          "width": 74.12199999999996,
+          "height": 16.319599999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "Button.Print1",
+      "type": "PDFButton",
+      "rects": [
+        {
+          "x": 31.2585,
+          "y": 0.0844116,
+          "width": 101.6105,
+          "height": 16.9352884
+        }
+      ]
+    },
+    {
+      "pdfName": "Button.Reset",
+      "type": "PDFButton",
+      "rects": [
+        {
+          "x": 479.129,
+          "y": 0.0844116,
+          "width": 101.61099999999999,
+          "height": 16.9352884
+        }
+      ]
+    },
+    {
+      "pdfName": "Button.SaveAs",
+      "type": "PDFButton",
+      "rects": [
+        {
+          "x": 142.842,
+          "y": 0.0844116,
+          "width": 101.61099999999999,
+          "height": 16.9352884
+        }
+      ]
+    },
+    {
+      "pdfName": "attach",
+      "type": "PDFButton",
+      "rects": [
+        {
+          "x": 252.375,
+          "y": 0.0844116,
+          "width": 101.61099999999999,
+          "height": 16.9352884
+        }
+      ]
+    },
+    {
+      "pdfName": "9 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.2,
+          "y": 416.88,
+          "width": 356.28000000000003,
+          "height": -27.42700000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "10 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.942,
+          "y": 357.347,
+          "width": 356.28,
+          "height": -27.426999999999964
+        }
+      ]
+    },
+    {
+      "pdfName": "11 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.979,
+          "y": 297.989,
+          "width": 356.28,
+          "height": -27.426999999999964
+        }
+      ]
+    },
+    {
+      "pdfName": "14 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.68,
+          "y": 101.52,
+          "width": 356.28,
+          "height": -27.427099999999996
+        }
+      ]
+    },
+    {
+      "pdfName": "12 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.56,
+          "y": 219,
+          "width": 356.28,
+          "height": -27.426999999999992
+        }
+      ]
+    },
+    {
+      "pdfName": "13 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.519,
+          "y": 158.208,
+          "width": 356.28,
+          "height": -27.426999999999992
+        }
+      ]
+    },
+    {
+      "pdfName": "17.1 Checking account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 486.92,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.6 Other financial account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 394.32,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.7 Other financial account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 375.6,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.8 Other financial account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 356.88,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.2 Checking account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 469.08,
+          "width": 237.6,
+          "height": 14.520000000000039
+        }
+      ]
+    },
+    {
+      "pdfName": "17.3 Checking account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 450.36,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.4 Checking account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 431.76,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.1 Checking amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 486.92,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.2 Checking amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 469.08,
+          "width": 80.04000000000002,
+          "height": 14.520000000000039
+        }
+      ]
+    },
+    {
+      "pdfName": "17.3 Checking amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 450.36,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.4 Checking amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 431.76,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.5 Certificates of deposit account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 413.04,
+          "width": 237.6,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.5 Certificates of deposit amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 413.04,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.6 Other financial amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 394.32,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.7 Other financial amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 375.6,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.8 Other financial amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 356.88,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "17.9 Other financial account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 241.92,
+          "y": 338.28,
+          "width": 237.6,
+          "height": 14.520000000000039
+        }
+      ]
+    },
+    {
+      "pdfName": "17.9 Other financial amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 338.28,
+          "width": 80.04000000000002,
+          "height": 14.520000000000039
+        }
+      ]
+    },
+    {
+      "pdfName": "16 Cash amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 597.24,
+          "width": 80.03999999999996,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "8 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.08,
+          "y": 489,
+          "width": 356.28,
+          "height": -27.42700000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "7 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.2,
+          "y": 558.36,
+          "width": 356.28000000000003,
+          "height": -27.42700000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "6 description",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 133.08,
+          "y": 604.133,
+          "width": 356.28,
+          "height": 27.426999999999907
+        }
+      ]
+    },
+    {
+      "pdfName": "6 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 500.76,
+          "y": 616.6,
+          "width": 84.48000000000002,
+          "height": 13.319999999999936
+        }
+      ]
+    },
+    {
+      "pdfName": "7 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 500.76,
+          "y": 543.88,
+          "width": 84.48000000000002,
+          "height": 13.32000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "8 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 500.76,
+          "y": 474.64,
+          "width": 84.48000000000002,
+          "height": 13.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "9 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 500.76,
+          "y": 402.04,
+          "width": 84.48000000000002,
+          "height": 13.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "10 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 500.76,
+          "y": 342.16,
+          "width": 84.48000000000002,
+          "height": 13.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "11 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 500.76,
+          "y": 283.24,
+          "width": 84.48000000000002,
+          "height": 13.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "12 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 206.56,
+          "width": 84.47999999999996,
+          "height": 13.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "13 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 145.72,
+          "width": 84.47999999999996,
+          "height": 13.319999999999993
+        }
+      ]
+    },
+    {
+      "pdfName": "14 description amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 87.88,
+          "width": 84.47999999999996,
+          "height": 13.320000000000007
+        }
+      ]
+    },
+    {
+      "pdfName": "15 amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.32,
+          "y": 59.44,
+          "width": 85.68,
+          "height": 13.320000000000007
+        }
+      ]
+    },
+    {
+      "pdfName": "19.1 Name of entity",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 120,
+          "width": 268.55999999999995,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "19.2 Name of entity",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 105,
+          "width": 268.55999999999995,
+          "height": 14.400000000000006
+        }
+      ]
+    },
+    {
+      "pdfName": "19.3 Name of entity",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 89.88,
+          "width": 268.55999999999995,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "19.1 % of ownership",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 413.4,
+          "y": 120,
+          "width": 42.84000000000003,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "19.2 % of ownership",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 413.4,
+          "y": 105,
+          "width": 42.84000000000003,
+          "height": 14.400000000000006
+        }
+      ]
+    },
+    {
+      "pdfName": "19.3 % of ownership",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 413.4,
+          "y": 89.88,
+          "width": 42.84000000000003,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "19.2 amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 103.2,
+          "width": 80.04000000000002,
+          "height": 14.519999999999996
+        }
+      ]
+    },
+    {
+      "pdfName": "19.1 amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 118.32,
+          "width": 80.04000000000002,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "19.3 amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 87.96,
+          "width": 80.04000000000002,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "20.1 Issuer name",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 638.4,
+          "width": 334.67999999999995,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "20.2 Issuer name",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 624.36,
+          "width": 334.67999999999995,
+          "height": 13.43999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "20.3 Issuer name",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 610.32,
+          "width": 334.67999999999995,
+          "height": 13.43999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "20.1 Issuer name amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 637.08,
+          "width": 80.04000000000002,
+          "height": 15.479999999999905
+        }
+      ]
+    },
+    {
+      "pdfName": "20.2 Issuer name amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 619.92,
+          "width": 80.04000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "20.3 Issuer name amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 606.72,
+          "width": 80.04000000000002,
+          "height": 12.600000000000023
+        }
+      ]
+    },
+    {
+      "pdfName": "21.2 Pension plan",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 210.96,
+          "y": 490.56,
+          "width": 260.76,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.3 IRA",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 210.96,
+          "y": 471.24,
+          "width": 260.76,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.4 Retirement account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 211.08,
+          "y": 453.08,
+          "width": 260.64,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.5 Keogh",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 210.96,
+          "y": 435.92,
+          "width": 260.76,
+          "height": 15.479999999999961
+        }
+      ]
+    },
+    {
+      "pdfName": "21.6 Additional account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 210.84,
+          "y": 417.72,
+          "width": 260.88,
+          "height": 15.479999999999961
+        }
+      ]
+    },
+    {
+      "pdfName": "21.7 Additional account",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 210.84,
+          "y": 397.52,
+          "width": 260.88,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.1 401k or similar plan",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 210.96,
+          "y": 507.76,
+          "width": 260.88,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.1 401k or similar plan amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 507.76,
+          "width": 80.04000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.2 Pension plan amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 490.56,
+          "width": 80.04000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.3 IRA amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 471.24,
+          "width": 80.04000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.4 Retirement account amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 453.08,
+          "width": 80.04000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "21.5 Keogh amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 435.92,
+          "width": 80.04000000000002,
+          "height": 15.479999999999961
+        }
+      ]
+    },
+    {
+      "pdfName": "21.6 Additional account amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 417.72,
+          "width": 80.04000000000002,
+          "height": 15.479999999999961
+        }
+      ]
+    },
+    {
+      "pdfName": "21.7 Additional account amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 397.52,
+          "width": 80.04000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "18.1 Institution or issuer name",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 136.32,
+          "y": 234.12,
+          "width": 346.44,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "18.3 Institution or issuer name",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 136.32,
+          "y": 205.92,
+          "width": 346.44,
+          "height": 13.560000000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "18.2 Institution or issuer name",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 136.32,
+          "y": 220.08,
+          "width": 346.44,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "18.1 Institution or issuer name 1 amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 233.64,
+          "width": 80.04000000000002,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "18.3 Institution or issuer name amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 203.16,
+          "width": 80.04000000000002,
+          "height": 14.52000000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "18.2 Institution or issuer name amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 499.8,
+          "y": 218.52,
+          "width": 80.04000000000002,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "22.1 Electric",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.52,
+          "y": 281.32,
+          "width": 272.4,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "22.2 Gas",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.4,
+          "y": 265.12,
+          "width": 272.4,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.5 Prepaid rent",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.52,
+          "y": 216.52,
+          "width": 272.4,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.7 Water",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.4,
+          "y": 184.12,
+          "width": 272.4,
+          "height": 15.359999999999985
+        }
+      ]
+    },
+    {
+      "pdfName": "22.8 Rented furniture",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.4,
+          "y": 167.92,
+          "width": 272.4,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.9 Other",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.4,
+          "y": 151.72,
+          "width": 272.4,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.6 Telephone",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.52,
+          "y": 200.32,
+          "width": 272.4,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.1 Electric amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 281.32,
+          "width": 84.48000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.2 Gas amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 265.12,
+          "width": 84.48000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.3 Heating oil",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.4,
+          "y": 248.92,
+          "width": 272.4,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.3 Heating oil amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 248.92,
+          "width": 84.48000000000002,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.4 Security deposit on rental unit",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 231.96,
+          "y": 233.56,
+          "width": 237.72,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.4 Security deposit on rental unit amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 233.56,
+          "width": 84.48000000000002,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.5 Prepaid rent amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 216.52,
+          "width": 84.48000000000002,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.6 Telephone amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 200.32,
+          "width": 84.48000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.7 Water amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 184.12,
+          "width": 84.48000000000002,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "22.8 Rented furniture amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 167.92,
+          "width": 84.48000000000002,
+          "height": 15.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "22.9 Other amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.36,
+          "y": 151.72,
+          "width": 84.48000000000002,
+          "height": 15.47999999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "23.2 Annuities",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 60.48,
+          "width": 338.64,
+          "height": 13.440000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "23.1 Annuities",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 74.52,
+          "width": 338.64,
+          "height": 13.560000000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "23.3 Annuities",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 135.96,
+          "y": 46.44,
+          "width": 338.64,
+          "height": 13.440000000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "23.1 Annuities amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.12,
+          "y": 73.08,
+          "width": 80.03999999999996,
+          "height": 15.480000000000004
+        }
+      ]
+    },
+    {
+      "pdfName": "23.2 Annuities amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.12,
+          "y": 57.96,
+          "width": 80.03999999999996,
+          "height": 14.520000000000003
+        }
+      ]
+    },
+    {
+      "pdfName": "23.3 Annuities amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 498.12,
+          "y": 45.72,
+          "width": 80.03999999999996,
+          "height": 11.64
+        }
+      ]
+    },
+    {
+      "pdfName": "24.1 Interest in an education IRA",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 156.6,
+          "y": 654.84,
+          "width": 327,
+          "height": 13.43999999999994
+        },
+        {
+          "x": 156.6,
+          "y": 626.76,
+          "width": 327,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "24.1 Interest in an education IRA amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 503.4,
+          "y": 654,
+          "width": 75.60000000000002,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "24.2 Interest in an education IRA",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 156.6,
+          "y": 640.8,
+          "width": 327,
+          "height": 13.440000000000055
+        },
+        {
+          "x": 503.4,
+          "y": 638.76,
+          "width": 75.60000000000002,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "24.3 Interest in an education IRA",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 503.4,
+          "y": 623.52,
+          "width": 75.60000000000002,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "25 Trusts, equitable or future interests in property",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 536.46,
+          "width": 339.84000000000003,
+          "height": 30.899999999999977
+        }
+      ]
+    },
+    {
+      "pdfName": "25 Trusts, equitable or future interests in property amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.96,
+          "y": 548.04,
+          "width": 80.04000000000002,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "26 Patents, copyrights, trademarks, trade secrets",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 494.13,
+          "width": 339.84000000000003,
+          "height": -30.899999999999977
+        }
+      ]
+    },
+    {
+      "pdfName": "26 Patents, copyrights, trademarks, trade secrets amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.96,
+          "y": 472.56,
+          "width": 80.04000000000002,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "27 Liscenses, Franchises",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 151.92,
+          "y": 414.48,
+          "width": 339.84000000000003,
+          "height": -30.900000000000034
+        }
+      ]
+    },
+    {
+      "pdfName": "27 Liscenses, Franchises amount",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 501.96,
+          "y": 395.16,
+          "width": 80.04000000000002,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "28 Tax refunds owed",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.16,
+          "y": 250.253,
+          "width": 209.4,
+          "height": 54.42700000000002
+        }
+      ]
+    },
+    {
+      "pdfName": "28 Tax refunds owed amout2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.44,
+          "y": 276.48,
+          "width": 75.59999999999997,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "28 Tax refunds owed amout1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.44,
+          "y": 291.6,
+          "width": 75.59999999999997,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "28 Tax refunds owed amout3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 493.44,
+          "y": 261.24,
+          "width": 75.59999999999997,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "29 Family support",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 197.16,
+          "y": 121.8,
+          "width": 209.4,
+          "height": 78.36
+        }
+      ]
+    },
+    {
+      "pdfName": "29 Family support amount2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.68,
+          "y": 167.52,
+          "width": 71.16000000000003,
+          "height": 13.079999999999984
+        }
+      ]
+    },
+    {
+      "pdfName": "29 Family support amount3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.68,
+          "y": 153.84,
+          "width": 71.16000000000003,
+          "height": 13.079999999999984
+        }
+      ]
+    },
+    {
+      "pdfName": "29 Family support amount1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.68,
+          "y": 181.2,
+          "width": 71.16000000000003,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "29 Family support amount4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.68,
+          "y": 140.16,
+          "width": 71.16000000000003,
+          "height": 13.080000000000013
+        }
+      ]
+    },
+    {
+      "pdfName": "29 Family support amount5",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 502.68,
+          "y": 126.36,
+          "width": 71.16000000000003,
+          "height": 13.200000000000003
+        }
+      ]
+    },
+    {
+      "pdfName": "32 Interest in property due you from someone who died",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 196.8,
+          "y": 538.013,
+          "width": 295.08,
+          "height": 30.861999999999966
+        }
+      ]
+    },
+    {
+      "pdfName": "33",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 196.68,
+          "y": 468.618,
+          "width": 295.08,
+          "height": 30.862000000000023
+        }
+      ]
+    },
+    {
+      "pdfName": "34",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 194.04,
+          "y": 408.138,
+          "width": 295.08000000000004,
+          "height": 30.862000000000023
+        }
+      ]
+    },
+    {
+      "pdfName": "35",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 194.16,
+          "y": 342.258,
+          "width": 295.08000000000004,
+          "height": 30.862000000000023
+        }
+      ]
+    },
+    {
+      "pdfName": "39 Office equipment furnishings and supplies",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 123.505,
+          "y": 43.9876,
+          "width": 364.98900000000003,
+          "height": 26.7149
+        }
+      ]
+    },
+    {
+      "pdfName": "40 Machinery fixtures equipment and tools of your trade",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 123.505,
+          "y": 669.799,
+          "width": 364.98900000000003,
+          "height": 28.492000000000075
+        }
+      ]
+    },
+    {
+      "pdfName": "38 Accounts receivable or commissions already earned",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 124.69,
+          "y": 104.437,
+          "width": 364.989,
+          "height": 30.86200000000001
+        }
+      ]
+    },
+    {
+      "pdfName": "43 Identifiable information",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 161.16,
+          "y": 429.48,
+          "width": 327,
+          "height": 26.399999999999977
+        }
+      ]
+    },
+    {
+      "pdfName": "44.1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 130.2,
+          "y": 384.12,
+          "width": 334.8,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "44.2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 130.2,
+          "y": 367.56,
+          "width": 334.8,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "44.3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 130.2,
+          "y": 351,
+          "width": 334.8,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "44.4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 130.2,
+          "y": 334.44,
+          "width": 334.8,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "44.5",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 130.2,
+          "y": 317.88,
+          "width": 334.8,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "44.6",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 130.2,
+          "y": 301.32,
+          "width": 334.8,
+          "height": 13.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "41 Inventory",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 123.505,
+          "y": 612.429,
+          "width": 364.98900000000003,
+          "height": 30.86200000000008
+        }
+      ]
+    },
+    {
+      "pdfName": "42.2 Name of entity",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 131.16,
+          "y": 537,
+          "width": 272.4,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "42.1 Name of entity",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 131.16,
+          "y": 551.04,
+          "width": 272.4,
+          "height": 13.440000000000055
+        }
+      ]
+    },
+    {
+      "pdfName": "42.3 Name of entity",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 131.16,
+          "y": 522.96,
+          "width": 272.4,
+          "height": 13.43999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "47 Farm Animals",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 124.505,
+          "y": 44.9876,
+          "width": 364.98900000000003,
+          "height": 35.601600000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "49",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 127.08,
+          "y": 620.4,
+          "width": 361.2,
+          "height": 24.360000000000014
+        }
+      ]
+    },
+    {
+      "pdfName": "50",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 127.08,
+          "y": 557.88,
+          "width": 361.2,
+          "height": 24.480000000000018
+        }
+      ]
+    },
+    {
+      "pdfName": "51",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 127.08,
+          "y": 502.08,
+          "width": 361.2,
+          "height": 22.439999999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "53 Examples Season tickets country club membership",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 127.44,
+          "y": 340.2,
+          "width": 339.12,
+          "height": 47.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Check 1",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 497.92,
+          "y": 641.28,
+          "width": 9.495000000000005,
+          "height": 10.177000000000021
+        }
+      ]
+    },
+    {
+      "pdfName": "Check 2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 476.31,
+          "width": 10.432400000000001,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 45.24,
+          "y": 464.07,
+          "width": 10.432499999999997,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 240.76,
+          "y": 323.63,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 240.76,
+          "y": 311.39,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 240.76,
+          "y": 299.15,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 240.76,
+          "y": 287.03,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 2",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 236.44,
+          "y": 111.71,
+          "width": 10.432000000000016,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 236.44,
+          "y": 99.4702,
+          "width": 10.432000000000016,
+          "height": 10.04979999999999
+        },
+        {
+          "x": 236.44,
+          "y": 87.2302,
+          "width": 10.432000000000016,
+          "height": 10.049800000000005
+        },
+        {
+          "x": 236.44,
+          "y": 75.1102,
+          "width": 10.432000000000016,
+          "height": 10.04979999999999
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 586.55,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        },
+        {
+          "x": 235.44,
+          "y": 574.31,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        },
+        {
+          "x": 235.44,
+          "y": 562.19,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 235.44,
+          "y": 549.95,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "Check 3",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.6631,
+          "y": 338.027,
+          "width": 10.432400000000001,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 45.9031,
+          "y": 325.787,
+          "width": 10.432499999999997,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 4",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 290.39,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 235.44,
+          "y": 278.27,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 235.44,
+          "y": 266.03,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 235.44,
+          "y": 253.79,
+          "width": 9.840000000000003,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 5",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 153.59,
+          "width": 9.840000000000003,
+          "height": 10.049999999999983
+        },
+        {
+          "x": 235.44,
+          "y": 141.47,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 235.44,
+          "y": 129.23,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 235.44,
+          "y": 116.99,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 6",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 691.68,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 235.44,
+          "y": 678.663,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 235.44,
+          "y": 666.423,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 235.44,
+          "y": 654.183,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 7",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 235.44,
+          "y": 581.463,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 235.44,
+          "y": 569.343,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 235.44,
+          "y": 557.103,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 235.44,
+          "y": 544.863,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 8",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 234.72,
+          "y": 370.863,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 234.72,
+          "y": 358.743,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 234.72,
+          "y": 346.503,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 234.72,
+          "y": 334.263,
+          "width": 9.719999999999999,
+          "height": 9.45700000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "Who has interest in property 9",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 234.72,
+          "y": 246.16,
+          "width": 9.719999999999999,
+          "height": -9.456999999999994
+        },
+        {
+          "x": 234.72,
+          "y": 224.463,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 234.72,
+          "y": 212.223,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 234.72,
+          "y": 199.983,
+          "width": 9.719999999999999,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "6 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 632.2,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 619.855,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        }
+      ]
+    },
+    {
+      "pdfName": "7 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 559.255,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 548.095,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        }
+      ]
+    },
+    {
+      "pdfName": "8 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 489.775,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 478.615,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        }
+      ]
+    },
+    {
+      "pdfName": "9 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 417.775,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 406.615,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        }
+      ]
+    },
+    {
+      "pdfName": "10 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 356.815,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 345.535,
+          "width": 9.247500000000002,
+          "height": 8.864999999999952
+        }
+      ]
+    },
+    {
+      "pdfName": "11 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 297.535,
+          "width": 9.247500000000002,
+          "height": 8.864999999999952
+        },
+        {
+          "x": 45.5925,
+          "y": 286.375,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        }
+      ]
+    },
+    {
+      "pdfName": "12 check",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 218.095,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 206.935,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        }
+      ]
+    },
+    {
+      "pdfName": "Check 16",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 44.6631,
+          "y": 613.5,
+          "width": 10.432400000000001,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 44.6631,
+          "y": 601.26,
+          "width": 10.432400000000001,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "Check 17",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 44.6631,
+          "y": 528.062,
+          "width": 10.432400000000001,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 44.6631,
+          "y": 515.822,
+          "width": 10.432400000000001,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "Check 18",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 44.6631,
+          "y": 267.4,
+          "width": 10.432400000000001,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 44.6631,
+          "y": 255.16,
+          "width": 10.432400000000001,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "check 19",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 44.6631,
+          "y": 135.71,
+          "width": 10.432400000000001,
+          "height": 10.049999999999983
+        },
+        {
+          "x": 44.6631,
+          "y": 123.47,
+          "width": 10.432400000000001,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "check 20",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 667.08,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 45,
+          "y": 654.47,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 21",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 550.91,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        },
+        {
+          "x": 45,
+          "y": 537.83,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 22",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 313.04,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 45,
+          "y": 299.96,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "check 23",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 104.84,
+          "width": 9.840000000000003,
+          "height": 10.049999999999997
+        },
+        {
+          "x": 45,
+          "y": 89.7596,
+          "width": 9.840000000000003,
+          "height": 10.049999999999997
+        }
+      ]
+    },
+    {
+      "pdfName": "check 24",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 692.023,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 679.783,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 26",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 497.143,
+          "width": 9.840000000000003,
+          "height": 9.45700000000005
+        },
+        {
+          "x": 45,
+          "y": 483.343,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 27",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 418.903,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 405.943,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 28",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 309.343,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 296.383,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 29",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 204.943,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 191.983,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 31",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 687.72,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 674.703,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 32",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 568.503,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 555.543,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 33",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 498.543,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 485.583,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 34",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 438.063,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 425.103,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 35",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 365.103,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 352.863,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 37",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 226.263,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 213.063,
+          "width": 9.840000000000003,
+          "height": 9.457000000000022
+        }
+      ]
+    },
+    {
+      "pdfName": "check 38",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 137.223,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 124.263,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 39",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 73.023,
+          "width": 9.840000000000003,
+          "height": 9.457000000000008
+        },
+        {
+          "x": 45,
+          "y": 60.063,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 40",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 701.04,
+          "width": 9.839999999999996,
+          "height": 10.050000000000068
+        },
+        {
+          "x": 46.0793,
+          "y": 687.71,
+          "width": 9.839999999999996,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 41",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 639.07,
+          "width": 9.839999999999996,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 46.0793,
+          "y": 627.95,
+          "width": 9.839999999999996,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 42",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 581.03,
+          "width": 9.839999999999996,
+          "height": 10.050000000000068
+        },
+        {
+          "x": 46.0793,
+          "y": 568.79,
+          "width": 9.839999999999996,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "check 43",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 486.67,
+          "width": 9.839999999999996,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 46.0793,
+          "y": 474.55,
+          "width": 9.839999999999996,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "check 43_1",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 76.44,
+          "y": 459.31,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 76.44,
+          "y": 447.07,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "check 44",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 400.87,
+          "width": 9.839999999999996,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 46.0793,
+          "y": 388.63,
+          "width": 9.839999999999996,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "check 46",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 179.75,
+          "width": 9.839999999999996,
+          "height": 10.050000000000011
+        },
+        {
+          "x": 46.0793,
+          "y": 168.59,
+          "width": 9.839999999999996,
+          "height": 10.049999999999983
+        }
+      ]
+    },
+    {
+      "pdfName": "check 47",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 46.0793,
+          "y": 85.5582,
+          "width": 9.839999999999996,
+          "height": 10.049999999999997
+        },
+        {
+          "x": 46.0793,
+          "y": 74.3982,
+          "width": 9.839999999999996,
+          "height": 10.049999999999997
+        }
+      ]
+    },
+    {
+      "pdfName": "check 48",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 704.76,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 45,
+          "y": 692.27,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        }
+      ]
+    },
+    {
+      "pdfName": "check 49",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 651.35,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 45,
+          "y": 639.11,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 50",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 588.83,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 45,
+          "y": 576.71,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 51",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 529.31,
+          "width": 9.840000000000003,
+          "height": 10.050000000000068
+        },
+        {
+          "x": 45,
+          "y": 517.07,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        }
+      ]
+    },
+    {
+      "pdfName": "check 53",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 382.91,
+          "width": 9.840000000000003,
+          "height": 10.049999999999955
+        },
+        {
+          "x": 45,
+          "y": 370.67,
+          "width": 9.840000000000003,
+          "height": 10.050000000000011
+        }
+      ]
+    },
+    {
+      "pdfName": "check 13",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 148.015,
+          "width": 9.247500000000002,
+          "height": 8.865000000000009
+        },
+        {
+          "x": 45.5925,
+          "y": 159.175,
+          "width": 9.247500000000002,
+          "height": 8.86499999999998
+        }
+      ]
+    },
+    {
+      "pdfName": "check 14",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45.5925,
+          "y": 105,
+          "width": 9.247500000000002,
+          "height": 8.864999999999995
+        },
+        {
+          "x": 45.5925,
+          "y": 93.8397,
+          "width": 9.247500000000002,
+          "height": 8.865300000000005
+        }
+      ]
+    },
+    {
+      "pdfName": "check 25",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 558.823,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        },
+        {
+          "x": 45,
+          "y": 571.783,
+          "width": 9.840000000000003,
+          "height": 9.456999999999994
+        }
+      ]
+    },
+    {
+      "pdfName": "check 30",
+      "type": "PDFCheckBox",
+      "rects": [
+        {
+          "x": 45,
+          "y": 74.743,
+          "width": 9.840000000000003,
+          "height": 9.457000000000008
+        },
+        {
+          "x": 45,
+          "y": 61.5603,
+          "width": 9.840000000000003,
+          "height": 9.457000000000008
+        }
+      ]
+    },
+    {
+      "pdfName": "3 1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 153,
+          "y": 301.56,
+          "width": 54.47999999999999,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "3 2",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 153,
+          "y": 286.44,
+          "width": 54.47999999999999,
+          "height": 14.519999999999982
+        }
+      ]
+    },
+    {
+      "pdfName": "3 3",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 153,
+          "y": 271.2,
+          "width": 46.68000000000001,
+          "height": 14.520000000000039
+        }
+      ]
+    },
+    {
+      "pdfName": "3 4",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 152.88,
+          "y": 256.08,
+          "width": 46.80000000000001,
+          "height": 14.520000000000039
+        }
+      ]
+    },
+    {
+      "pdfName": "1 1",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 429.84,
+          "width": 159.71999999999997,
+          "height": 14.640000000000043
+        }
+      ]
+    },
+    {
+      "pdfName": "1 1a",
+      "type": "PDFTextField",
+      "rects": [
+        {
+          "x": 68.76,
+          "y": 395.76,
+          "width": 159.71999999999997,
+          "height": 14.639999999999986
+        }
+      ]
+    },
+    {
+      "pdfName": "Bankruptcy District Information",
+      "type": "PDFDropdown",
+      "rects": [
+        {
+          "x": 158.161,
+          "y": 662.884,
+          "width": 162.15300000000002,
+          "height": 17.32899999999995
+        }
+      ]
+    }
+  ]
+}

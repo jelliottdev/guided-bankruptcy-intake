@@ -60,6 +60,12 @@ export interface Field {
   dontHaveYetCheckbox?: boolean;
   /** File upload: small caption under upload box (e.g. "Applies to: Checking, Savings") */
   uploadAppliesTo?: string;
+  /** File upload: accepted alternatives that may satisfy the requirement. */
+  acceptedAlternatives?: string[];
+  /** File upload: concise examples shown in request cards/panels. */
+  examplesMini?: string[];
+  /** File upload: whether issue resolution flow is required when unavailable. */
+  resolutionRequired?: boolean;
 }
 
 export interface Step {

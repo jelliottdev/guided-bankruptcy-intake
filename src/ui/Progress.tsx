@@ -21,8 +21,17 @@ export function Progress({ currentStepIndex, totalSteps }: ProgressProps) {
       <p className="progress-step-counter">
         Section {stepNum} of {totalSteps}
       </p>
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${displayPct}%` }} />
+      <div className="progress-bar" style={{ height: '2px', background: 'rgba(0,0,0,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
+        <div
+          className="progress-fill"
+          style={{
+            width: `${displayPct}%`,
+            height: '100%',
+            background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+            boxShadow: '0 0 8px rgba(59, 130, 246, 0.5)',
+            transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        />
       </div>
     </div>
   );

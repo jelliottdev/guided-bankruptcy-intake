@@ -38,3 +38,17 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Local / dev-only
+tmp/
+reference_repos/
+material-ui/
+
+# Personal Data / Test Files
+Documents - Wallace/
+*.pdf
+!public/**/*.pdf
+
+# Backend artifacts
+backend/**/venv/
+backend/**/__pycache__/

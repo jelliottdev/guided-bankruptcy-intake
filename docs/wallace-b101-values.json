@@ -1,0 +1,40 @@
+{
+  "source": "(Doc 1) Voluntary Petition - Wallace (1).pdf",
+  "sourcePath": "Documents - Wallace/Pleadings - Wallace/(Doc 1) Voluntary Petition - Wallace (1).pdf",
+  "note": "Filed PDF has no AcroForm fields (flattened/scanned). Reference values are from seedData (Wallace-derived) and map to intake/canonical keys used for B101 generation and gold validation.",
+  "intakeKeys": {
+    "filing_chapter": "13",
+    "filing_fee_method": "installments",
+    "debt_nature": "consumer",
+    "creditor_count_range": "1-49",
+    "asset_range": "500001-1000000",
+    "liability_range": "500001-1000000",
+    "filing_date": "2025-11-26",
+    "asset_distribution_expected": "No",
+    "filing_setup": "Filing with spouse",
+    "debtor_full_name": "Nicholas Alexander Wallace",
+    "debtor_ssn_last4": "1174",
+    "debtor_dob": "1986-12-29",
+    "debtor_phone": "(407) 555-0184",
+    "debtor_email": "nick.wallace@email.com",
+    "debtor_address": "10556 Bull Grass Dr\nOrlando, FL 32825",
+    "county": "Orange",
+    "spouse_full_name": "Katie Marie Wallace",
+    "spouse_ssn_last4": "9805",
+    "spouse_dob": "1986-08-16",
+    "spouse_phone": "(407) 555-0185",
+    "spouse_email": "katie.wallace@email.com",
+    "spouse_address": "10556 Bull Grass Dr\nOrlando, FL 32825"
+  },
+  "canonicalExpectations": {
+    "filing.chapter": "13",
+    "filing.feePayment": "installments",
+    "reporting.debtType": "consumer",
+    "reporting.estimatedCreditors": "1-49",
+    "reporting.estimatedAssets": "500001-1000000",
+    "reporting.estimatedLiabilities": "500001-1000000",
+    "debtor1.name": "Nicholas Alexander Wallace",
+    "debtor2.name": "Katie Marie Wallace",
+    "filing.district": "Middle District of Florida"
+  }
+}

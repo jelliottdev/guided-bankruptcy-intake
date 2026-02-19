@@ -1,11 +1,11 @@
 /**
- * Risk assessment: trustee scrutiny score, dismissal/fraud/timeline factors, recommendations.
+ * Risk assessment: exception factors + recommended actions for attorney review.
  */
 import type { RiskAssessmentResult } from '../../../attorney/riskAssessment';
 
 export interface RiskAssessmentProps {
   result: RiskAssessmentResult;
-  onCopyDocRequest?: () => void;
+  onOpenDocRequests?: () => void;
   onOpenMeansTest?: () => void;
   onOpenExemptions?: () => void;
   onOpenBlockers?: () => void;
@@ -14,7 +14,7 @@ export interface RiskAssessmentProps {
 
 export function RiskAssessment({
   result,
-  onCopyDocRequest,
+  onOpenDocRequests,
   onOpenMeansTest,
   onOpenExemptions,
   onOpenBlockers,
@@ -31,7 +31,7 @@ export function RiskAssessment({
     .slice(0, 3);
 
   const primaryAction = (() => {
-    if (topFactors.some((f) => f.id === 'docs-missing') && onCopyDocRequest) return { label: 'Copy doc request', onClick: onCopyDocRequest };
+    if (topFactors.some((f) => f.id === 'docs-missing') && onOpenDocRequests) return { label: 'Open document requests', onClick: onOpenDocRequests };
     if (topFactors.some((f) => f.id === 'above-median') && onOpenMeansTest) return { label: 'Review means test', onClick: onOpenMeansTest };
     if (topFactors.some((f) => f.id === 'non-exempt-assets') && onOpenExemptions) return { label: 'Review exemptions', onClick: onOpenExemptions };
     if (topFactors.some((f) => f.id === 'urgency') && onOpenBlockers) return { label: 'Open urgency items', onClick: onOpenBlockers };
@@ -55,12 +55,8 @@ export function RiskAssessment({
         ) : null}
       </div>
       <div className="risk-score-row">
-        <span className="risk-score-label">Trustee scrutiny score</span>
-        <span
-          className={`risk-score-value risk-score-${result.trusteeScrutinyScore >= 50 ? 'high' : result.trusteeScrutinyScore >= 25 ? 'medium' : 'low'}`}
-        >
-          {result.trusteeScrutinyScore}
-        </span>
+        <span className="risk-score-label">Active risk factors</span>
+        <span className="risk-score-value">{allFactors.length}</span>
       </div>
       {allFactors.length > 0 && (
         <ul className="risk-factors-list">

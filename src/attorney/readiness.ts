@@ -67,7 +67,10 @@ export function computeCaseReadiness(
     incomeExpTotal += 1;
     if (!isEmpty(answers[id])) incomeExpFilled += 1;
   });
-  if (answers['monthly_expenses'] && typeof answers['monthly_expenses'] === 'object') {
+  if (!isEmpty(answers['monthly_expenses_total_estimate']) || answers['monthly_expenses_not_sure'] === 'Yes') {
+    incomeExpTotal += 5;
+    incomeExpFilled += 5;
+  } else if (answers['monthly_expenses'] && typeof answers['monthly_expenses'] === 'object') {
     const grid = answers['monthly_expenses'] as Record<string, string>;
     const keys = Object.keys(grid).filter((k) => grid[k]);
     incomeExpTotal += 5;
@@ -101,7 +104,7 @@ export function computeCaseReadiness(
       const n = getBankAccountCount(answers);
       for (let i = 1; i <= n; i++) {
         assetsTotal += 2;
-        if (!isEmpty(answers[`account_${i}_name`])) assetsFilled += 1;
+        if (!isEmpty(answers[`account_${i}_institution`])) assetsFilled += 1;
         if (!isEmpty(answers[`account_${i}_balance`])) assetsFilled += 1;
       }
     } else {
@@ -114,7 +117,7 @@ export function computeCaseReadiness(
       const n = getVehicleCount(answers);
       for (let i = 1; i <= n; i++) {
         assetsTotal += 2;
-        if (!isEmpty(answers[`vehicle_${i}_details`])) assetsFilled += 1;
+        if (!isEmpty(answers[`vehicle_${i}_year`]) || !isEmpty(answers[`vehicle_${i}_make`]) || !isEmpty(answers[`vehicle_${i}_model`])) assetsFilled += 1;
         if (!isEmpty(answers[`vehicle_${i}_value`])) assetsFilled += 1;
       }
     } else {
@@ -157,7 +160,7 @@ export function computeCaseReadiness(
   let bandLabel: string;
   if (clamped >= 90) {
     band = 'ready';
-    bandLabel = 'Ready for draft schedules';
+    bandLabel = 'Ready to generate forms';
   } else if (clamped >= 70) {
     band = 'minor';
     bandLabel = 'Needs minor follow-up';

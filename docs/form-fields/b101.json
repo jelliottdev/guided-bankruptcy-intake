@@ -1,0 +1,898 @@
+{
+  "source": "b101.pdf",
+  "inspectedAt": "2026-02-17T16:08:45.065Z",
+  "totalFields": 159,
+  "fields": [
+    {
+      "name": "16c State the type of debts you owe that are not consumer debts or business debts",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "attach",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Attorney.Bar number",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Bar State",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.City",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Date signed",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Email address",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Firm name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.phone",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Printed name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Sig",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.State",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Street address_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Street address_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Attorney.Zip",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Bankruptcy District Information",
+      "type": "PDFDropdown",
+      "options": [
+        " ",
+        "__________ District of __________",
+        "Middle District of Alabama",
+        "Northern District of Alabama",
+        "Southern District of Alabama",
+        "District of Alaska",
+        "District of Arizona",
+        "Eastern and Western District of Arkansas",
+        "Central District of California",
+        "Eastern District of California",
+        "Northern District of California",
+        "Southern District of California",
+        "District of Colorado",
+        "District of Connecticut",
+        "District of Columbia",
+        "District of Delaware",
+        "Middle District of Florida",
+        "Northern District of Florida",
+        "Southern District of Florida",
+        "Middle District of Georgia",
+        "Northern District of Georgia ",
+        "Southern District of Georgia ",
+        "District of Guam",
+        "District of Hawaii",
+        "District of Idaho",
+        "Central District of Illinois",
+        "Northern District of Illinois",
+        "Southern District of Illinois",
+        "Northern District of Indiana",
+        "Southern District of Indiana",
+        "Northern District of Iowa",
+        "Southern District of Iowa",
+        "District of Kansas",
+        "Eastern District of Kentucky",
+        "Western District of Kentucky",
+        "Eastern District of Louisiana",
+        "Middle District of Louisiana",
+        "Western District of Louisiana",
+        "District of Maine",
+        "District of Maryland",
+        "District of Massachusetts",
+        "District of Montana",
+        "Eastern District of Michigan",
+        "Western District of Michigan",
+        "District of Minnesota",
+        "Northern District of Mississippi",
+        "Southern District of Mississippi",
+        "Eastern District of Missouri",
+        "Western District of Missouri",
+        "District of Nebraska",
+        "District of Nevada",
+        "District of New Hampshire",
+        "District of New Jersey",
+        "District of New Mexico",
+        "Eastern District of New York",
+        "Northern District of New York",
+        "Southern District of New York",
+        "Western District of New York",
+        "Eastern District of North Carolina",
+        "Middle District of North Carolina",
+        "Western District of North Carolina",
+        "District of North Dakota",
+        "District of Northern Mariana Islands",
+        "Northern District of Ohio",
+        "Southern District of Ohio",
+        "Eastern District of Oklahoma",
+        "Northern District of Oklahoma",
+        "Western District of Oklahoma",
+        "District of Oregon",
+        "Eastern District of Pennsylvania",
+        "Middle District of Pennsylvania",
+        "Western District of Pennsylvania",
+        "District of Puerto Rico",
+        "District of Rhode Island",
+        "District of South Carolina",
+        "District of South Dakota",
+        "Eastern District of Tennessee",
+        "Middle District of Tennessee",
+        "Western District of Tennessee",
+        "Eastern District of Texas",
+        "Northern District of Texas",
+        "Southern District of Texas",
+        "Western District of Texas",
+        "District of Utah",
+        "District of Vermont",
+        "District of Virgin Islands",
+        "Eastern District of Virginia",
+        "Western District of Virginia",
+        "Eastern District of Washington",
+        "Western District of Washington",
+        "Northern District of West Virginia",
+        "Southern District of West Virginia",
+        "Eastern District of Wisconsin",
+        "Western District of Wisconsin",
+        "District of Wyoming"
+      ],
+      "selected": [
+        "__________ District of __________"
+      ]
+    },
+    {
+      "name": "Business City",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Business State",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Business Street address",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Business Street address2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Button.Print1",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Button.Reset",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Button.SaveAs",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Case number",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Case number if known_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Case number if known_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Case number_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Case number_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Case number1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Check Box1",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box2",
+      "type": "PDFCheckBox",
+      "checked": false,
+      "AS": "/Off"
+    },
+    {
+      "name": "Check Box5",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box6",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box7",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box8",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box9",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box10",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box11",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box12",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box13",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box14",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box15",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box16",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box16A",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box17",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box17A",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box18",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box19",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box20",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box20A",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box21",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box22",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box23",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box24",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box25",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Check Box26",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "City_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "County_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1 Tax Payer IDNum",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Business name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Business name_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Cell phone",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.City",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.City_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Contact phone_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.County",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Date signed",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Email address_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Employer Identification Number1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Employer Identification Number2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.First name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.First name_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.First name_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Last name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Last name_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Last name_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Middle name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Middle name_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Middle name_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.PO Box",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.See 28 USC  1408 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.See 28 USC  1408 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.See 28 USC  1408 3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.See 28 USC  1408 4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.signature",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Signature",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.SSNum",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.State",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.State_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Street",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Street_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Street1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Suffix Sr Jr II III",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.ZIP Code",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.ZIP Code_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2 Employer Identification Number2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2 SSNum",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Business name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Business name_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Cell phone",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.City",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.City_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Contact phone",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Date signed",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Email address",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Employer Identification Number1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Executed on",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.First name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.First name_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.First name_6",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Last name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Last name_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Last name_6",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Middle name_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Middle name_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Middle name_6",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.PO Box",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.See 28 USC  1408 1_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.See 28 USC  1408 2_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.See 28 USC  1408 3_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.See 28 USC  1408 4_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.signature",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Signature",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.State",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.State_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Street",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Street_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Street2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Tax Payer IDNum",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.ZIP",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "District",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "District_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "District_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "District_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "District_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Executed on",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "If immediate attention is needed why is it needed1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "If immediate attention is needed why is it needed2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Name of business if any",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Name of person payed to help file",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Relationship to you",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Relationship to you_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "State_6",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Street_6",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Street_7",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Suffix Sr Jr II III_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "What is the hazard1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "What is the hazard2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "When",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "When_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "When_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "When_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "When_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "ZIP Code_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "ZIP Code_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "ZIP Code_6",
+      "type": "PDFTextField",
+      "value": ""
+    }
+  ]
+}

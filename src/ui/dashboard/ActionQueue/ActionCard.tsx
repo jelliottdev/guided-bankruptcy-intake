@@ -5,6 +5,7 @@ import type { ActionStatusValue } from '../dashboardShared';
 import type { Flags } from '../../../form/types';
 
 export type ActionQueueItem = {
+  issueId?: string;
   severity: 'critical' | 'important' | 'follow-up';
   label: string;
   reason: string;

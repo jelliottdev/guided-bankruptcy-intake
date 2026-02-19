@@ -35,6 +35,118 @@ const STEP_FILING: Step = {
   showIf: alwaysShow,
 };
 
+// ---------- Filing choices (petition / B101-critical) ----------
+const STEP_FILING_CHOICES: Step = {
+  id: 'filing_choices',
+  title: 'Filing choices',
+  description: 'Chapter, fee, and petition estimates. Your attorney can confirm or change these.',
+  reassurance: 'These go on the Voluntary Petition (Form 101).',
+  fields: [
+    {
+      id: 'filing_chapter',
+      type: 'radio',
+      label: 'Chapter you are filing under',
+      required: true,
+      options: [
+        { value: '7', label: 'Chapter 7' },
+        { value: '11', label: 'Chapter 11' },
+        { value: '12', label: 'Chapter 12' },
+        { value: '13', label: 'Chapter 13' },
+      ],
+      helper: 'Your attorney will confirm eligibility.',
+    },
+    {
+      id: 'filing_fee_method',
+      type: 'radio',
+      label: 'Filing fee',
+      required: true,
+      options: [
+        { value: 'full', label: 'Pay in full now' },
+        { value: 'installments', label: 'Pay in installments' },
+        { value: 'waiver', label: 'Request fee waiver' },
+      ],
+    },
+    {
+      id: 'debt_nature',
+      type: 'radio',
+      label: 'Primary nature of your debts',
+      required: true,
+      options: [
+        { value: 'consumer', label: 'Consumer (personal, household)' },
+        { value: 'business', label: 'Business' },
+        { value: 'both', label: 'Both' },
+      ],
+    },
+    {
+      id: 'creditor_count_range',
+      type: 'select',
+      label: 'Estimated number of creditors',
+      required: true,
+      options: [
+        { value: '1-49', label: '1–49' },
+        { value: '50-99', label: '50–99' },
+        { value: '100-199', label: '100–199' },
+        { value: '200-999', label: '200–999' },
+        { value: '1000-5000', label: '1,000–5,000' },
+        { value: '5001-10000', label: '5,001–10,000' },
+        { value: '10001-25000', label: '10,001–25,000' },
+        { value: '25001-50000', label: '25,001–50,000' },
+        { value: '50001-100000', label: '50,001–100,000' },
+        { value: '100000+', label: '100,000+' },
+      ],
+    },
+    {
+      id: 'asset_range',
+      type: 'select',
+      label: 'Estimated total value of assets',
+      required: true,
+      options: [
+        { value: '0-50000', label: '$0–$50,000' },
+        { value: '50001-100000', label: '$50,001–$100,000' },
+        { value: '100001-500000', label: '$100,001–$500,000' },
+        { value: '500001-1000000', label: '$500,001–$1 million' },
+        { value: '1000001-10000000', label: '$1M–$10M' },
+        { value: '10000001-50000000', label: '$10M–$50M' },
+        { value: '50000001-100000000', label: '$50M–$100M' },
+        { value: '100000001-500000000', label: '$100M–$500M' },
+        { value: '500000001-1000000000', label: '$500M–$1B' },
+        { value: '1000000001-10000000000', label: '$1B–$10B' },
+        { value: '10000000001-50000000000', label: '$10B–$50B' },
+        { value: '50000000000+', label: '$50B+' },
+      ],
+    },
+    {
+      id: 'liability_range',
+      type: 'select',
+      label: 'Estimated total liabilities',
+      required: true,
+      options: [
+        { value: '0-50000', label: '$0–$50,000' },
+        { value: '50001-100000', label: '$50,001–$100,000' },
+        { value: '100001-500000', label: '$100,001–$500,000' },
+        { value: '500001-1000000', label: '$500,001–$1 million' },
+        { value: '1000001-10000000', label: '$1M–$10M' },
+        { value: '10000001-50000000', label: '$10M–$50M' },
+        { value: '50000001-100000000', label: '$50M–$100M' },
+        { value: '100000001-500000000', label: '$100M–$500M' },
+        { value: '500000001-1000000000', label: '$500M–$1B' },
+        { value: '1000000001-10000000000', label: '$1B–$10B' },
+        { value: '10000000001-50000000000', label: '$10B–$50B' },
+        { value: '50000000000+', label: '$50B+' },
+      ],
+    },
+    {
+      id: 'filing_date',
+      type: 'date',
+      label: 'Filing / signature date',
+      required: false,
+      placeholder: 'YYYY-MM-DD',
+      helper: 'Date you (and attorney) will sign the petition. Leave blank to use today.',
+    },
+  ],
+  showIf: alwaysShow,
+};
+
 // ---------- Identity ----------
 const STEP_IDENTITY: Step = {
   id: 'identity',
@@ -42,7 +154,8 @@ const STEP_IDENTITY: Step = {
   description: 'Information required for court filings.',
   reassurance: 'If you\'re unsure, enter your best estimate.',
   fields: [
-    { id: 'debtor_full_name', type: 'text', label: 'Full legal name', required: true, placeholder: 'As on your ID' },
+    { id: 'debtor_full_name', type: 'text', label: 'First and Last Name', required: true, placeholder: 'As on your ID' },
+    { id: 'debtor_middle_name', type: 'text', label: 'Middle Name', required: false, placeholder: 'Leave blank if none' },
     { id: 'debtor_other_names', type: 'text', label: 'Other names used (maiden, prior)', required: false, placeholder: 'Leave blank if none' },
     { id: 'debtor_ssn_last4', type: 'text', label: 'Last 4 of SSN', required: true, placeholder: '1234', whyWeAsk: 'Court and trustee use this to identify you.' },
     { id: 'debtor_dob', type: 'date', label: 'Date of birth', required: true, placeholder: 'YYYY-MM-DD' },
@@ -78,7 +191,9 @@ const STEP_CONTACT: Step = {
       required: true,
       options: [{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }],
     },
-    { id: 'prior_bankruptcy_details', type: 'textarea', label: 'Prior bankruptcy details', required: false, showIf: (a) => a['prior_bankruptcy'] === 'Yes' },
+    { id: 'prior_bankruptcy_district', type: 'text', label: 'District where you filed', required: true, showIf: (a) => a['prior_bankruptcy'] === 'Yes', placeholder: 'e.g. Northern District of Illinois' },
+    { id: 'prior_bankruptcy_date', type: 'date', label: 'When did you file?', required: true, showIf: (a) => a['prior_bankruptcy'] === 'Yes' },
+    { id: 'prior_bankruptcy_case_number', type: 'text', label: 'Case number', required: true, showIf: (a) => a['prior_bankruptcy'] === 'Yes', placeholder: 'e.g. 12-34567' },
   ],
   showIf: alwaysShow,
 };
@@ -89,7 +204,8 @@ const STEP_SPOUSE: Step = {
   title: 'Spouse information',
   description: 'Required for joint filing.',
   fields: [
-    { id: 'spouse_full_name', type: 'text', label: 'Spouse full legal name', required: true },
+    { id: 'spouse_full_name', type: 'text', label: 'Spouse First and Last Name', required: true },
+    { id: 'spouse_middle_name', type: 'text', label: 'Spouse Middle Name', required: false, placeholder: 'Leave blank if none' },
     { id: 'spouse_other_names', type: 'text', label: 'Spouse other names used', required: false },
     { id: 'spouse_ssn_last4', type: 'text', label: 'Spouse last 4 of SSN', required: true, placeholder: '1234' },
     { id: 'spouse_dob', type: 'date', label: 'Spouse date of birth', required: true },
@@ -150,44 +266,75 @@ const STEP_URGENCY: Step = {
 // ---------- Real estate ----------
 function propertyFields(n: 1 | 2 | 3): Field[] {
   const base: Field[] = [
-    { id: `property_${n}_address`, type: 'text', label: `Property ${n} address`, required: true },
+    {
+      id: `property_${n}_doc`,
+      type: 'file',
+      label: `Upload Mortgage Statement or Deed (Optional)`,
+      required: false,
+      helper: 'Upload to auto-fill details',
+      uploadForTag: `Property ${n}`
+    },
+    { id: `property_${n}_address`, type: 'text', label: `Property ${n} address`, required: true, placeholder: 'Street address' },
+    { id: `property_${n}_city`, type: 'text', label: `City`, required: true },
+    { id: `property_${n}_state`, type: 'text', label: `State`, required: true },
+    { id: `property_${n}_zip`, type: 'text', label: `ZIP Code`, required: true },
+    { id: `property_${n}_county`, type: 'text', label: `County`, required: true },
+    {
+      id: `property_${n}_ownership`,
+      type: 'radio',
+      label: 'Who owns this property?',
+      required: true,
+      options: [
+        { value: 'Debtor', label: 'Me (Debtor)' },
+        { value: 'Spouse', label: 'Spouse' },
+        { value: 'Joint', label: 'Both' },
+        { value: 'Community', label: 'Community Property' },
+      ],
+      showIf: isJointFiling,
+    },
     {
       id: `property_${n}_type`,
       type: 'select',
-      label: `Property ${n} type`,
+      label: `Property type`,
       required: true,
       options: [
-        { value: 'Primary Residence', label: 'Primary residence' },
-        { value: 'Rental Property', label: 'Rental property' },
+        { value: 'Single Family', label: 'Single Family Home' },
+        { value: 'Condo/Townhome', label: 'Condo or Townhome' },
+        { value: 'Multi-Family', label: 'Multi-Family (2-4 units)' },
+        { value: 'Land', label: 'Land / Lot' },
+        { value: 'Commercial', label: 'Commercial Property' },
+        { value: 'Manufactured Home', label: 'Manufactured / Mobile Home' },
+        { value: 'Timeshare', label: 'Timeshare' },
         { value: 'Other', label: 'Other' },
       ],
     },
-    { id: `property_${n}_value`, type: 'text', label: `Estimated value`, required: true, placeholder: 'e.g. 250000' },
+    { id: `property_${n}_value`, type: 'text', label: `Estimated current market value`, required: true, placeholder: 'e.g. 250000' },
     {
       id: `property_${n}_mortgage`,
       type: 'radio',
-      label: 'Mortgage or lien?',
+      label: 'Is there a mortgage or lien?',
       required: true,
       options: [{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }],
     },
-    { id: `property_${n}_mortgage_details`, type: 'textarea', label: 'Mortgage/lien details', required: false, showIf: (a) => a[`property_${n}_mortgage`] === 'Yes' },
+    { id: `property_${n}_mortgage_balance`, type: 'text', label: 'Outstanding balance (payoff amount)', required: false, showIf: (a) => a[`property_${n}_mortgage`] === 'Yes', placeholder: 'e.g. 180000' },
+    { id: `property_${n}_mortgage_details`, type: 'textarea', label: 'Lender name and loan number', required: false, showIf: (a) => a[`property_${n}_mortgage`] === 'Yes' },
     {
       id: `property_${n}_plan`,
       type: 'select',
-      label: 'Plan for this property',
+      label: 'Intention for this property',
       required: true,
       options: [
         { value: 'Keep the property', label: 'Keep the property' },
-        { value: 'Surrender', label: 'Surrender' },
-        { value: 'Reaffirm', label: 'Reaffirm' },
+        { value: 'Surrender', label: 'Surrender (give back to lender)' },
+        { value: 'Reaffirm', label: 'Reaffirm (sign new agreement)' },
       ],
     },
-    { id: `property_${n}_hoa`, type: 'radio', label: 'HOA?', required: true, options: [{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }] },
-    { id: `property_${n}_hoa_details`, type: 'textarea', label: 'HOA details', required: false, showIf: (a) => a[`property_${n}_hoa`] === 'Yes' },
+    { id: `property_${n}_hoa`, type: 'radio', label: 'Is there an HOA?', required: true, options: [{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }] },
+    { id: `property_${n}_hoa_details`, type: 'textarea', label: 'HOA details (Name, Fees)', required: false, showIf: (a) => a[`property_${n}_hoa`] === 'Yes' },
   ];
   return base.map((f) => ({
     ...f,
-    showIf: n === 1 ? hasRealEstate : (answers: Answers) => getRealEstateCount(answers) >= n,
+    showIf: (a) => (n === 1 ? hasRealEstate(a) : getRealEstateCount(a) >= n) && (!f.showIf || f.showIf(a)),
   }));
 }
 
@@ -227,13 +374,39 @@ const STEP_REAL_ESTATE: Step = {
 
 // ---------- Bank accounts ----------
 function accountFields(n: 1 | 2 | 3): Field[] {
-  const showIf = n === 1
+  const showIfBase = n === 1
     ? hasBankAccounts
     : (a: Answers) => getBankAccountCount(a) >= n;
+
+  // We need to carry the base visibility check into the per-field checks
   return [
-    { id: `account_${n}_name`, type: 'text', label: `Account ${n} name`, required: true, showIf },
-    { id: `account_${n}_last4`, type: 'text', label: `Last 4 of account`, required: false, showIf },
-    { id: `account_${n}_balance`, type: 'text', label: `Balance`, required: true, placeholder: 'e.g. 1,500', showIf },
+    {
+      id: `account_${n}_doc`,
+      type: 'file',
+      label: `Upload Bank Statement (Optional)`,
+      required: false,
+      helper: 'Upload to auto-fill details',
+      showIf: showIfBase
+    },
+    { id: `account_${n}_institution`, type: 'text', label: `Institution Name`, required: true, showIf: showIfBase, placeholder: 'e.g. Chase Bank' },
+    {
+      id: `account_${n}_type`,
+      type: 'select',
+      label: `Account Type`,
+      required: true,
+      showIf: showIfBase,
+      options: [
+        { value: 'Checking', label: 'Checking' },
+        { value: 'Savings', label: 'Savings' },
+        { value: 'Money Market', label: 'Money Market' },
+        { value: 'CD', label: 'CD' },
+        { value: 'Brokerage', label: 'Brokerage / Investment' },
+        { value: 'Other', label: 'Other' },
+      ]
+    },
+    { id: `account_${n}_ownership`, type: 'radio', label: 'Ownership', required: true, showIf: (a) => showIfBase(a) && isJointFiling(a), options: [{ value: 'Debtor', label: 'Me' }, { value: 'Spouse', label: 'Spouse' }, { value: 'Joint', label: 'Joint' }] },
+    { id: `account_${n}_last4`, type: 'text', label: `Last 4 digits`, required: false, showIf: showIfBase, placeholder: '1234' },
+    { id: `account_${n}_balance`, type: 'text', label: `Current Balance`, required: true, placeholder: 'e.g. 1,500', showIf: showIfBase },
   ];
 }
 
@@ -295,11 +468,16 @@ const STEP_SECURITY_DEPOSITS: Step = {
 // ---------- Household property (grid) ----------
 const HOUSEHOLD_ROWS: GridRow[] = [
   { id: 'furniture', label: 'Furniture' },
-  { id: 'electronics', label: 'Electronics' },
-  { id: 'appliances', label: 'Appliances' },
+  { id: 'electronics', label: 'Electronics (TV, Computer, etc)' },
+  { id: 'appliances', label: 'Appliances (Washer, Dryer, etc)' },
   { id: 'clothing', label: 'Clothing' },
-  { id: 'tools', label: 'Tools' },
-  { id: 'collectibles', label: 'Collectibles' },
+  { id: 'tools', label: 'Tools & Equipment' },
+  { id: 'books_media', label: 'Books, Media, & Hobby Equipment' },
+  { id: 'sports', label: 'Sports & Exercise Equipment' },
+  { id: 'firearms', label: 'Firearms' },
+  { id: 'animals', label: 'Animals / Pets' },
+  { id: 'collectibles', label: 'Collectibles / Antiques' },
+  { id: 'other', label: 'Other Household Items' },
 ];
 const HOUSEHOLD_COLUMNS: GridColumn[] = [
   { id: '0_500', label: '$0 – $500' },
@@ -349,8 +527,27 @@ const STEP_FINANCIAL_ASSETS: Step = {
   title: 'Financial assets',
   description: 'Retirement, insurance, tax refunds.',
   fields: [
+    { id: 'cash_on_hand', type: 'text', label: 'Cash on hand (approximate)', required: true, placeholder: 'e.g. 50', helper: 'Total cash not in a bank account.' },
     { id: 'financial_assets', type: 'checkbox', label: 'Which apply?', required: false, options: FINANCIAL_ASSETS_OPTIONS },
-    { id: 'financial_assets_details', type: 'textarea', label: 'Details', required: false },
+
+    // Retirement
+    { id: 'retirement_details', type: 'textarea', label: 'Retirement Accounts Details', required: false, helper: 'List specific accounts: "Fidelity 401k: $34,000", "Vanguard IRA: $12,000"', showIf: (a) => (a['financial_assets'] as string[] || []).includes('Retirement accounts (401k, IRA, etc.)') },
+
+    // Tax Refunds
+    { id: 'tax_refunds_details', type: 'textarea', label: 'Tax Refunds Details', required: false, helper: 'e.g. "Federal 2024: $2,100", "State 2024: $500"', showIf: (a) => (a['financial_assets'] as string[] || []).includes('Tax refund currently owed to you') },
+
+    // Life Insurance
+    { id: 'life_insurance_details', type: 'textarea', label: 'Life Insurance Details', required: false, helper: 'Carrier, Face Value, Cash Surrender Value.', showIf: (a) => (a['financial_assets'] as string[] || []).includes('Life Insurance with cash or loan value') },
+
+    // Catch-all for others
+    {
+      id: 'financial_assets_details', type: 'textarea', label: 'Other Asset Details', required: false, showIf: (a) => {
+        const selected = (a['financial_assets'] as string[] || []);
+        const specific = ['Retirement accounts (401k, IRA, etc.)', 'Tax refund currently owed to you', 'Life Insurance with cash or loan value', 'None of the above'];
+        // Show if they selected something NOT in the specific list
+        return selected.some(s => !specific.includes(s));
+      }
+    },
   ],
   showIf: alwaysShow,
 };
@@ -358,12 +555,26 @@ const STEP_FINANCIAL_ASSETS: Step = {
 // ---------- Vehicles ----------
 function vehicleFields(n: 1 | 2 | 3): Field[] {
   const showIf = n === 1 ? hasVehicles : (a: Answers) => getVehicleCount(a) >= n;
+
   return [
-    { id: `vehicle_${n}_details`, type: 'text', label: `Vehicle ${n} (year, make, model)`, required: true, showIf },
+    {
+      id: `vehicle_${n}_doc`,
+      type: 'file',
+      label: `Upload Title or Registration (Optional)`,
+      required: false,
+      helper: 'Upload to auto-fill details',
+      showIf
+    },
+    { id: `vehicle_${n}_year`, type: 'text', label: `Year`, required: true, showIf, placeholder: 'e.g. 2018' },
+    { id: `vehicle_${n}_make`, type: 'text', label: `Make`, required: true, showIf, placeholder: 'e.g. Toyota' },
+    { id: `vehicle_${n}_model`, type: 'text', label: `Model`, required: true, showIf, placeholder: 'e.g. Camry' },
+    { id: `vehicle_${n}_mileage`, type: 'text', label: `Mileage (approx)`, required: false, showIf, placeholder: 'e.g. 85,000' },
+    { id: `vehicle_${n}_vin`, type: 'text', label: `VIN (optional)`, required: false, showIf },
+    { id: `vehicle_${n}_ownership`, type: 'radio', label: 'Ownership', required: true, showIf: (a) => showIf(a) && isJointFiling(a), options: [{ value: 'Debtor', label: 'Me' }, { value: 'Spouse', label: 'Spouse' }, { value: 'Joint', label: 'Joint' }] },
     { id: `vehicle_${n}_value`, type: 'text', label: `Estimated value`, required: true, placeholder: 'e.g. 15000', showIf },
     { id: `vehicle_${n}_loan`, type: 'radio', label: 'Loan or lien?', required: true, showIf, options: [{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }] },
-    { id: `vehicle_${n}_loan_details`, type: 'textarea', label: 'Loan details', required: false, showIf: (a) => (n === 1 ? hasVehicles(a) : getVehicleCount(a) >= n) && a[`vehicle_${n}_loan`] === 'Yes' },
-    { id: `vehicle_${n}_plan`, type: 'select', label: 'Plan', required: true, showIf, options: [{ value: 'Keep', label: 'Keep' }, { value: 'Surrender', label: 'Surrender' }] },
+    { id: `vehicle_${n}_loan_details`, type: 'textarea', label: 'Lender name and balance', required: false, showIf: (a) => showIf(a) && a[`vehicle_${n}_loan`] === 'Yes' },
+    { id: `vehicle_${n}_plan`, type: 'select', label: 'Plan', required: true, showIf, options: [{ value: 'Keep', label: 'Keep' }, { value: 'Surrender', label: 'Surrender' }, { value: 'Reaffirm', label: 'Reaffirm' }] },
   ];
 }
 
@@ -397,6 +608,41 @@ const STEP_VEHICLES: Step = {
     ...vehicleFields(1),
     ...vehicleFields(2),
     ...vehicleFields(3),
+  ],
+  showIf: alwaysShow,
+};
+
+// ---------- Business and farm assets (Schedule A/B Parts 5–6) ----------
+const STEP_BUSINESS_FARM: Step = {
+  id: 'business_farm',
+  title: 'Business and farm assets',
+  description: 'Do you own a business or have farm or commercial fishing assets?',
+  fields: [
+    {
+      id: 'business_or_farm',
+      type: 'radio',
+      label: 'Do you own a business or have farm/fishing assets?',
+      required: true,
+      options: [
+        { value: 'No', label: 'No' },
+        { value: 'Yes', label: 'Yes' },
+      ],
+    },
+    {
+      id: 'business_farm_description',
+      type: 'textarea',
+      label: 'Brief description (e.g. business name, type, or farm/fishing assets)',
+      required: false,
+      showIf: (a) => a['business_or_farm'] === 'Yes',
+    },
+    {
+      id: 'business_farm_value',
+      type: 'text',
+      label: 'Estimated total value',
+      required: false,
+      placeholder: 'e.g. 5000',
+      showIf: (a) => a['business_or_farm'] === 'Yes',
+    },
   ],
   showIf: alwaysShow,
 };
@@ -513,7 +759,33 @@ const STEP_EXPENSES: Step = {
   title: 'Monthly expenses',
   description: 'Estimate your typical monthly expenses.',
   fields: [
-    { id: 'monthly_expenses', type: 'grid', label: 'Monthly expense ranges', required: false, rows: EXPENSE_ROWS, columns: EXPENSE_COLUMNS },
+    {
+      id: 'monthly_expenses_total_estimate',
+      type: 'text',
+      label: 'Monthly expenses total estimate',
+      required: false,
+      placeholder: 'e.g. 3200',
+      helper: 'Start with a single estimate. Use detailed breakdown below only if helpful.',
+    },
+    {
+      id: 'monthly_expenses_not_sure',
+      type: 'radio',
+      label: 'Not sure of total yet?',
+      required: false,
+      options: [
+        { value: 'Yes', label: 'Yes, I am not sure yet' },
+        { value: 'No', label: 'No, I entered my best estimate' },
+      ],
+    },
+    {
+      id: 'monthly_expenses',
+      type: 'grid',
+      label: 'Optional detailed breakdown',
+      required: false,
+      rows: EXPENSE_ROWS,
+      columns: EXPENSE_COLUMNS,
+      helper: 'Optional: add ranges by category if you want a more detailed estimate.',
+    },
   ],
   showIf: alwaysShow,
 };
@@ -536,16 +808,54 @@ const STEP_DOCUMENTS: Step = {
   id: 'documents',
   title: 'Documents',
   description: 'Upload requested documents. You can add more later.',
-  uploadInstructions: 'Upload what you have. You can add more before filing.',
+  uploadInstructions: 'Upload what you have. Start with the bulk uploader, then add details below if needed.',
   fields: [
-    { id: 'upload_paystubs', type: 'file', label: 'Paystubs', required: false, uploadForTag: 'Income', dateRangeRequested: 'Last 6 months' },
-    { id: 'upload_bank_statements', type: 'file', label: 'Bank statements', required: false, uploadForTag: 'Bank accounts' },
-    { id: 'upload_tax_returns', type: 'file', label: 'Tax returns', required: false, uploadForTag: 'Tax returns' },
-    { id: 'upload_vehicle_docs', type: 'file', label: 'Vehicle docs', required: false },
-    { id: 'upload_mortgage_docs', type: 'file', label: 'Mortgage docs', required: false },
-    { id: 'upload_credit_report', type: 'file', label: 'Credit report', required: false },
-    { id: 'upload_debt_counseling', type: 'file', label: 'Debt counseling certificate', required: false, uploadForTag: 'Pre-filing requirement' },
-    { id: 'upload_business_docs', type: 'file', label: 'Business docs (if self-employed)', required: false, showIf: (a) => a['self_employed'] === 'Yes' },
+    {
+      id: 'upload_documents_bulk',
+      type: 'file',
+      label: 'Upload documents (bulk)',
+      required: false,
+      helper: 'Use this first. You can choose multiple files at once.',
+      uploadForTag: 'Primary upload',
+      requestedDocsList: ['Paystubs', 'Bank statements', 'Tax returns', 'Any court or creditor notices'],
+      dontHaveYetCheckbox: false,
+    },
+    {
+      id: 'upload_paystubs',
+      type: 'file',
+      label: 'Paystubs',
+      required: false,
+      uploadForTag: 'Income',
+      dateRangeRequested: 'Last 6 months',
+      acceptedAlternatives: ['Payroll portal export', 'Employer income letter'],
+      examplesMini: ['Last 60 days from all employers'],
+      resolutionRequired: true,
+    },
+    {
+      id: 'upload_bank_statements',
+      type: 'file',
+      label: 'Bank statements',
+      required: false,
+      uploadForTag: 'Bank accounts',
+      acceptedAlternatives: ['Transaction history export (PDF/CSV)', 'Official account activity printout'],
+      examplesMini: ['2–3 months for each active account'],
+      resolutionRequired: true,
+    },
+    {
+      id: 'upload_tax_returns',
+      type: 'file',
+      label: 'Tax returns',
+      required: false,
+      uploadForTag: 'Tax returns',
+      acceptedAlternatives: ['IRS transcript', 'Tax preparer transcript'],
+      examplesMini: ['Last 2 years'],
+      resolutionRequired: true,
+    },
+    { id: 'upload_vehicle_docs', type: 'file', label: 'Vehicle docs', required: false, acceptedAlternatives: ['Registration and payoff statement'], resolutionRequired: true },
+    { id: 'upload_mortgage_docs', type: 'file', label: 'Mortgage docs', required: false, acceptedAlternatives: ['Latest statement and payoff estimate'], resolutionRequired: true },
+    { id: 'upload_credit_report', type: 'file', label: 'Credit report', required: false, acceptedAlternatives: ['Creditor list with balances'], resolutionRequired: true },
+    { id: 'upload_debt_counseling', type: 'file', label: 'Debt counseling certificate', required: false, uploadForTag: 'Pre-filing requirement', acceptedAlternatives: ['Course completion confirmation'], resolutionRequired: true },
+    { id: 'upload_business_docs', type: 'file', label: 'Business docs (if self-employed)', required: false, showIf: (a) => a['self_employed'] === 'Yes', acceptedAlternatives: ['Profit/loss report and bank activity'], resolutionRequired: true },
   ],
   showIf: alwaysShow,
 };
@@ -596,6 +906,7 @@ const STEP_FINAL_REVIEW: Step = {
 // ---------- Export ----------
 export const ALL_STEPS: Step[] = [
   STEP_FILING,
+  STEP_FILING_CHOICES,
   STEP_IDENTITY,
   STEP_CONTACT,
   STEP_SPOUSE,
@@ -607,6 +918,7 @@ export const ALL_STEPS: Step[] = [
   STEP_VALUABLES,
   STEP_FINANCIAL_ASSETS,
   STEP_VEHICLES,
+  STEP_BUSINESS_FARM,
   STEP_OTHER_SECURED,
   STEP_PRIORITY_DEBTS,
   STEP_UNSECURED,

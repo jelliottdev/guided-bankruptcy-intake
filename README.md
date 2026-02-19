@@ -37,43 +37,55 @@ Built for workflow validation and attorney feedback. See [Production and data](#
 
 ```
 src/
-  App.tsx                 # Root: client wizard vs attorney dashboard, step navigation, jump-to-field
-  main.tsx                # Entry, error boundary
+  App.tsx, main.tsx       # Root: client vs attorney view, step navigation, jump-to-field
   index.css               # Global + attorney dashboard styles
 
   form/                   # Intake definition and validation
-    steps/                # Step definitions and visibility helpers
-      index.ts            # Public exports for step definitions
-      allSteps.ts         # Step and field definitions (showIf, helpers)
-    types.ts              # Answers, flags, field value types
-    validate.ts           # Required-field and step-level validation
-    defaults.ts           # Default answers
+    steps/                # Step definitions, visibility (allSteps, index)
+    types.ts, validate.ts, defaults.ts, seedData.ts
 
-  state/
-    IntakeProvider.tsx    # Context: answers, uploads, flags, step, autosave, setAnswer, setFlag
-    autosave.ts           # Debounced persist to localStorage
+  state/                  # Intake state and persistence
+    IntakeProvider.tsx    # Context: answers, uploads, flags, step, autosave
+    autosave.ts, clientScope.ts
 
-  ui/
-    Layout.tsx            # Shell, nav, save status
-    StepShell.tsx         # Per-step container, next/back
-    FieldRenderer.tsx    # Renders fields by type (text, file, radio, etc.), field IDs for deep link
-    Progress.tsx          # Step progress
-    Review.tsx            # Final review step
-    AttorneyDashboard.tsx # Attorney View: all dashboard panels and actions
+  engine/                 # Canonical case model and PDF generation
+    transform.ts          # intakeToCanonical (intake → canonical)
+    types.ts              # CaseCanonical, Debtor, etc.
+    export/               # B101 and Schedule A/B PDF fill (b101.ts, scheduleAB.ts)
+    mapping/              # Canonical path → PDF field (b101.ts, scheduleAB.ts)
 
-  attorney/               # Attorney logic (no UI)
-    readiness.ts          # Case readiness %, bands, primary blockers, getCaseStatus, getNextBestAction
-    snapshot.ts           # Doc sufficiency, schedule coverage, follow-up questions, timeline, checklists
-    clientReliability.ts   # Reliability score and breakdown
-    creditorMatrix.ts      # Creditor list from intake, worksheet export (intake + attorney overlay)
+  ocr/                    # Document OCR extraction and reconciliation
+    store.ts, queue.ts, reconcile.ts, types.ts, fieldMapping.ts
 
-  ai/
-    localSummary.ts       # Rules-based 2-sentence case summary (variation seed for regenerate)
+  attorney/               # Attorney logic (readiness, snapshot, means test, creditor matrix)
+    readiness.ts, snapshot.ts, meansTest.ts, creditorMatrix.ts, attorneyProfile.ts
+    vm/                   # View models for dashboard (readinessVM, etc.)
+    store/, types/
 
-  utils/
-    logic.ts              # Helpers: isJointFiling, hasVehicles, counts, getCaseStatus, getNextBestAction
-    mask.ts                # Input masking (SSN, phone)
+  ui/                     # React UI
+    Layout.tsx, StepShell.tsx, FieldRenderer.tsx, Progress.tsx, Review.tsx
+    AttorneyDashboard.tsx, AccessGate.tsx, PageSurface.tsx
+    workspace/            # Attorney workspace, filing drawer, tabs
+    client/               # Client-facing panels (messages, todo, dashboard tabs)
+    dashboard/            # Dashboard panels (CaseHeader, ActionQueue, Financial, etc.)
+    shared/, fields/      # Shared components and field UIs
+
+  questionnaires/         # Questionnaire templates, assignments, runtime
+    store, runtime/, types, seeds/
+
+  workflow/, issues/      # Workflow state and issue tracking
+  files/                  # Blob storage (blobStore)
+  telemetry/              # Local telemetry, baseline metrics
+  theme/                  # MUI Joy theme (attorneyTheme)
+  api/, config/           # API client (OCR), app config
+  ai/                     # Rules-based case summary (localSummary)
+  utils/                  # logic.ts, mask.ts
+  auth/, documents/, scheduling/, examples/, seed/   # Supporting modules
 ```
+
+**Form PDFs:** All form templates (B101, Schedule A/B, etc.) live in `public/forms/` and are served at runtime. See [docs/](docs/) for methodology and field mapping reference.
+
+**Scripts:** One-off dev tools (e.g. PDF field inspection) are in `scripts/`. Run from repo root; paths in scripts assume `./public/forms/` for PDFs when no argument is given.
 
 ---
 
@@ -89,8 +101,13 @@ src/
 | `npm run preview` | Preview production build locally |
 | `npm run lint` | Run ESLint |
 
+- **File naming:** React components and UI modules use **PascalCase** (e.g. `AttorneyDashboard.tsx`, `IntakeProvider.tsx`). All other modules use **camelCase** (e.g. `readiness.ts`, `attorneyProfile.ts`).
 - **Client flow:** Open the app, complete steps. Data autosaves to localStorage.
 - **Attorney View:** Use the header toggle to switch to the dashboard. “Copy” copies answers + uploads JSON; “Export Case Snapshot” adds flags and meta. “Jump to field” from the action queue switches to Client View and scrolls to that field.
+
+### Backend (optional)
+
+An optional **Python OCR service** lives under `backend/ocr-service` (FastAPI + PaddleOCR). It provides document extraction (paystubs, bank statements, tax returns). The app runs fully without it; OCR features degrade gracefully if the service is not available. For setup, see [docs/QUICKSTART_OCR.md](docs/QUICKSTART_OCR.md) or [docs/PADDLEOCR_INTEGRATION.md](docs/PADDLEOCR_INTEGRATION.md).
 
 ---
 

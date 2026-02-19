@@ -109,7 +109,7 @@ export function CaseHeader({
             <span className="pill">
               <span className="knob" />
             </span>
-            Client View
+            View as Client
           </button>
           {copyToast && (
             <span

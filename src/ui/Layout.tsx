@@ -62,7 +62,7 @@ export function Layout({ children, email, phone, onReset, onLoadDemo }: LayoutPr
             className="load-demo-data"
             onClick={() => onLoadDemo?.()}
           >
-            Load demo data
+            Load Wallace demo
           </button>
           <button type="button" className="reset-demo" onClick={onReset}>
             Reset demo

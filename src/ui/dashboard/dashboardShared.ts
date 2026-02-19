@@ -3,6 +3,7 @@
  */
 import type { FieldValue } from '../../form/types';
 import type { CreditorRow } from '../../attorney/creditorMatrix';
+import { scopedStorageKey } from '../../state/clientScope';
 
 export const DOCUMENT_IDS = [
   { id: 'upload_paystubs', label: 'Paystubs' },
@@ -90,7 +91,7 @@ export function shortActionLabel(fullLabel: string, _isEstimate: boolean): strin
 
 export function loadAttorneyFinancial(): AttorneyFinancialEntry {
   try {
-    const raw = localStorage.getItem(ATTORNEY_FINANCIAL_KEY);
+    const raw = localStorage.getItem(scopedStorageKey(ATTORNEY_FINANCIAL_KEY));
     if (!raw) return {};
     const parsed = JSON.parse(raw) as Record<string, unknown>;
     const out: AttorneyFinancialEntry = {};
@@ -114,7 +115,7 @@ export function loadAttorneyFinancial(): AttorneyFinancialEntry {
 
 export function saveAttorneyFinancial(entry: AttorneyFinancialEntry): void {
   try {
-    localStorage.setItem(ATTORNEY_FINANCIAL_KEY, JSON.stringify(entry));
+    localStorage.setItem(scopedStorageKey(ATTORNEY_FINANCIAL_KEY), JSON.stringify(entry));
   } catch {
     /* ignore */
   }
@@ -134,7 +135,7 @@ export function getSeededAttorneyFinancial(): AttorneyFinancialEntry {
 
 export function loadAttorneyCreditors(): AttorneyCreditorEntry[] {
   try {
-    const raw = localStorage.getItem(ATTORNEY_CREDITOR_KEY);
+    const raw = localStorage.getItem(scopedStorageKey(ATTORNEY_CREDITOR_KEY));
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown[];
     if (!Array.isArray(parsed)) return [];
@@ -162,7 +163,7 @@ export function loadAttorneyCreditors(): AttorneyCreditorEntry[] {
 
 export function saveAttorneyCreditors(list: AttorneyCreditorEntry[]): void {
   try {
-    localStorage.setItem(ATTORNEY_CREDITOR_KEY, JSON.stringify(list));
+    localStorage.setItem(scopedStorageKey(ATTORNEY_CREDITOR_KEY), JSON.stringify(list));
   } catch {
     /* ignore */
   }
@@ -170,7 +171,7 @@ export function saveAttorneyCreditors(list: AttorneyCreditorEntry[]): void {
 
 export function loadActionStatus(): Record<string, ActionStatusValue> {
   try {
-    const raw = localStorage.getItem(ACTION_STATUS_KEY);
+    const raw = localStorage.getItem(scopedStorageKey(ACTION_STATUS_KEY));
     if (!raw) return {};
     const parsed = JSON.parse(raw) as Record<string, string>;
     const out: Record<string, ActionStatusValue> = {};
@@ -185,7 +186,7 @@ export function loadActionStatus(): Record<string, ActionStatusValue> {
 
 export function saveActionStatus(map: Record<string, ActionStatusValue>): void {
   try {
-    localStorage.setItem(ACTION_STATUS_KEY, JSON.stringify(map));
+    localStorage.setItem(scopedStorageKey(ACTION_STATUS_KEY), JSON.stringify(map));
   } catch {
     /* ignore */
   }

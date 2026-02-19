@@ -1,0 +1,833 @@
+{
+  "source": "b_122a-2_0425-form.pdf",
+  "inspectedAt": "2026-02-17T16:08:45.560Z",
+  "totalFields": 146,
+  "fields": [
+    {
+      "name": "1_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "2_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "attach",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Bankruptcy District Information",
+      "type": "PDFDropdown",
+      "options": [
+        " ",
+        "__________ District of __________",
+        "Middle District of Alabama",
+        "Northern District of Alabama",
+        "Southern District of Alabama",
+        "District of Alaska",
+        "District of Arizona",
+        "Eastern and Western District of Arkansas",
+        "Central District of California",
+        "Eastern District of California",
+        "Northern District of California",
+        "Southern District of California",
+        "District of Colorado",
+        "District of Connecticut",
+        "District of Columbia",
+        "District of Delaware",
+        "Middle District of Florida",
+        "Northern District of Florida",
+        "Southern District of Florida",
+        "Middle District of Georgia",
+        "Northern District of Georgia ",
+        "Southern District of Georgia ",
+        "District of Guam",
+        "District of Hawaii",
+        "District of Idaho",
+        "Central District of Illinois",
+        "Northern District of Illinois",
+        "Southern District of Illinois",
+        "Northern District of Indiana",
+        "Southern District of Indiana",
+        "Northern District of Iowa",
+        "Southern District of Iowa",
+        "District of Kansas",
+        "Eastern District of Kentucky",
+        "Western District of Kentucky",
+        "Eastern District of Louisiana",
+        "Middle District of Louisiana",
+        "Western District of Louisiana",
+        "District of Maine",
+        "District of Maryland",
+        "District of Massachusetts",
+        "District of Montana",
+        "Eastern District of Michigan",
+        "Western District of Michigan",
+        "District of Minnesota",
+        "Northern District of Mississippi",
+        "Southern District of Mississippi",
+        "Eastern District of Missouri",
+        "Western District of Missouri",
+        "District of Nebraska",
+        "District of Nevada",
+        "District of New Hampshire",
+        "District of New Jersey",
+        "District of New Mexico",
+        "Eastern District of New York",
+        "Northern District of New York",
+        "Southern District of New York",
+        "Western District of New York",
+        "Eastern District of North Carolina",
+        "Middle District of North Carolina",
+        "Western District of North Carolina",
+        "District of North Dakota",
+        "District of Northern Mariana Islands",
+        "Northern District of Ohio",
+        "Southern District of Ohio",
+        "Eastern District of Oklahoma",
+        "Northern District of Oklahoma",
+        "Western District of Oklahoma",
+        "District of Oregon",
+        "Eastern District of Pennsylvania",
+        "Middle District of Pennsylvania",
+        "Western District of Pennsylvania",
+        "District of Puerto Rico",
+        "District of Rhode Island",
+        "District of South Carolina",
+        "District of South Dakota",
+        "Eastern District of Tennessee",
+        "Middle District of Tennessee",
+        "Western District of Tennessee",
+        "Eastern District of Texas",
+        "Northern District of Texas",
+        "Southern District of Texas",
+        "Western District of Texas",
+        "District of Utah",
+        "District of Vermont",
+        "District of Virgin Islands",
+        "Eastern District of Virginia",
+        "Western District of Virginia",
+        "Eastern District of Washington",
+        "Western District of Washington",
+        "Northern District of West Virginia",
+        "Southern District of West Virginia",
+        "Eastern District of Wisconsin",
+        "Western District of Wisconsin",
+        "District of Wyoming"
+      ],
+      "selected": [
+        "__________ District of __________"
+      ]
+    },
+    {
+      "name": "Button.Print1",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Button.Reset",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Button.SaveAs",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Case number1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "CheckBox1",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox2",
+      "type": "PDFCheckBox",
+      "checked": false,
+      "AS": "/Off"
+    },
+    {
+      "name": "CheckBox3",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox4",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox5",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox6",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox7",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox8",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox9",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox10",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox11",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox12",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox13",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox14",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox15",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "CheckBox16",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Debtor1.Date signed",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.Name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor1.sig",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Date signed",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.Name",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor2.sig",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe Vehicle 1 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe Vehicle 1 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe Vehicle 2 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe Vehicle 2 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Explain 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Explain 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3A",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3A1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3B",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3B1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3C",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest3C1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest6",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7A",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7B",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7C",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7D",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7E",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7F",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest7G",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest8",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B creditor amount1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B creditor amount2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B creditor amount3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B creditor name1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B creditor name2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B creditor name3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9B total amount",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest9C",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest10",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest12",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13A",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13B amount for vehicle 1-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13B amount for vehicle 1-2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13B Creditor for vehicle 1-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13B Creditor for vehicle 1-2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13B Total amount for vehicle 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13C",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13D",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13E.Creditor1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13E.Creditor2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13E.Monthly1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13E.Monthly2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13E.TotalMonthly",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest13F",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest14",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Quest15",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "secures the debt",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_48",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_49",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_50",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_51",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_52",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_53",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_54",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_55",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_56",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_57",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_58",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_59",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_61",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_62",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_63",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_64",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_65",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_66",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_67",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_71",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_72",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_73",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_74",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_75",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_76",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_77",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_78",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_79",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_80",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_81",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_82",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_83",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_84",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_85",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_86",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_87",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_88",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_89",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_90",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_91",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_92",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_93",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_93-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_97",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_98",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_100",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_101",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_102",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_103",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_104",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_107",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_108",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_110",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_111",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_113",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_114",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_115",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_116",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_117",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_118",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_119",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_120",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "x",
+      "type": "PDFTextField",
+      "value": ""
+    }
+  ]
+}

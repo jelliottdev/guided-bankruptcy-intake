@@ -3,6 +3,8 @@ import { getVisibleSteps } from '../form/steps';
 import { validateAll } from '../form/validate';
 import { FieldRenderer } from './FieldRenderer';
 import { StepShell } from './StepShell';
+import type { Issue } from '../issues/types';
+import { getDocumentSufficiency } from '../attorney/snapshot';
 
 interface ReviewProps {
   currentStepIndex: number;
@@ -12,6 +14,7 @@ interface ReviewProps {
   saveStatusText: string;
   jumpToStep: (stepIndex: number, fieldId?: string) => void;
   submitted: boolean;
+  issues: Issue[];
 }
 
 /** Format YYYY-MM-DD as MM/DD/YYYY for display. */
@@ -59,6 +62,7 @@ export function Review({
   saveStatusText,
   jumpToStep,
   submitted,
+  issues,
 }: ReviewProps) {
   const { state, setAnswer } = useIntake();
   const { answers, uploads, flags, saving } = state;
@@ -78,6 +82,9 @@ export function Review({
 
   const confidenceValue = answers['confidence'];
   const confidenceError = errors.find((e) => e.fieldId === 'confidence');
+  const missingFields = errors;
+  const missingDocs = getDocumentSufficiency(answers, uploads).filter((d) => d.status === 'Missing' || d.status === 'Partial');
+  const awaitingReview = issues.filter((i) => i.status === 'needs_review');
 
   return (
     <StepShell
@@ -123,22 +130,70 @@ export function Review({
           </div>
         ))}
 
-      {errors.length > 0 && (
+      {missingFields.length > 0 && (
         <>
-          <h3>Missing required items</h3>
+          <h3>Missing fields</h3>
           <ul className="review-missing">
-            {errors.map((er) => (
-              <li key={`${er.stepIndex}-${er.fieldId}`}>
-                {er.message}{' '}
+            {missingFields.map((er) => (
+              <li key={`${er.stepIndex}-${er.fieldId}`} className="review-missing-item">
+                <span className="review-missing-text">{er.message}</span>
                 <button
                   type="button"
-                  className="review-fix-link"
+                  className="review-fix-btn"
                   onClick={() => jumpToStep(er.stepIndex, er.fieldId)}
                 >
                   Go fix
                 </button>
               </li>
             ))}
+          </ul>
+        </>
+      )}
+      {missingDocs.length > 0 && (
+        <>
+          <h3>Missing documents</h3>
+          <ul className="review-missing">
+            {missingDocs.map((doc) => {
+              const stepIndex = visibleSteps.findIndex((s) => s.id === 'documents');
+              return (
+                <li key={doc.type} className="review-missing-item">
+                  <span className="review-missing-text">{doc.type} — {doc.message || doc.coverageRule}</span>
+                  <button
+                    type="button"
+                    className="review-fix-btn"
+                    onClick={() => jumpToStep(stepIndex >= 0 ? stepIndex : 0)}
+                  >
+                    Open documents
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+      {awaitingReview.length > 0 && (
+        <>
+          <h3>Needs attorney review</h3>
+          <ul className="review-missing">
+            {awaitingReview.map((issue) => {
+              const linkedStepIdx = issue.linkedFieldId
+                ? visibleSteps.findIndex((s) => s.fields.some((f) => f.id === issue.linkedFieldId))
+                : -1;
+              return (
+                <li key={issue.id} className="review-missing-item">
+                  <span className="review-missing-text">{issue.title}</span>
+                  {issue.linkedFieldId && linkedStepIdx >= 0 && (
+                    <button
+                      type="button"
+                      className="review-fix-btn"
+                      onClick={() => jumpToStep(linkedStepIdx, issue.linkedFieldId)}
+                    >
+                      Open context
+                    </button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </>
       )}

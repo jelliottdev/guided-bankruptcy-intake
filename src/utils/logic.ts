@@ -105,12 +105,12 @@ export function getNextBestAction(meta: {
   missingRequired: number;
   missingDocs: number;
   flaggedCount: number;
-}): { title: string; action: 'openActionQueue' | 'copyDocRequest' | 'openSummary' | 'openFlags' } {
+}): { title: string; action: 'openActionQueue' | 'openDocuments' | 'openSummary' | 'openFlags' } {
   if (meta.missingRequired > 0) {
     return { title: 'Request missing required answers', action: 'openActionQueue' };
   }
   if (meta.missingDocs > 0) {
-    return { title: 'Request missing documents', action: 'copyDocRequest' };
+    return { title: 'Request missing documents', action: 'openDocuments' };
   }
   if (meta.flaggedCount > 0) {
     return { title: 'Review client flags & notes', action: 'openFlags' };

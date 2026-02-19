@@ -1,0 +1,339 @@
+{
+  "formId": "schedule-ab",
+  "templateSource": "form_b106ab.pdf",
+  "templateFieldsRef": "docs/form-fields/form_b106ab.json",
+  "description": "Official Form 106A/B (Schedule A/B: Property). Required/optional sections and logical fields for full completion.",
+  "sections": [
+    {
+      "part": 1,
+      "title": "Real property",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "real_property.1.address",
+          "required": true,
+          "pdfNames": [
+            "1 1"
+          ],
+          "notes": "First property address"
+        },
+        {
+          "id": "real_property.1.type",
+          "required": false,
+          "pdfNames": [
+            "1 1a"
+          ],
+          "notes": "Property type"
+        },
+        {
+          "id": "real_property.1.county_ownership",
+          "required": false,
+          "pdfNames": [
+            "1_2",
+            "1_4"
+          ],
+          "notes": "County / ownership"
+        },
+        {
+          "id": "real_property.1.value",
+          "required": true,
+          "pdfNames": [
+            "1_3"
+          ],
+          "notes": "Current value"
+        },
+        {
+          "id": "real_property.2.address",
+          "required": false,
+          "pdfNames": [
+            "2_2"
+          ],
+          "notes": "Second property if any"
+        },
+        {
+          "id": "real_property.2.value",
+          "required": false,
+          "pdfNames": [
+            "2_3",
+            "2_4"
+          ]
+        }
+      ]
+    },
+    {
+      "part": 2,
+      "title": "Vehicles",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "vehicles.1.description",
+          "required": true,
+          "pdfNames": [
+            "3 1"
+          ],
+          "notes": "Year, make, model, VIN"
+        },
+        {
+          "id": "vehicles.1.mileage",
+          "required": false,
+          "pdfNames": [
+            "3 2"
+          ]
+        },
+        {
+          "id": "vehicles.1.ownership",
+          "required": false,
+          "pdfNames": [
+            "3 3",
+            "3_2",
+            "3_3"
+          ]
+        },
+        {
+          "id": "vehicles.1.value",
+          "required": true,
+          "pdfNames": [
+            "3 4"
+          ]
+        },
+        {
+          "id": "vehicles.2.description",
+          "required": false,
+          "pdfNames": [
+            "3_2"
+          ],
+          "notes": "Second vehicle row"
+        },
+        {
+          "id": "vehicles.2.value",
+          "required": false,
+          "pdfNames": [
+            "3_3"
+          ]
+        }
+      ]
+    },
+    {
+      "part": 3,
+      "title": "Personal property (household goods Q6\u201315)",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "household.6.description",
+          "required": false,
+          "pdfNames": [
+            "6 description",
+            "6 description amount",
+            "6 check"
+          ]
+        },
+        {
+          "id": "household.7-14.description",
+          "required": false,
+          "pdfNames": [
+            "7 description",
+            "7 description amount",
+            "7 check",
+            "8 description",
+            "8 description amount",
+            "8 check",
+            "9 description",
+            "9 description amount",
+            "9 check",
+            "10 description",
+            "10 description amount",
+            "10 check",
+            "11 description",
+            "11 description amount",
+            "11 check",
+            "12 description",
+            "12 description amount",
+            "12 check",
+            "13",
+            "13 description",
+            "13 description amount",
+            "13 check",
+            "14 description",
+            "14 description amount",
+            "14 check",
+            "15 amount",
+            "15 check"
+          ]
+        },
+        {
+          "id": "household.none",
+          "required": true,
+          "pdfNames": [
+            "6 check",
+            "7 check",
+            "8 check",
+            "9 check",
+            "10 check",
+            "11 check",
+            "12 check",
+            "13 check",
+            "14 check"
+          ],
+          "notes": "At least value or 'None' per line"
+        }
+      ]
+    },
+    {
+      "part": 4,
+      "title": "Financial assets (Q16\u201335)",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "financial.cash",
+          "required": true,
+          "pdfNames": [
+            "16 Cash amount",
+            "Check 16"
+          ]
+        },
+        {
+          "id": "financial.accounts",
+          "required": true,
+          "pdfNames": [
+            "17.1 Checking account",
+            "17.1 Checking amount",
+            "Check 17",
+            "17.2",
+            "17.3",
+            "17.4",
+            "17.6",
+            "17.7",
+            "17.8",
+            "17.9"
+          ]
+        },
+        {
+          "id": "financial.stocks_bonds_etc",
+          "required": true,
+          "pdfNames": [
+            "Check 18",
+            "check 19",
+            "check 20",
+            "check 21",
+            "check 22",
+            "check 23",
+            "check 24",
+            "check 25",
+            "check 26",
+            "check 27",
+            "check 28",
+            "check 29",
+            "check 30",
+            "check 35"
+          ]
+        },
+        {
+          "id": "financial.retirement",
+          "required": false,
+          "pdfNames": [
+            "21.1 401k or similar plan",
+            "21.1 401k or similar plan amount",
+            "21.2 Pension plan",
+            "21.2 Pension plan amount",
+            "21.3 IRA",
+            "21.3 IRA amount",
+            "21.4 Retirement account",
+            "21.4 Retirement account amount",
+            "21.5 Keogh",
+            "21.5 Keogh amount"
+          ]
+        },
+        {
+          "id": "financial.security_deposits",
+          "required": false,
+          "pdfNames": [
+            "22.1 Electric",
+            "22.1 Electric amount",
+            "22.4 Security deposit on rental unit",
+            "22.4 Security deposit on rental unit amount",
+            "22.9 Other",
+            "22.9 Other amount",
+            "check 22"
+          ]
+        },
+        {
+          "id": "financial.tax_refunds",
+          "required": false,
+          "pdfNames": [
+            "28 Tax refunds owed",
+            "28 Tax refunds owed amout1",
+            "check 28"
+          ]
+        },
+        {
+          "id": "financial.other",
+          "required": false,
+          "pdfNames": [
+            "35",
+            "check 35"
+          ]
+        }
+      ]
+    },
+    {
+      "part": 5,
+      "title": "Business property (Q36\u201345)",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "business.none_or_details",
+          "required": true,
+          "pdfNames": [
+            "check 37",
+            "check 38",
+            "check 39",
+            "check 40",
+            "check 41",
+            "check 42"
+          ],
+          "notes": "Either 'None' checkbox or business asset fields (38-42 text when present)"
+        }
+      ]
+    },
+    {
+      "part": 6,
+      "title": "Farm / commercial fishing (Q46\u201352)",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "farm.none_or_details",
+          "required": true,
+          "pdfNames": [
+            "check 46",
+            "check 47",
+            "check 48",
+            "check 49",
+            "check 50",
+            "check 51"
+          ],
+          "notes": "Either 'None' or farm asset fields (47, 48 etc when present)"
+        }
+      ]
+    },
+    {
+      "part": 8,
+      "title": "Totals",
+      "required": true,
+      "logicalFields": [
+        {
+          "id": "total.real_estate",
+          "required": true,
+          "pdfNames": [],
+          "notes": "TBD: undefined_155 is Part 7 Other (wrong). Identify correct Line 55 field from docs/form-fields/form_b106ab-manifest.json and form_b106ab-with-positions.json"
+        },
+        {
+          "id": "total.personal_property",
+          "required": true,
+          "pdfNames": [],
+          "notes": "TBD: undefined_163 is Part 5 Line 59 (wrong). Identify correct total personal property field from manifest/position dump"
+        }
+      ]
+    }
+  ],
+  "notes": "pdfNames should be filled from docs/form-fields/form_b106ab.json. When form template changes, re-inspect and update this file and fillScheduleAB mapping. See FULL_COMPLETION_PLAN.md."
+}

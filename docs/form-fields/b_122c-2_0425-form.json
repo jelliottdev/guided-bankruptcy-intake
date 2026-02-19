@@ -1,0 +1,853 @@
+{
+  "source": "b_122c-2_0425-form.pdf",
+  "inspectedAt": "2026-02-17T16:08:45.728Z",
+  "totalFields": 150,
+  "fields": [
+    {
+      "name": "1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "7a Outofpocket health care allowance per person",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "7d Outofpocket health care allowance per person",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "33d",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "33e",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "33f",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "43a",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "43b",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "43c",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "60",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "attach",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Bankruptcy District Information",
+      "type": "PDFDropdown",
+      "options": [
+        " ",
+        "__________ District of __________",
+        "Middle District of Alabama",
+        "Northern District of Alabama",
+        "Southern District of Alabama",
+        "District of Alaska",
+        "District of Arizona",
+        "Eastern and Western District of Arkansas",
+        "Central District of California",
+        "Eastern District of California",
+        "Northern District of California",
+        "Southern District of California",
+        "District of Colorado",
+        "District of Connecticut",
+        "District of Columbia",
+        "District of Delaware",
+        "Middle District of Florida",
+        "Northern District of Florida",
+        "Southern District of Florida",
+        "Middle District of Georgia",
+        "Northern District of Georgia ",
+        "Southern District of Georgia ",
+        "District of Guam",
+        "District of Hawaii",
+        "District of Idaho",
+        "Central District of Illinois",
+        "Northern District of Illinois",
+        "Southern District of Illinois",
+        "Northern District of Indiana",
+        "Southern District of Indiana",
+        "Northern District of Iowa",
+        "Southern District of Iowa",
+        "District of Kansas",
+        "Eastern District of Kentucky",
+        "Western District of Kentucky",
+        "Eastern District of Louisiana",
+        "Middle District of Louisiana",
+        "Western District of Louisiana",
+        "District of Maine",
+        "District of Maryland",
+        "District of Massachusetts",
+        "District of Montana",
+        "Eastern District of Michigan",
+        "Western District of Michigan",
+        "District of Minnesota",
+        "Northern District of Mississippi",
+        "Southern District of Mississippi",
+        "Eastern District of Missouri",
+        "Western District of Missouri",
+        "District of Nebraska",
+        "District of Nevada",
+        "District of New Hampshire",
+        "District of New Jersey",
+        "District of New Mexico",
+        "Eastern District of New York",
+        "Northern District of New York",
+        "Southern District of New York",
+        "Western District of New York",
+        "Eastern District of North Carolina",
+        "Middle District of North Carolina",
+        "Western District of North Carolina",
+        "District of North Dakota",
+        "District of Northern Mariana Islands",
+        "Northern District of Ohio",
+        "Southern District of Ohio",
+        "Eastern District of Oklahoma",
+        "Northern District of Oklahoma",
+        "Western District of Oklahoma",
+        "District of Oregon",
+        "Eastern District of Pennsylvania",
+        "Middle District of Pennsylvania",
+        "Western District of Pennsylvania",
+        "District of Puerto Rico",
+        "District of Rhode Island",
+        "District of South Carolina",
+        "District of South Dakota",
+        "Eastern District of Tennessee",
+        "Middle District of Tennessee",
+        "Western District of Tennessee",
+        "Eastern District of Texas",
+        "Northern District of Texas",
+        "Southern District of Texas",
+        "Western District of Texas",
+        "District of Utah",
+        "District of Vermont",
+        "District of Virgin Islands",
+        "Eastern District of Virginia",
+        "Western District of Virginia",
+        "Eastern District of Washington",
+        "Western District of Washington",
+        "Northern District of West Virginia",
+        "Southern District of West Virginia",
+        "Eastern District of Wisconsin",
+        "Western District of Wisconsin",
+        "District of Wyoming"
+      ],
+      "selected": [
+        "__________ District of __________"
+      ]
+    },
+    {
+      "name": "Button.Print1",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Button.Reset",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Button.SaveAs",
+      "type": "PDFButton"
+    },
+    {
+      "name": "Case number",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Check if this is an amended filing",
+      "type": "PDFCheckBox",
+      "checked": false,
+      "AS": "/Off"
+    },
+    {
+      "name": "check11",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check25",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check33d",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check33e",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check33f",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check34",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check35",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46a",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46b",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46c",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46d",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46e",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46f",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "check46g",
+      "type": "PDFCheckBox",
+      "checked": false
+    },
+    {
+      "name": "Date",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Date_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Debtor 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe 1_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Describe 2_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Explain why 1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Explain why 2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Text1.0",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Text1.1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Text1.2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "Text1.3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_3",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_4",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_5",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_7",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_8",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_9",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_10",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_11",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_12",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_13",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_14",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_16",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_17",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_18",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_19",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_19-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_20",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_20-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_20-2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_21",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_23",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_24",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_24-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_25",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_25-1",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_25-2",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_26",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_28",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_29",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_30",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_31",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_32",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_33",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_34",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_35",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_36",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_37",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_38",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_39",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_40",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_41",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_42",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_44",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_45",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_46",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_47",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_48",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_49",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_53",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_54",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_55",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_56",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_57",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_58",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_59",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_60",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_61",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_63",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_64",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_65",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_66",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_67",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_68",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_69",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_70",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_71",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_72",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_73",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_74",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_76",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_77",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_78",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_79",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_81",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_85",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_87",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_88",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_90",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_91",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_92",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_93",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_95",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_96",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_98",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_99",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_100",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_101",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_102",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_103",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_104",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_105",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_106",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_107",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_108",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_109",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_110",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_111",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "undefined_112",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "x",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "X",
+      "type": "PDFTextField",
+      "value": ""
+    },
+    {
+      "name": "X_2",
+      "type": "PDFTextField",
+      "value": ""
+    }
+  ]
+}

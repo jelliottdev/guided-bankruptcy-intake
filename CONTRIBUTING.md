@@ -1,25 +1,24 @@
 # Contributing
 
-## Setup
+## Development setup
 
-1. Clone the repo and install: `npm install`
-2. Run the dev server: `npm run dev` (see [README.md](README.md#development))
+- Install dependencies: `npm install`
+- Dev server: `npm run dev` (http://localhost:5173)
+- Tests: `npm run test` (once) or `npm run test:watch` (watch mode)
+- Lint: `npm run lint`
 
-## Before committing
+## Expectations
 
-- **Lint:** Run `npm run lint`. CI runs ESLint on push; fix any errors or warnings.
-- **Build:** Run `npm run build` to ensure the project compiles.
+- **Tests:** Keep the test suite green. Run `npm run test` before submitting changes.
+- **Lint:** Code must pass `npm run lint`. Fix any reported issues.
+- **File naming:** React components and UI-only modules use **PascalCase** (e.g. `AttorneyDashboard.tsx`, `IntakeProvider.tsx`). All other modules use **camelCase** (e.g. `readiness.ts`, `attorneyProfile.ts`).
 
-## Code structure
+## Codebase scope
 
-- **Client flow:** `src/form/` (steps, types, validation, defaults) and `src/ui/` (Layout, StepShell, FieldRenderer, Progress, Review).
-- **Attorney View:** `src/ui/AttorneyDashboard.tsx` (all dashboard UI) and `src/attorney/` (readiness, snapshot, clientReliability, creditorMatrix). Attorney logic is pure functions; dashboard wires them to state and UI.
-- **State:** `src/state/` (IntakeProvider, autosave). No backend; data lives in memory and localStorage.
+- **Engine:** Canonical case model and form generation live under `src/engine/` (transform, types, export, mapping). New form fill logic should prefer the canonical pipeline.
+- **Legacy export:** `src/export/` still contains Schedule A/B and related mapping used by the UI; the engine depends on `export/scheduleB` for some mapping. Migrating fully to the engine is a separate effort.
 
-## Data and production
+## Pull requests
 
-This app is a prototype. It does not use a server or database. Do not add handling of real client PII or secrets without a proper backend and security review.
-
-## Questions
-
-Open an [issue](https://github.com/jelliottdev/guided-bankruptcy-intake/issues) for bugs or feature ideas.
+- Branch from `main`; keep changes focused.
+- Ensure tests and lint pass. The project may run CI (e.g. GitHub Actions) on push.

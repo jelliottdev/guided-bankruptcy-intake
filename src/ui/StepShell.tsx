@@ -42,10 +42,12 @@ export function StepShell({
   return (
     <div className="step-shell">
       <div className="step-content">
-        <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
-        <h2>{title}</h2>
-        {description && <p className="header-subtext">{description}</p>}
-        {reassurance && <p className="step-reassurance" aria-live="polite">{reassurance}</p>}
+        <div className="step-header-block">
+          <Progress currentStepIndex={currentStepIndex} totalSteps={totalSteps} />
+          <h2>{title}</h2>
+          {description && <p className="header-subtext">{description}</p>}
+          {reassurance && <p className="step-reassurance" aria-live="polite">{reassurance}</p>}
+        </div>
         {uploadInstructions && (
           <div className="upload-instructions-block" role="region" aria-label="Document upload instructions">
             {uploadInstructions.split('\n').map((line, i) => (

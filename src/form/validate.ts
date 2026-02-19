@@ -72,12 +72,12 @@ export function validateAll(answers: Answers, flags?: Flags): ValidationError[] 
         if (isSatisfiedByFlag(flags, field.id)) return;
         const entry = flags?.[field.id];
         if (entry?.flagged) {
-          errors.push({
-            stepIndex,
-            stepId: step.id,
-            fieldId: field.id,
-            message: 'Note to your attorney must be at least 10 characters.',
-          });
+            errors.push({
+              stepIndex,
+              stepId: step.id,
+              fieldId: field.id,
+              message: 'Because you marked Can’t answer, add a note for your attorney (at least 10 characters).',
+            });
         } else {
           errors.push({
             stepIndex,

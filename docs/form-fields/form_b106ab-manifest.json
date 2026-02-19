@@ -1,0 +1,31 @@
+{
+  "source": "form_b106ab.pdf",
+  "description": "Authoritative mapping of PDF field names to form meaning / logicalId. Generated from position script + visual layout. Do not use totals fields until identified here.",
+  "updatedAt": "2026-02-17T00:00:00.000Z",
+  "notes": {
+    "wrongTotals": "undefined_155 and undefined_163 were guessed; they are Part 7 Other and Part 5 Line 59 respectively. Do NOT write scheduleA.totalValue or scheduleB.totalValue to them.",
+    "part2VehicleOrder": "Physical order of 3 1, 3 2, 3 3, 3 4 on form may not match description/mileage/value; user reported value ($22,000) in Mileage box. Use position script output to assign correct meaning."
+  },
+  "fields": [
+    { "pdfName": "undefined_155", "meaning": "Part 7 Other Property amount", "wrongForTotals": true, "logicalId": null },
+    { "pdfName": "undefined_163", "meaning": "Part 5 Business (Line 59)", "wrongForTotals": true, "logicalId": null },
+    { "pdfName": "1 1", "part": 1, "meaning": "Part 1 Property 1 address", "logicalId": "real_property.1.address" },
+    { "pdfName": "1 1a", "part": 1, "meaning": "Part 1 Property 1 type", "logicalId": "real_property.1.type" },
+    { "pdfName": "1_2", "part": 1, "meaning": "Part 1 Property 1 county", "logicalId": "real_property.1.county" },
+    { "pdfName": "1_3", "part": 1, "meaning": "Part 1 Property 1 value", "logicalId": "real_property.1.value" },
+    { "pdfName": "1_4", "part": 1, "meaning": "Part 1 Property 1 ownership", "logicalId": "real_property.1.ownership" },
+    { "pdfName": "2_2", "part": 1, "meaning": "Part 1 Property 2 address", "logicalId": "real_property.2.address" },
+    { "pdfName": "2_3", "part": 1, "meaning": "Part 1 Property 2 county", "logicalId": "real_property.2.county" },
+    { "pdfName": "2_4", "part": 1, "meaning": "Part 1 Property 2 value", "logicalId": "real_property.2.value" },
+    { "pdfName": "3 1", "part": 2, "meaning": "Part 2 Vehicle 1 – order TBD (possibly description)", "logicalId": "vehicles.1.description" },
+    { "pdfName": "3 2", "part": 2, "meaning": "Part 2 Vehicle 1 – order TBD (possibly mileage)", "logicalId": "vehicles.1.mileage" },
+    { "pdfName": "3 3", "part": 2, "meaning": "Part 2 Vehicle 1 – unassigned", "logicalId": null },
+    { "pdfName": "3 4", "part": 2, "meaning": "Part 2 Vehicle 1 – order TBD (value reported in Mileage box)", "logicalId": "vehicles.1.value" },
+    { "pdfName": "3_2", "part": 2, "meaning": "Part 2 Vehicle 2 description", "logicalId": "vehicles.2.description" },
+    { "pdfName": "3_3", "part": 2, "meaning": "Part 2 Vehicle 2 value", "logicalId": "vehicles.2.value" }
+  ],
+  "totalsTBD": [
+    "Part 8 Line 55 (total real property)",
+    "Part 8 Line 56–63 (subtotals and total personal property)"
+  ]
+}
