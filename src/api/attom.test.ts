@@ -108,7 +108,7 @@ describe('attom API', () => {
 
         // Verify correct endpoint was called for demographics
         expect(globalThis.fetch).toHaveBeenCalledWith(
-            expect.stringContaining('communityapi/v2.0.0/neighborhood/community'),
+            expect.stringContaining('v4/neighborhood/community'),
             expect.anything()
         );
     });
