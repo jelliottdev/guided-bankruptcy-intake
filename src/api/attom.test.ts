@@ -17,9 +17,9 @@ describe('attom API', () => {
             property: [{
                 identifier: { attomId: 12345 },
                 address: { oneLine: '123 Main St' },
-                summary: { propClass: 'Residential', yearBuilt: 2000 },
-                building: { size: { universalSize: 2000 }, rooms: { beds: 3, bathsTotal: 2 } },
-                lot: { lotSize2: 5000, zoningType: 'R1' }
+                summary: { propclass: 'Residential', yearbuilt: 2000 },
+                building: { size: { universalsize: 2000 }, rooms: { beds: 3, bathstotal: 2 } },
+                lot: { lotsize2: 5000, zoningType: 'R1' }
             }]
         };
 
@@ -67,6 +67,14 @@ describe('attom API', () => {
 
         expect(report.address).toBe('123 Main St');
         expect(report.attom_id).toBe(12345);
+
+        expect(report.profile.type).toBe('Residential');
+        expect(report.profile.year_built).toBe(2000);
+        expect(report.profile.sqft).toBe(2000);
+        expect(report.profile.beds).toBe(3);
+        expect(report.profile.baths).toBe(2);
+        expect(report.profile.lot_sqft).toBe(5000);
+        expect(report.profile.zoning).toBe('R1');
 
         // Validation of aggregated fields
         expect(report.valuation?.value).toBe(500000);

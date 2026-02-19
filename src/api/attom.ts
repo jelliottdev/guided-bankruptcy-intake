@@ -37,40 +37,40 @@ export interface AttomPropertyDetail {
     };
     summary: {
         absenteeInd: string;
-        propClass: string;
-        propSubType: string;
-        propType: string;
-        yearBuilt: number;
+        propclass: string;
+        propsubtype: string;
+        proptype: string;
+        yearbuilt: number;
         propLandUse: string;
         propIndicator: string;
         legal1: string;
     };
     utilities: {
-        heatingFuel: string;
-        heatingType: string;
-        sewerType: string;
-        waterType: string;
+        heatingfuel: string;
+        heatingtype: string;
+        sewertype: string;
+        watertype: string;
     };
     building: {
         size: {
-            bldgSize: number;
-            grossSize: number;
-            grossSizeAdjusted: number;
-            groundFloorSize: number;
-            livingSize: number;
+            bldgsize: number;
+            grosssize: number;
+            grosssizeadjusted: number;
+            groundfloorsize: number;
+            livingsize: number;
             sizeInd: string;
-            universalSize: number;
+            universalsize: number;
         };
         rooms: {
-            bathFixtures: number;
+            bathfixtures: number;
             baths1qtr: number;
             baths3qtr: number;
-            bathsCalc: number;
-            bathsFull: number;
-            bathsHalf: number;
-            bathsTotal: number;
+            bathscalc: number;
+            bathsfull: number;
+            bathshalf: number;
+            bathstotal: number;
             beds: number;
-            roomsTotal: number;
+            roomstotal: number;
         };
         interior: {
             bsmtSize: number;
@@ -110,14 +110,14 @@ export interface AttomPropertyDetail {
     lot: {
         depth: number;
         frontage: number;
-        lotNum: string;
-        lotSize1: number; // Acres
-        lotSize2: number; // Sq Ft
+        lotnum: string;
+        lotsize1: number; // Acres
+        lotsize2: number; // Sq Ft
         pools: number;
-        poolType: string;
+        pooltype: string;
         shape: string;
         width: number;
-        zoningType: string;
+        zoningType?: string; // Often missing in example, marking optional
     };
     vintage: {
         lastModified: string;
@@ -390,13 +390,13 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
         address: property.address.oneLine,
         attom_id: property.identifier.attomId,
         profile: {
-            type: property.summary.propClass || 'Unknown',
-            year_built: property.summary.yearBuilt,
-            sqft: property.building.size.universalSize,
+            type: property.summary.propclass || 'Unknown',
+            year_built: property.summary.yearbuilt,
+            sqft: property.building.size.universalsize,
             beds: property.building.rooms.beds,
-            baths: property.building.rooms.bathsTotal,
-            lot_sqft: property.lot.lotSize2,
-            zoning: property.lot.zoningType
+            baths: property.building.rooms.bathstotal,
+            lot_sqft: property.lot.lotsize2,
+            zoning: property.lot.zoningType || 'N/A'
         },
         owner: {
             // If assessment data has owner name, we could use it here, but interface currently empty for it
