@@ -304,7 +304,7 @@ export async function fetchAttomAvm(attomId: number): Promise<AttomAvmDetail | n
         }
 
         const data: AttomResponse<AttomAvmDetail> = await response.json();
-        console.log('Attom AVM Response:', data);
+        console.log('Attom AVM Response:', JSON.stringify(data, null, 2));
 
         if (data.status.code !== 0 || !data.property || data.property.length === 0) {
             console.warn('Attom AVM Data Missing:', data);
@@ -331,7 +331,7 @@ export async function fetchAttomAssessment(attomId: number): Promise<AttomAssess
             return null;
         }
         const data: AttomResponse<AttomAssessmentDetail> = await response.json();
-        console.log('Attom Assessment Response:', data);
+        console.log('Attom Assessment Response:', JSON.stringify(data, null, 2));
         if (!data.property || data.property.length === 0) {
             console.warn('Attom Assessment Data Missing:', data);
         }
@@ -355,7 +355,7 @@ export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSale
             return null;
         }
         const data: AttomResponse<AttomSalesHistory> = await response.json();
-        console.log('Attom Sales History Response:', data);
+        console.log('Attom Sales History Response:', JSON.stringify(data, null, 2));
         if (!data.property || data.property.length === 0) {
             console.warn('Attom Sales Data Missing:', data);
         }
