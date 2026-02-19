@@ -126,17 +126,14 @@ export interface AttomPropertyDetail {
 }
 
 export interface AttomAvmDetail {
-    amount: {
-        value: number;
-        high: number;
-        low: number;
-        currency: string;
-    };
     avm: {
         eventDate: string;
-        analysisDate: string;
-        confidenceScore: number;
-        fsd: number; // Forecast Standard Deviation
+        amount: {
+            value: number;
+            high: number;
+            low: number;
+            scr?: number; // Confidence score
+        };
     };
 }
 
@@ -154,32 +151,30 @@ export interface AttomResponse<T> {
 
 // --- Assessment Types ---
 export interface AttomAssessmentDetail {
-    assessed: {
-        assdTtlValue: number;
-        assdLandValue: number;
-        assdImprValue: number; // Improvements
-        taxAmt: number;
-        taxYear: number;
-    };
-    market: {
-        mktTtlValue: number;
-        mktLandValue: number;
-        mktImprValue: number;
+    assessment: {
+        assessed: {
+            assdttlvalue: number;
+        };
+        market: {
+            mktttlvalue: number;
+        };
+        tax: {
+            taxamt: number;
+            taxyear: number;
+        };
     };
 }
 
 // --- Sales History Types ---
 export interface AttomSaleEvent {
-    saleSearchDate: string;
     saleTransDate: string;
-    saleAmt: number;
-    transactionIdent: string;
-    saleCode?: string;
-    multiApnFlag?: string;
+    amount: {
+        saleamt: number;
+    };
 }
 
 export interface AttomSalesHistory {
-    sale: AttomSaleEvent[];
+    salehistory: AttomSaleEvent[];
 }
 
 // --- Foreclosure Types ---
@@ -304,7 +299,6 @@ export async function fetchAttomAvm(attomId: number): Promise<AttomAvmDetail | n
         }
 
         const data: AttomResponse<AttomAvmDetail> = await response.json();
-        console.log('Attom AVM Response:', JSON.stringify(data, null, 2));
 
         if (data.status.code !== 0 || !data.property || data.property.length === 0) {
             console.warn('Attom AVM Data Missing:', data);
@@ -331,7 +325,6 @@ export async function fetchAttomAssessment(attomId: number): Promise<AttomAssess
             return null;
         }
         const data: AttomResponse<AttomAssessmentDetail> = await response.json();
-        console.log('Attom Assessment Response:', JSON.stringify(data, null, 2));
         if (!data.property || data.property.length === 0) {
             console.warn('Attom Assessment Data Missing:', data);
         }
@@ -355,7 +348,6 @@ export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSale
             return null;
         }
         const data: AttomResponse<AttomSalesHistory> = await response.json();
-        console.log('Attom Sales History Response:', JSON.stringify(data, null, 2));
         if (!data.property || data.property.length === 0) {
             console.warn('Attom Sales Data Missing:', data);
         }
@@ -413,37 +405,35 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
         }
     };
 
-    if (avm && avm.amount) {
+    if (avm && avm.avm && avm.avm.amount) {
         report.valuation = {
-            value: avm.amount.value,
-            high: avm.amount.high,
-            low: avm.amount.low,
-            confidence_score: avm.avm?.confidenceScore,
-            fsd: avm.avm?.fsd,
-            date: avm.avm?.eventDate
+            value: avm.avm.amount.value,
+            high: avm.avm.amount.high,
+            low: avm.avm.amount.low,
+            confidence_score: avm.avm.amount.scr,
+            date: avm.avm.eventDate
         };
         // Estimate equity (naive)
         report.equity = {
-            estimated_value: avm.amount.value
+            estimated_value: avm.avm.amount.value
         };
     }
 
-    if (assessment && assessment.assessed) {
+    if (assessment && assessment.assessment) {
         report.assessment = {
-            total_assessed_value: assessment.assessed.assdTtlValue,
-            tax_amount: assessment.assessed.taxAmt,
-            tax_year: assessment.assessed.taxYear,
-            market_value: assessment.market?.mktTtlValue
+            total_assessed_value: assessment.assessment.assessed?.assdttlvalue,
+            tax_amount: assessment.assessment.tax?.taxamt,
+            tax_year: assessment.assessment.tax?.taxyear,
+            market_value: assessment.assessment.market?.mktttlvalue
         };
     }
 
-    if (sales && sales.sale && sales.sale.length > 0) {
+    if (sales && sales.salehistory && sales.salehistory.length > 0) {
         // Sort by date desc
-        // Dates are usually ISO or YYYY-MM-DD
-        const sortedSales = [...sales.sale].sort((a, b) => (b.saleTransDate || '').localeCompare(a.saleTransDate || ''));
+        const sortedSales = [...sales.salehistory].sort((a, b) => (b.saleTransDate || '').localeCompare(a.saleTransDate || ''));
         report.sales_history = sortedSales.slice(0, 3).map(s => ({
             last_sale_date: s.saleTransDate,
-            last_sale_amount: s.saleAmt
+            last_sale_amount: s.amount?.saleamt
         }));
     }
 

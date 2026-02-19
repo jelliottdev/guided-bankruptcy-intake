@@ -27,8 +27,10 @@ describe('attom API', () => {
         const mockAvm = {
             status: { code: 0 },
             property: [{
-                amount: { value: 500000, high: 550000, low: 450000 },
-                avm: { confidenceScore: 90, fsd: 10 }
+                avm: {
+                    eventDate: '2023-01-01',
+                    amount: { value: 500000, high: 550000, low: 450000, scr: 90 }
+                }
             }]
         };
 
@@ -36,8 +38,11 @@ describe('attom API', () => {
         const mockAssessment = {
             status: { code: 0 },
             property: [{
-                assessed: { assdTtlValue: 400000, taxAmt: 5000, taxYear: 2023 },
-                market: { mktTtlValue: 480000 }
+                assessment: {
+                    assessed: { assdttlvalue: 400000 },
+                    market: { mktttlvalue: 480000 },
+                    tax: { taxamt: 5000, taxyear: 2023 }
+                }
             }]
         };
 
@@ -45,9 +50,9 @@ describe('attom API', () => {
         const mockSales = {
             status: { code: 0 },
             property: [{
-                sale: [
-                    { saleTransDate: '2020-01-01', saleAmt: 450000 },
-                    { saleTransDate: '2015-05-01', saleAmt: 300000 }
+                salehistory: [
+                    { saleTransDate: '2020-01-01', amount: { saleamt: 450000 } },
+                    { saleTransDate: '2015-05-01', amount: { saleamt: 300000 } }
                 ]
             }]
         };
