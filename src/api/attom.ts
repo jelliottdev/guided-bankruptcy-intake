@@ -469,15 +469,26 @@ export async function fetchAttomDemographics(zipInfo: string): Promise<AttomDemo
     const zip = zipInfo.substring(0, 5);
     const params = new URLSearchParams({ postalcode: zip });
 
+    const url = `https://api.gateway.attomdata.com/communityapi/v2.0.0/neighborhood/community?${params}`;
+    console.log('Fetching Demographics from:', url);
+
     try {
-        // Use Community API V2.0.0 for demographics
-        const response = await fetch(`https://api.gateway.attomdata.com/communityapi/v2.0.0/neighborhood/community?${params}`, {
+        const response = await fetch(url, {
             headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
-        if (!response.ok) return null;
+
+        if (!response.ok) {
+            console.error(`Demographics API Error: ${response.status} ${response.statusText}`);
+            console.error('Demographics Response Body:', await response.text());
+            return null;
+        }
+
         const data: AttomResponse<AttomDemographicsDetail> = await response.json();
+        console.log('Demographics Data:', JSON.stringify(data, null, 2));
+
         return data.property?.[0] ?? null;
-    } catch {
+    } catch (e) {
+        console.error('Exception fetching Demographics:', e);
         return null;
     }
 }
