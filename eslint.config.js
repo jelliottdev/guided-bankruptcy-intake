@@ -19,6 +19,8 @@ export default tseslint.config(
       'vite.config.ts.timestamp-*.mjs',
       'reference_repos/**',
       'scripts/**',
+      'docs/**',
+      'backend/**',
       '**/venv/**',
     ],
   },
