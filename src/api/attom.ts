@@ -152,15 +152,25 @@ export interface AttomResponse<T> {
 // --- Assessment Types ---
 export interface AttomAssessmentDetail {
     assessment: {
-        assessed: {
-            assdttlvalue: number;
+        assessed?: {
+            assdttlvalue?: number;
         };
-        market: {
-            mktttlvalue: number;
+        tax?: {
+            taxamt?: number;
+            taxyear?: number;
         };
-        tax: {
-            taxamt: number;
-            taxyear: number;
+        market?: {
+            mktttlvalue?: number;
+        };
+        owner?: {
+            owner1?: {
+                lastname?: string;
+                firstnameAndMi?: string;
+            };
+            owner2?: {
+                lastname?: string;
+                firstnameAndMi?: string;
+            };
         };
     };
 }
@@ -426,12 +436,18 @@ export async function fetchAttomEquity(attomId: number): Promise<AttomEquityDeta
     const apiKey = getApiKey();
     if (!apiKey) return null;
     const params = new URLSearchParams({ attomid: attomId.toString() });
+    const url = `${API_BASE_URL}/valuation/homeequity?${params}`;
+    console.log('Fetching Equity from:', url);
     try {
-        const response = await fetch(`${API_BASE_URL}/valuation/homeequity?${params}`, {
+        const response = await fetch(url, {
             headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
-        if (!response.ok) return null;
+        if (!response.ok) {
+            console.error(`Equity API Error: ${response.status} ${response.statusText}`);
+            return null;
+        }
         const data: AttomResponse<AttomEquityDetail> = await response.json();
+        console.log('Equity Data:', JSON.stringify(data, null, 2));
         return data.property?.[0] ?? null;
     } catch (e) {
         console.error('Failed to fetch Equity:', e);
@@ -443,12 +459,18 @@ export async function fetchAttomMortgage(attomId: number): Promise<AttomMortgage
     const apiKey = getApiKey();
     if (!apiKey) return null;
     const params = new URLSearchParams({ attomid: attomId.toString() });
+    const url = `${API_BASE_URL}/property/detailmortgage?${params}`;
+    console.log('Fetching Mortgage from:', url);
     try {
-        const response = await fetch(`${API_BASE_URL}/property/detailmortgage?${params}`, {
+        const response = await fetch(url, {
             headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
-        if (!response.ok) return null;
+        if (!response.ok) {
+            console.error(`Mortgage API Error: ${response.status} ${response.statusText}`);
+            return null;
+        }
         const data: AttomResponse<AttomMortgageDetail> = await response.json();
+        console.log('Mortgage Data:', JSON.stringify(data, null, 2));
         return data.property?.[0] ?? null;
     } catch (e) {
         console.error('Failed to fetch Mortgage:', e);
@@ -556,9 +578,9 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
             zoning: property.lot.zoningType || 'N/A'
         },
         owner: {
-            // If assessment data has owner name, we could use it here, but interface currently empty for it
-            // using generic fallback for now
-            formatted_string: "Owner data requires premium access",
+            formatted_string: assessment?.assessment?.owner?.owner1?.lastname
+                ? `${assessment.assessment.owner.owner1.firstnameAndMi || ''} ${assessment.assessment.owner.owner1.lastname}`.trim()
+                : 'Unknown (Premium Access Required)',
         }
     };
 
@@ -575,10 +597,10 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
 
     if (assessment && assessment.assessment) {
         report.assessment = {
-            total_assessed_value: assessment.assessment.assessed?.assdttlvalue,
-            tax_amount: assessment.assessment.tax?.taxamt,
-            tax_year: assessment.assessment.tax?.taxyear,
-            market_value: assessment.assessment.market?.mktttlvalue
+            total_assessed_value: assessment.assessment.assessed?.assdttlvalue ?? 0,
+            tax_amount: assessment.assessment.tax?.taxamt ?? 0,
+            tax_year: assessment.assessment.tax?.taxyear ?? 0,
+            market_value: assessment.assessment.market?.mktttlvalue ?? 0
         };
     }
 
