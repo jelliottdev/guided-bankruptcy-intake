@@ -81,6 +81,7 @@ describe('attom API', () => {
         expect(report.assessment?.total_assessed_value).toBe(400000);
         expect(report.assessment?.market_value).toBe(480000);
         expect(report.assessment?.tax_amount).toBe(5000);
+        expect(report.equity).toBeUndefined();
 
         expect(report.sales_history).toHaveLength(2);
         expect(report.sales_history?.[0].last_sale_amount).toBe(450000);

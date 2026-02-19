@@ -413,10 +413,7 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
             confidence_score: avm.avm.amount.scr,
             date: avm.avm.eventDate
         };
-        // Estimate equity (naive)
-        report.equity = {
-            estimated_value: avm.avm.amount.value
-        };
+
     }
 
     if (assessment && assessment.assessment) {

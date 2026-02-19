@@ -133,8 +133,8 @@ export function PropertySnapshotTool({ onSaveToCase }: PropertySnapshotToolProps
 
                             <Grid xs={12} md={6}>
                                 <Typography level="title-sm">Equity (Est.)</Typography>
-                                <Typography level="h4" color={(report.equity?.estimated_value ?? 0) > 0 ? 'success' : 'danger'}>
-                                    {formatCurrency(report.equity?.estimated_value)}
+                                <Typography level="h4" color={report.equity?.estimated_value ? ((report.equity.estimated_value > 0) ? 'success' : 'danger') : 'neutral'}>
+                                    {report.equity?.estimated_value !== undefined ? formatCurrency(report.equity.estimated_value) : 'Unknown (Requires Mortgage Data)'}
                                 </Typography>
                             </Grid>
 
