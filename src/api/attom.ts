@@ -198,56 +198,25 @@ export interface AttomForeclosureDetail {
 }
 // --- Equity Types ---
 export interface AttomEquityDetail {
-    equity: {
-        amount: {
-            equityamount: number;
-            lendertotal: number;
-            originalLoantotal: number;
-            reportdate: string;
-        };
-    }[];
+    homeEquity: {
+        estimatedAvailableEquity: number;
+        estimatedLendableEquity: number;
+        totalEstimatedLoanBalance: number;
+        recordLastUpdated: string;
+    };
 }
 
 // --- Mortgage Types ---
 export interface AttomMortgageDetail {
     mortgage: {
-        amount: {
-            amount: number;
-        };
-        date: {
-            recordingDate: string;
-        };
+        amount: number;
+        date: string;
         lender: {
             companyName: string;
         };
-    }[];
-}
-// --- Equity Types ---
-export interface AttomEquityDetail {
-    equity: {
-        amount: {
-            equityamount: number;
-            lendertotal: number;
-            originalLoantotal: number;
-            reportdate: string;
-        };
-    }[];
+    };
 }
 
-// --- Mortgage Types ---
-export interface AttomMortgageDetail {
-    mortgage: {
-        amount: {
-            amount: number;
-        };
-        date: {
-            recordingDate: string;
-        };
-        lender: {
-            companyName: string;
-        };
-    }[];
-}
 
 // --- Demographics Types ---
 export interface AttomDemographicsDetail {
@@ -489,7 +458,8 @@ export async function fetchAttomDemographics(zipInfo: string): Promise<AttomDemo
 
     // Extract 5 digit zip if passed full zip+4
     const zip = zipInfo.substring(0, 5);
-    const params = new URLSearchParams({ postalcode: zip });
+    // Data Dictionary suggests camelCase 'postalCode' for v4
+    const params = new URLSearchParams({ postalCode: zip });
 
     // Data Dictionary suggests [ base url: /v4 ] for Demographics
     const url = `https://api.gateway.attomdata.com/v4/neighborhood/community?${params}`;
@@ -613,35 +583,42 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
         }));
     }
 
-    if (equityData && equityData.equity && equityData.equity.length > 0) {
-        const eq = equityData.equity[0];
+    // Map Equity Data (using homeEquity object)
+    if (equityData && equityData.homeEquity) {
+        const eq = equityData.homeEquity;
         report.equity = {
-            estimated_value: eq.amount.equityamount
+            estimated_value: eq.estimatedAvailableEquity
         };
-        // If we have lender total from equity endpoint, use it
-        if (eq.amount.lendertotal) {
+
+        // Use total estimated loan balance as mortgage proxy if we don't have a record
+        if (!report.mortgage && eq.totalEstimatedLoanBalance) {
             report.mortgage = {
-                amount: eq.amount.lendertotal,
-                date: eq.amount.reportdate,
-                lender: { name: 'Aggregated' }
+                amount: eq.totalEstimatedLoanBalance,
+                date: eq.recordLastUpdated,
+                lender: { name: 'Estimated (Equity Report)' }
             };
         }
     }
 
-    // Fallback to detailmortgage if equity endpoint didn't provide mortgage info
-    if (!report.mortgage && mortgageData && mortgageData.mortgage && mortgageData.mortgage.length > 0) {
-        // Use most recent mortgage
-        const recentMortgage = mortgageData.mortgage[0];
-        report.mortgage = {
-            amount: recentMortgage.amount.amount,
-            date: recentMortgage.date.recordingDate,
-            lender: { name: recentMortgage.lender.companyName }
-        };
+    // Map Mortgage Data (using mortgage object)
+    // Only overwrite if we don't have better data or want verification
+    if (mortgageData && mortgageData.mortgage) {
+        const mort = mortgageData.mortgage;
 
-        // Calculate equity manually if not provided by equity endpoint
+        // Sometimes mortgage data is more specific than equity estimate
+        if (!report.mortgage || report.mortgage.lender.name.startsWith('Estimated')) {
+            report.mortgage = {
+                amount: mort.amount,
+                date: mort.date, // API returns string like "2010-09-13" directly
+                lender: { name: mort.lender?.companyName || 'Unknown Lender' }
+            };
+        }
+
+        // Re-calculate equity if we have a real mortgage amount and AVM, but no official equity record
+        // (Only if equity was not already set by homeEquity)
         if (!report.equity && report.valuation && report.valuation.value) {
             report.equity = {
-                estimated_value: report.valuation.value - (recentMortgage.amount.amount || 0)
+                estimated_value: report.valuation.value - (report.mortgage?.amount || 0)
             };
         }
     }

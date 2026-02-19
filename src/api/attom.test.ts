@@ -70,13 +70,38 @@ describe('attom API', () => {
             }]
         };
 
+        // Mock Equity response (using homeEquity)
+        const mockEquity = {
+            status: { code: 0 },
+            property: [{
+                homeEquity: {
+                    estimatedAvailableEquity: 100000,
+                    estimatedLendableEquity: 80000,
+                    totalEstimatedLoanBalance: 300000,
+                    recordLastUpdated: '2023-01-01'
+                }
+            }]
+        };
+
+        // Mock mortgage response
+        const mockMortgage = {
+            status: { code: 0 },
+            property: [{
+                mortgage: {
+                    amount: 300000,
+                    date: '2015-01-01',
+                    lender: { companyName: 'Mock Bank' }
+                }
+            }]
+        };
+
         vi.mocked(globalThis.fetch)
             .mockResolvedValueOnce({ ok: true, json: async () => mockProperty } as unknown as Response) // fetchProperty
             .mockResolvedValueOnce({ ok: true, json: async () => mockAvm } as unknown as Response) // fetchAvm
             .mockResolvedValueOnce({ ok: true, json: async () => mockAssessment } as unknown as Response) // fetchAssessment
             .mockResolvedValueOnce({ ok: true, json: async () => mockSales } as unknown as Response) // fetchSales
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // fetchEquity (empty)
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // fetchMortgage (empty)
+            .mockResolvedValueOnce({ ok: true, json: async () => mockEquity } as unknown as Response) // fetchEquity
+            .mockResolvedValueOnce({ ok: true, json: async () => mockMortgage } as unknown as Response) // fetchMortgage
             .mockResolvedValueOnce({ ok: true, json: async () => mockDemographics } as unknown as Response); // fetchDemographics
 
         const report = await getPropertyReport('123 Main St');
@@ -97,7 +122,13 @@ describe('attom API', () => {
         expect(report.assessment?.total_assessed_value).toBe(400000);
         expect(report.assessment?.market_value).toBe(480000);
         expect(report.assessment?.tax_amount).toBe(5000);
-        expect(report.equity).toBeUndefined();
+
+        // Equity should now be populated
+        expect(report.equity?.estimated_value).toBe(100000);
+
+        // Mortgage should be populated
+        expect(report.mortgage?.amount).toBe(300000);
+        expect(report.mortgage?.lender.name).toBe('Mock Bank');
 
 
         expect(report.sales_history).toHaveLength(2);
@@ -119,11 +150,11 @@ describe('attom API', () => {
         const mockMortgage = {
             status: { code: 0 },
             property: [{
-                mortgage: [{
-                    amount: { amount: 300000 },
-                    date: { recordingDate: '2020-01-01' },
+                mortgage: {
+                    amount: 300000,
+                    date: '2020-01-01',
                     lender: { companyName: 'Test Bank' }
-                }]
+                }
             }]
         };
 
