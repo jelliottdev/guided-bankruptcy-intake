@@ -105,6 +105,12 @@ describe('attom API', () => {
 
         expect(report.demographics?.median_household_income).toBe(60000);
         expect(report.demographics?.median_family_income).toBe(70000);
+
+        // Verify correct endpoint was called for demographics
+        expect(globalThis.fetch).toHaveBeenCalledWith(
+            expect.stringContaining('communityapi/v2.0.0/neighborhood/community'),
+            expect.anything()
+        );
     });
 
     it('calculates equity from valuation and mortgage when equity endpoint is missing', async () => {

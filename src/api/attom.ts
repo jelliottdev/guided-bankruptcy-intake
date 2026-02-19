@@ -470,14 +470,14 @@ export async function fetchAttomDemographics(zipInfo: string): Promise<AttomDemo
     const params = new URLSearchParams({ postalcode: zip });
 
     try {
-        const response = await fetch(`${API_BASE_URL}/neighborhood/community?${params}`, {
+        // Use Community API V2.0.0 for demographics
+        const response = await fetch(`https://api.gateway.attomdata.com/communityapi/v2.0.0/neighborhood/community?${params}`, {
             headers: { 'apikey': apiKey, 'Accept': 'application/json' }
         });
         if (!response.ok) return null;
         const data: AttomResponse<AttomDemographicsDetail> = await response.json();
         return data.property?.[0] ?? null;
-    } catch (e) {
-        console.error('Failed to fetch Demographics:', e);
+    } catch {
         return null;
     }
 }
