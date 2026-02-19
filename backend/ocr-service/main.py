@@ -8,13 +8,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from typing import Optional
 import logging
+import os
 
 from services.paddleocr_service import PaddleOCRService
+from services.property_service import PropertyService
 from services.document_parsers.paystub_parser import PaystubParser
 from services.document_parsers.bank_statement_parser import BankStatementParser
 from services.document_parsers.tax_return_parser import TaxReturnParser
 from services.document_parsers.generic_parser import GenericParser
-from models.schemas import OcrResponse, ValidationResponse
+from models.schemas import OcrResponse, ValidationResponse, PropertyReportRequest, PropertyReportResponse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +40,9 @@ app.add_middleware(
 
 # Initialize OCR service (singleton, loaded once)
 ocr_service = PaddleOCRService()
+
+# Initialize Property service
+property_service = PropertyService()
 
 # Initialize document parsers
 parsers = {
@@ -143,6 +148,25 @@ async def validate_field_against_document(
     except Exception as e:
         logger.error(f"Error validating field: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Validation failed: {str(e)}")
+
+@app.post("/api/property/report", response_model=PropertyReportResponse)
+async def generate_property_report(request: PropertyReportRequest):
+    """
+    Generate a property report using ATTOM data.
+    
+    Args:
+        request: PropertyReportRequest containing address
+        
+    Returns:
+        PropertyReportResponse with property details
+    """
+    try:
+        logger.info(f"Generating property report for: {request.address}")
+        report = property_service.generate_report(request.address)
+        return PropertyReportResponse(success=True, report=report)
+    except Exception as e:
+        logger.error(f"Error generating property report: {str(e)}", exc_info=True)
+        return PropertyReportResponse(success=False, error=str(e))
 
 if __name__ == "__main__":
     import uvicorn

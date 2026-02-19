@@ -40,6 +40,8 @@ import { getBlob, hasBlob } from '../../../files/blobStore';
 import type { ResponseFileMeta } from '../../../questionnaires/runtime/filesValue';
 import { getMappableFields } from '../../../ocr/fieldMapping';
 import { ReviewConflicts } from './ReviewConflicts';
+import { PropertySnapshotTool } from './PropertySnapshotTool';
+import type { PropertyReport } from '../../../api/attom';
 
 /** B101-critical intake keys; filled from voluntary petition (raw/visual analysis) or seed. */
 const B101_CRITICAL_KEYS = [
@@ -602,6 +604,30 @@ export function FilingToolsDrawer({
 
 
 
+  const handleSaveToCase = useCallback((report: PropertyReport) => {
+    // Basic mapping to property_1 fields (for now, overwriting or filling empty)
+
+    // Parse address parts if possible from the single line or rely on what we have.
+    onApplyToIntakeField('property_1_address', report.address);
+    // onApplyToIntakeField('property_1_city', ...); // We don't have city/state/zip separated in PropertyReport yet.
+
+    if (report.valuation?.value) {
+      onApplyToIntakeField('property_1_value', String(report.valuation.value));
+    }
+
+    if (report.mortgage?.amount) {
+      onApplyToIntakeField('property_1_mortgage_balance', String(report.mortgage.amount));
+      onApplyToIntakeField('property_1_mortgage', 'Yes'); // Infer existence
+    }
+
+    if (report.profile?.year_built) {
+      // We might not have a direct field for year built in simple intake, but if we did:
+      // onApplyToIntakeField('property_1_year_built', String(report.profile.year_built));
+    }
+
+    setApplyToast('Property data saved to Case (Slot 1)');
+  }, [onApplyToIntakeField]);
+
   const bulkUploads = intakeUploadFilesByFieldId['upload_documents_bulk'] ?? [];
 
   return (
@@ -728,6 +754,17 @@ export function FilingToolsDrawer({
               />
             );
           })()}
+
+
+
+          // ...
+
+          <Stack spacing={0.9}>
+            <Typography level="title-sm">Property Data</Typography>
+            <Sheet variant="soft" sx={{ p: 1, borderRadius: 'md' }}>
+              <PropertySnapshotTool onSaveToCase={handleSaveToCase} />
+            </Sheet>
+          </Stack>
 
           <Stack spacing={0.9}>
             <Typography level="title-sm">Documents</Typography>
@@ -1155,9 +1192,9 @@ export function FilingToolsDrawer({
                     <Typography level="body-sm" sx={{ fontWeight: 800 }}>
                       Form 101 (Voluntary Petition)
                     </Typography>
-                <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
-                  Generate a court-fileable PDF using the intake data currently on record.
-                </Typography>
+                    <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
+                      Generate a court-fileable PDF using the intake data currently on record.
+                    </Typography>
                   </Box>
                   <Stack direction="row" spacing={0.75} alignItems="center" sx={{ flexShrink: 0 }} flexWrap="wrap">
                     <input

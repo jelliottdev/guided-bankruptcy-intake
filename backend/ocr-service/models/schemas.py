@@ -31,3 +31,13 @@ class ValidationResponse(BaseModel):
     extracted_value: str = ""
     confidence: float = Field(ge=0.0, le=1.0)
     message: str = ""
+
+class PropertyReportRequest(BaseModel):
+    """Request to generate property report"""
+    address: str
+
+class PropertyReportResponse(BaseModel):
+    """Response containing property report data"""
+    success: bool
+    report: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
