@@ -186,6 +186,58 @@ export interface AttomForeclosureDetail {
         estimatedValue?: number;
     }[];
 }
+// --- Equity Types ---
+export interface AttomEquityDetail {
+    equity: {
+        amount: {
+            equityamount: number;
+            lendertotal: number;
+            originalLoantotal: number;
+            reportdate: string;
+        };
+    }[];
+}
+
+// --- Mortgage Types ---
+export interface AttomMortgageDetail {
+    mortgage: {
+        amount: {
+            amount: number;
+        };
+        date: {
+            recordingDate: string;
+        };
+        lender: {
+            companyName: string;
+        };
+    }[];
+}
+// --- Equity Types ---
+export interface AttomEquityDetail {
+    equity: {
+        amount: {
+            equityamount: number;
+            lendertotal: number;
+            originalLoantotal: number;
+            reportdate: string;
+        };
+    }[];
+}
+
+// --- Mortgage Types ---
+export interface AttomMortgageDetail {
+    mortgage: {
+        amount: {
+            amount: number;
+        };
+        date: {
+            recordingDate: string;
+        };
+        lender: {
+            companyName: string;
+        };
+    }[];
+}
 
 
 // Normalized report interface for UI
@@ -353,7 +405,40 @@ export async function fetchAttomSalesHistory(attomId: number): Promise<AttomSale
         }
         return data.property?.[0] ?? null;
     } catch (e) {
-        console.error('Failed to fetch Sales History:', e);
+        return null;
+    }
+}
+
+export async function fetchAttomEquity(attomId: number): Promise<AttomEquityDetail | null> {
+    const apiKey = getApiKey();
+    if (!apiKey) return null;
+    const params = new URLSearchParams({ attomid: attomId.toString() });
+    try {
+        const response = await fetch(`${API_BASE_URL}/valuation/homeequity?${params}`, {
+            headers: { 'apikey': apiKey, 'Accept': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const data: AttomResponse<AttomEquityDetail> = await response.json();
+        return data.property?.[0] ?? null;
+    } catch (e) {
+        console.error('Failed to fetch Equity:', e);
+        return null;
+    }
+}
+
+export async function fetchAttomMortgage(attomId: number): Promise<AttomMortgageDetail | null> {
+    const apiKey = getApiKey();
+    if (!apiKey) return null;
+    const params = new URLSearchParams({ attomid: attomId.toString() });
+    try {
+        const response = await fetch(`${API_BASE_URL}/property/detailmortgage?${params}`, {
+            headers: { 'apikey': apiKey, 'Accept': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const data: AttomResponse<AttomMortgageDetail> = await response.json();
+        return data.property?.[0] ?? null;
+    } catch (e) {
+        console.error('Failed to fetch Mortgage:', e);
         return null;
     }
 }
@@ -375,13 +460,16 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
     let avm: AttomAvmDetail | null = null;
     let assessment: AttomAssessmentDetail | null = null;
     let sales: AttomSalesHistory | null = null;
-    // let foreclosure: AttomForeclosureDetail | null = null; // Future: add foreclosure endpoint if package available
+    let equityData: AttomEquityDetail | null = null;
+    let mortgageData: AttomMortgageDetail | null = null;
 
     if (attomId) {
-        [avm, assessment, sales] = await Promise.all([
+        [avm, assessment, sales, equityData, mortgageData] = await Promise.all([
             fetchAttomAvm(attomId),
             fetchAttomAssessment(attomId),
-            fetchAttomSalesHistory(attomId)
+            fetchAttomSalesHistory(attomId),
+            fetchAttomEquity(attomId),
+            fetchAttomMortgage(attomId)
         ]);
     }
 
@@ -432,6 +520,39 @@ export async function getPropertyReport(addressInput: string): Promise<PropertyR
             last_sale_date: s.saleTransDate,
             last_sale_amount: s.amount?.saleamt
         }));
+    }
+
+    if (equityData && equityData.equity && equityData.equity.length > 0) {
+        const eq = equityData.equity[0];
+        report.equity = {
+            estimated_value: eq.amount.equityamount
+        };
+        // If we have lender total from equity endpoint, use it
+        if (eq.amount.lendertotal) {
+            report.mortgage = {
+                amount: eq.amount.lendertotal,
+                date: eq.amount.reportdate,
+                lender: { name: 'Aggregated' }
+            };
+        }
+    }
+
+    // Fallback to detailmortgage if equity endpoint didn't provide mortgage info
+    if (!report.mortgage && mortgageData && mortgageData.mortgage && mortgageData.mortgage.length > 0) {
+        // Use most recent mortgage
+        const recentMortgage = mortgageData.mortgage[0];
+        report.mortgage = {
+            amount: recentMortgage.amount.amount,
+            date: recentMortgage.date.recordingDate,
+            lender: { name: recentMortgage.lender.companyName }
+        };
+
+        // Calculate equity manually if not provided by equity endpoint
+        if (!report.equity && report.valuation && report.valuation.value) {
+            report.equity = {
+                estimated_value: report.valuation.value - (recentMortgage.amount.amount || 0)
+            };
+        }
     }
 
     return report;

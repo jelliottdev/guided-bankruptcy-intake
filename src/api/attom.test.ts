@@ -61,7 +61,9 @@ describe('attom API', () => {
             .mockResolvedValueOnce({ ok: true, json: async () => mockProperty } as unknown as Response) // fetchProperty
             .mockResolvedValueOnce({ ok: true, json: async () => mockAvm } as unknown as Response) // fetchAvm
             .mockResolvedValueOnce({ ok: true, json: async () => mockAssessment } as unknown as Response) // fetchAssessment
-            .mockResolvedValueOnce({ ok: true, json: async () => mockSales } as unknown as Response); // fetchSales
+            .mockResolvedValueOnce({ ok: true, json: async () => mockSales } as unknown as Response) // fetchSales
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // fetchEquity (empty)
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response); // fetchMortgage (empty)
 
         const report = await getPropertyReport('123 Main St');
 
@@ -85,5 +87,33 @@ describe('attom API', () => {
 
         expect(report.sales_history).toHaveLength(2);
         expect(report.sales_history?.[0].last_sale_amount).toBe(450000);
+    });
+
+    it('calculates equity from valuation and mortgage when equity endpoint is missing', async () => {
+        const mockProperty = { status: { code: 0 }, property: [{ identifier: { attomId: 1 }, address: { oneLine: 'Test' }, summary: {}, building: { size: {}, rooms: {} }, lot: {} }] };
+        const mockAvm = { status: { code: 0 }, property: [{ avm: { eventDate: '2023-01-01', amount: { value: 500000 } } }] };
+        const mockMortgage = {
+            status: { code: 0 },
+            property: [{
+                mortgage: [{
+                    amount: { amount: 300000 },
+                    date: { recordingDate: '2020-01-01' },
+                    lender: { companyName: 'Test Bank' }
+                }]
+            }]
+        };
+
+        vi.mocked(globalThis.fetch)
+            .mockResolvedValueOnce({ ok: true, json: async () => mockProperty } as unknown as Response)
+            .mockResolvedValueOnce({ ok: true, json: async () => mockAvm } as unknown as Response)
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // assessment
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // sales
+            .mockResolvedValueOnce({ ok: true, json: async () => ({ status: { code: 0 }, property: [] }) } as unknown as Response) // equity
+            .mockResolvedValueOnce({ ok: true, json: async () => mockMortgage } as unknown as Response); // mortgage
+
+        const report = await getPropertyReport('Test');
+
+        expect(report.mortgage?.amount).toBe(300000);
+        expect(report.equity?.estimated_value).toBe(200000); // 500k - 300k
     });
 });
