@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getPropertyReport } from './attom';
 
 // Mock fetch
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 describe('attom API', () => {
     beforeEach(() => {
@@ -52,11 +52,11 @@ describe('attom API', () => {
             }]
         };
 
-        (global.fetch as any)
-            .mockResolvedValueOnce({ ok: true, json: async () => mockProperty }) // fetchProperty
-            .mockResolvedValueOnce({ ok: true, json: async () => mockAvm }) // fetchAvm
-            .mockResolvedValueOnce({ ok: true, json: async () => mockAssessment }) // fetchAssessment
-            .mockResolvedValueOnce({ ok: true, json: async () => mockSales }); // fetchSales
+        vi.mocked(globalThis.fetch)
+            .mockResolvedValueOnce({ ok: true, json: async () => mockProperty } as unknown as Response) // fetchProperty
+            .mockResolvedValueOnce({ ok: true, json: async () => mockAvm } as unknown as Response) // fetchAvm
+            .mockResolvedValueOnce({ ok: true, json: async () => mockAssessment } as unknown as Response) // fetchAssessment
+            .mockResolvedValueOnce({ ok: true, json: async () => mockSales } as unknown as Response); // fetchSales
 
         const report = await getPropertyReport('123 Main St');
 

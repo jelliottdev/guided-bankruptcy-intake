@@ -30,7 +30,7 @@ export function usePropertySnapshot(): UsePropertySnapshotResult {
             } else {
                 setError(result.error || 'Failed to generate report');
             }
-        } catch (err) {
+        } catch {
             setError('An unexpected error occurred');
         } finally {
             setLoading(false);
